@@ -1,0 +1,8 @@
+# scan은 초당 5장이라 track_buffer는 프레임 수 기준 5장(약 1초). 나머지는 ultralytics 기본값.
+tracker_type: bytetrack
+track_high_thresh: 0.25
+track_low_thresh: 0.1
+new_track_thresh: 0.25
+track_buffer: 5
+match_thresh: 0.8
+fuse_score: True

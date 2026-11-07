@@ -1,0 +1,174 @@
+{
+ "meta": {
+  "at": "20261105T164737Z",
+  "model": "gpt-5.5",
+  "effort": "low",
+  "prompt_version": "2026-11-06.2"
+ },
+ "rows": [
+  {
+   "file": "ChEd1775124884_965_com.mp4",
+   "status": "ok",
+   "involvement": "party",
+   "collision_t": 11.53,
+   "chart_id": "차43-2",
+   "me": "A",
+   "my_min": 0,
+   "my_max": 50,
+   "confidence": "medium",
+   "severity": "low",
+   "scene": "lane_change",
+   "extra_focus": false,
+   "unknown": [
+    "상대 진로변경 신호불이행·지연",
+    "내 현저한 과실",
+    "내 중대한 과실",
+    "상대 현저한 과실",
+    "상대 중대한 과실"
+   ],
+   "serious": [
+    {
+     "item": "앞지르기·끼어들기 위반",
+     "likelihood": "medium",
+     "party": "other"
+    }
+   ],
+   "evidence": [
+    {
+     "t": 1.53,
+     "text": "촬영차는 직진 차로를 따라 진행 중이고, 전방 우측 차로에 흰색 승용차가 있으며 맞은편 차로에 차량들이 보인다."
+    },
+    {
+     "t": 3.0,
+     "text": "교차로 신호등에 녹색 신호가 보이고, 흰색 승용차가 촬영차 오른쪽 앞에 있다."
+    },
+    {
+     "t": 8.73,
+     "text": "촬영차 전방 횡단보도와 녹색 신호가 보이며, 왼쪽 전방에 흰색 차량, 중앙 앞쪽에 어두운색 차량, 오른쪽 가장자리에 파란색 차량 일부가 보인다."
+    },
+    {
+     "t": 9.6,
+     "text": "촬영차가 횡단보도 위를 지나가고, 왼쪽 전방의 흰색 차량은 화면 왼쪽 가까이에 있으며, 중앙 앞쪽에 어두운색 SUV가 보인다."
+    },
+    {
+     "t": 10.0,
+     "text": "흰색 차량은 화면 왼쪽 가장자리로 지나가고, 어두운색 SUV가 촬영차 전방 좌측에서 촬영차 진행 방향 쪽으로 비스듬히 위치해 있다."
+    },
+    {
+     "t": 11.53,
+     "text": "어두운색 SUV가 촬영차 바로 앞 왼쪽에서 오른쪽으로 비스듬히 들어와 촬영차 전방을 크게 가리고, 차량 전면부와 촬영차 앞부분이 맞닿은 상태로 보인다."
+    },
+    {
+     "t": 12.0,
+     "text": "어두운색 SUV의 앞부분과 측면이 촬영차 앞부분에 매우 가까이 붙어 화면 왼쪽과 하단을 크게 차지한다."
+    }
+   ],
+   "summary": "촬영차는 녹색 신호가 보이는 교차로 구간에서 직진 진행 중이었고, 전방 좌측의 어두운색 SUV가 촬영차 진행 방향 쪽으로 비스듬히 들어와 촬영차 앞부분과 맞닿은 사고로 보입니다.",
+   "reason": null,
+   "seconds": 39.1,
+   "stage_seconds": {
+    "normalize": 3.25,
+    "scan": 5.13,
+    "locate": 0.08,
+    "focus": 2.08,
+    "observe": 12.78,
+    "assess": 15.79
+   },
+   "calls": 2,
+   "cost": 0.1756
+  },
+  {
+   "file": "CQQd1776919162_138_com.mp4",
+   "status": "ok",
+   "involvement": "party",
+   "collision_t": 9.87,
+   "chart_id": null,
+   "me": null,
+   "my_min": null,
+   "my_max": null,
+   "confidence": "low",
+   "severity": "medium",
+   "scene": "other",
+   "extra_focus": false,
+   "unknown": [],
+   "serious": [],
+   "evidence": [
+    {
+     "t": 6.87,
+     "text": "야간 도로에서 촬영 차량이 전방으로 주행 중이며, 차로와 우측 가드레일이 보인다."
+    },
+    {
+     "t": 7.87,
+     "text": "전방 차로 중앙 부근에 작은 어두운 물체가 보인다."
+    },
+    {
+     "t": 8.67,
+     "text": "전방 같은 차로에 밝게 반사되는 기둥형 부분이 있는 장애물이 서 있거나 놓여 있다."
+    },
+    {
+     "t": 9.2,
+     "text": "장애물이 촬영 차량 바로 앞쪽에 크게 보이고, 하단이 차량 앞부분 가까이에 위치한다."
+    },
+    {
+     "t": 9.87,
+     "text": "장애물이 촬영 차량 전면 하단과 겹쳐 보이며, 여러 반사 기둥과 사선 구조물이 차량 앞부분에 붙은 상태로 보인다."
+    },
+    {
+     "t": 10.0,
+     "text": "장애물이 계속 촬영 차량 전면 하단과 겹쳐 붙어 보인다."
+    },
+    {
+     "t": 10.6,
+     "text": "장애물이 여전히 차량 앞부분과 겹쳐 보이며 함께 이동하는 것처럼 보인다."
+    },
+    {
+     "t": 11.0,
+     "text": "장애물이 촬영 차량 전면 하단에 가까이 붙어 보이고, 전방 도로와 우측 가드레일은 계속 보인다."
+    }
+   ],
+   "summary": "촬영 차량이 야간 도로에서 전방 주행하던 중 같은 차로 중앙 부근의 장애물에 가까워졌고, 장애물이 차량 전면 하단과 겹쳐 붙은 상태로 보인다.",
+   "reason": null,
+   "seconds": 20.1,
+   "stage_seconds": {
+    "normalize": 1.54,
+    "scan": 3.23,
+    "locate": 0.06,
+    "focus": 0.29,
+    "observe": 7.26,
+    "assess": 7.73
+   },
+   "calls": 2,
+   "cost": 0.1577
+  },
+  {
+   "file": "AA8U1773902328_a3398f_470_com.mp4",
+   "status": "ok",
+   "involvement": "none",
+   "collision_t": null,
+   "chart_id": null,
+   "me": null,
+   "my_min": null,
+   "my_max": null,
+   "confidence": "low",
+   "severity": null,
+   "scene": "lane_change",
+   "extra_focus": false,
+   "unknown": [],
+   "serious": [],
+   "evidence": [],
+   "summary": null,
+   "reason": "흰색 승용차가 우측에서 촬영차 앞쪽으로 매우 가까이 지나가지만, 접촉이나 파편·파손은 프레임에서 보이지 않습니다.",
+   "seconds": 21.5,
+   "stage_seconds": {
+    "normalize": 3.18,
+    "scan": 3.77,
+    "locate": 0.06,
+    "focus": 1.48,
+    "observe": 12.93,
+    "assess": 0.0
+   },
+   "calls": 1,
+   "cost": 0.117
+  }
+ ]
+}

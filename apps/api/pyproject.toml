@@ -1,0 +1,49 @@
+[project]
+name = "aigo-api"
+version = "0.1.0"
+requires-python = ">=3.12,<3.13"
+dependencies = [
+  "fastapi",
+  "uvicorn[standard]",
+  "pydantic-settings",
+  "sqlalchemy>=2",
+  "psycopg[binary]",
+  "alembic>=1.20.1",
+  "boto3>=1.43.124",
+  "clerk-backend-api>=7.1.0",
+  "cryptography>=50.0.2",
+  "httpx",
+  "numpy",
+  "opencv-python-headless",
+  "torch",
+  "torchvision",
+  "ultralytics",
+  "openai>=3.46.0",
+  "lap>=0.5.14",
+]
+
+[dependency-groups]
+dev = [
+    "pytest",
+    "httpx2",
+    "moto[s3]>=5.2.5",
+]
+
+[tool.uv]
+# ultralytics가 끌어오는 GUI용 opencv-python은 설치하지 않고 headless만 쓴다.
+override-dependencies = ["opencv-python; sys_platform == 'never'"]
+
+# Linux(Docker)는 CPU 전용 torch, macOS는 기본 wheel.
+[tool.uv.sources]
+torch = { index = "pytorch-cpu", marker = "sys_platform == 'linux'" }
+torchvision = { index = "pytorch-cpu", marker = "sys_platform == 'linux'" }
+
+[[tool.uv.index]]
+name = "pytorch-cpu"
+url = "https://download.pytorch.org/whl/cpu"
+explicit = true
+
+[tool.pytest.ini_options]
+markers = ["model: 실제 YOLO 모델이 필요한 느린 테스트 (-m 'not model'로 제외)"]
+testpaths = ["tests"]
+pythonpath = ["."]

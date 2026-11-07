@@ -1,0 +1,184 @@
+[
+ {
+  "file": "ChEd1775124884_965_com.mp4",
+  "t": 1.53,
+  "ok": true,
+  "note": null,
+  "checked_by": ""
+ },
+ {
+  "file": "ChEd1775124884_965_com.mp4",
+  "t": 3.0,
+  "ok": true,
+  "note": null,
+  "checked_by": ""
+ },
+ {
+  "file": "ChEd1775124884_965_com.mp4",
+  "t": 8.73,
+  "ok": false,
+  "note": "넘어진 이륜차를 썸네일로 확인 못 함",
+  "checked_by": ""
+ },
+ {
+  "file": "ChEd1775124884_965_com.mp4",
+  "t": 9.6,
+  "ok": true,
+  "note": null,
+  "checked_by": ""
+ },
+ {
+  "file": "ChEd1775124884_965_com.mp4",
+  "t": 10.0,
+  "ok": true,
+  "note": null,
+  "checked_by": ""
+ },
+ {
+  "file": "ChEd1775124884_965_com.mp4",
+  "t": 11.53,
+  "ok": false,
+  "note": "이 시각에는 아직 틈이 보이는데 맞닿았다고 적음",
+  "checked_by": ""
+ },
+ {
+  "file": "ChEd1775124884_965_com.mp4",
+  "t": 12.0,
+  "ok": true,
+  "note": null,
+  "checked_by": ""
+ },
+ {
+  "file": "ChEd1775124884_965_com.mp4",
+  "t": 13.2,
+  "ok": true,
+  "note": null,
+  "checked_by": ""
+ },
+ {
+  "file": "ChEd1775124884_965_com.mp4",
+  "t": 14.0,
+  "ok": true,
+  "note": null,
+  "checked_by": ""
+ },
+ {
+  "file": "CQQd1776919162_138_com.mp4",
+  "t": 6.87,
+  "ok": true,
+  "note": null,
+  "checked_by": ""
+ },
+ {
+  "file": "CQQd1776919162_138_com.mp4",
+  "t": 7.87,
+  "ok": false,
+  "note": "작은 물체를 썸네일로 확인 못 함",
+  "checked_by": ""
+ },
+ {
+  "file": "CQQd1776919162_138_com.mp4",
+  "t": 8.67,
+  "ok": true,
+  "note": null,
+  "checked_by": ""
+ },
+ {
+  "file": "CQQd1776919162_138_com.mp4",
+  "t": 9.2,
+  "ok": true,
+  "note": null,
+  "checked_by": ""
+ },
+ {
+  "file": "CQQd1776919162_138_com.mp4",
+  "t": 9.87,
+  "ok": true,
+  "note": null,
+  "checked_by": ""
+ },
+ {
+  "file": "CQQd1776919162_138_com.mp4",
+  "t": 10.0,
+  "ok": true,
+  "note": null,
+  "checked_by": ""
+ },
+ {
+  "file": "CQQd1776919162_138_com.mp4",
+  "t": 10.6,
+  "ok": true,
+  "note": null,
+  "checked_by": ""
+ },
+ {
+  "file": "CQQd1776919162_138_com.mp4",
+  "t": 11.0,
+  "ok": true,
+  "note": null,
+  "checked_by": ""
+ },
+ {
+  "file": "AA8U1773902328_a3398f_470_com.mp4",
+  "t": 0.0,
+  "ok": true,
+  "note": null,
+  "checked_by": ""
+ },
+ {
+  "file": "AA8U1773902328_a3398f_470_com.mp4",
+  "t": 1.53,
+  "ok": true,
+  "note": null,
+  "checked_by": ""
+ },
+ {
+  "file": "AA8U1773902328_a3398f_470_com.mp4",
+  "t": 3.53,
+  "ok": true,
+  "note": null,
+  "checked_by": ""
+ },
+ {
+  "file": "AA8U1773902328_a3398f_470_com.mp4",
+  "t": 10.4,
+  "ok": false,
+  "note": "흰 차를 썸네일로 확인 못 함",
+  "checked_by": ""
+ },
+ {
+  "file": "AA8U1773902328_a3398f_470_com.mp4",
+  "t": 11.47,
+  "ok": true,
+  "note": null,
+  "checked_by": ""
+ },
+ {
+  "file": "AA8U1773902328_a3398f_470_com.mp4",
+  "t": 12.0,
+  "ok": true,
+  "note": null,
+  "checked_by": ""
+ },
+ {
+  "file": "AA8U1773902328_a3398f_470_com.mp4",
+  "t": 12.6,
+  "ok": true,
+  "note": null,
+  "checked_by": ""
+ },
+ {
+  "file": "AA8U1773902328_a3398f_470_com.mp4",
+  "t": 14.0,
+  "ok": true,
+  "note": null,
+  "checked_by": ""
+ },
+ {
+  "file": "AA8U1773902328_a3398f_470_com.mp4",
+  "t": 15.93,
+  "ok": false,
+  "note": "흰 차가 아니라 자기 차 가장자리일 수 있음",
+  "checked_by": ""
+ }
+]

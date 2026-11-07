@@ -1,0 +1,59 @@
+/* 레포트 PDF 저장용. 영상과 버튼은 화면 코드의 print:hidden으로 뺀다. */
+@media print {
+  @page {
+    size: A4;
+    margin: 14mm;
+  }
+
+  :root,
+  [data-theme] {
+    color-scheme: light;
+    --bg: #fff;
+    --raised: #fff;
+  }
+
+  * {
+    print-color-adjust: exact;
+  }
+
+  nav,
+  footer {
+    display: none !important;
+  }
+
+  .frame {
+    max-width: none;
+    border: 0;
+  }
+
+  /* 페이지마다 머리가 겹치지 않게 고정을 푼다 */
+  .sticky,
+  [class*="lg:sticky"] {
+    position: static !important;
+    backdrop-filter: none;
+  }
+
+  h3,
+  .sticky {
+    break-after: avoid;
+  }
+
+  /* 칸이 다음 쪽으로 넘어가면 틈 선 색 바탕이 면으로 드러난다 */
+  .cells {
+    background: none;
+  }
+
+  .cells > * {
+    break-inside: avoid;
+  }
+
+  [data-reveal] {
+    animation: none;
+    opacity: 1;
+  }
+
+  article a[href^="http"]::after {
+    content: " (" attr(href) ")";
+    font-weight: 400;
+  }
+}
