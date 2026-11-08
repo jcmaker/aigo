@@ -1,0 +1,15 @@
+# 미검증: 개발 PC에 Docker daemon이 없어 실행해 보지 못했다.
+services:
+  postgres:
+    image: postgres:15
+    environment: {POSTGRES_USER: dashpi, POSTGRES_PASSWORD: dashpi, POSTGRES_DB: dashpi}
+    ports: ["5432:5432"]
+  postgres-test:
+    image: postgres:15
+    environment: {POSTGRES_USER: dashpi, POSTGRES_PASSWORD: dashpi, POSTGRES_DB: dashpi_test}
+    ports: ["5433:5432"]
+  s3:
+    image: minio/minio
+    command: server /data --console-address ":9001"
+    environment: {MINIO_ROOT_USER: dashpi, MINIO_ROOT_PASSWORD: dashpi-secret}
+    ports: ["9000:9000", "9001:9001"]

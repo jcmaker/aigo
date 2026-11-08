@@ -1,0 +1,40 @@
+{
+ "meta": {
+  "at": "20261105T163350Z",
+  "model": "gpt-5.5",
+  "effort": "low",
+  "prompt_version": "2026-11-06.2"
+ },
+ "rows": [
+  {
+   "file": "noacc_ER8Z.mp4",
+   "status": "ok",
+   "involvement": "none",
+   "collision_t": null,
+   "chart_id": null,
+   "me": null,
+   "my_min": null,
+   "my_max": null,
+   "confidence": "low",
+   "severity": null,
+   "scene": "signal_intersection",
+   "extra_focus": false,
+   "unknown": [],
+   "serious": [],
+   "evidence": [],
+   "summary": null,
+   "reason": "영상 프레임들에서 차량 간 접촉, 파편, 파손, 접촉 후 정지 장면이 보이지 않는다.",
+   "seconds": 16.0,
+   "stage_seconds": {
+    "normalize": 0.95,
+    "scan": 2.66,
+    "locate": 0.06,
+    "focus": 0.21,
+    "observe": 12.09,
+    "assess": 0.0
+   },
+   "calls": 1,
+   "cost": 0.1193
+  }
+ ]
+}

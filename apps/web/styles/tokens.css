@@ -1,0 +1,99 @@
+/* 토큰. 색은 light-dark()로 한 번만 적고, 테마는 color-scheme이 고른다.
+   기본은 OS 설정이다. html의 data-theme는 테마 버튼이 정하고, /_design은 두 테마를 나란히 보려고 쓴다.
+   lightningcss가 light-dark()를 변수로 풀어내므로 [data-theme]에도 같은 값을 다시 계산하게 둔다. */
+
+:root,
+[data-theme] {
+  /* 바탕 · 글자 · 선 */
+  --bg: light-dark(#f2f1ee, #121316);
+  --raised: light-dark(#faf9f6, #191a1e);
+  --sunken: light-dark(#e8e7e3, #0b0b0d);
+  --ink: light-dark(#101014, #f2f1ee);
+  --ink-strong: light-dark(#08080a, #fbfaf7);
+  --muted: light-dark(rgb(16 16 20 / 0.66), rgb(242 241 238 / 0.64));
+  --faint: light-dark(rgb(16 16 20 / 0.42), rgb(242 241 238 / 0.4)); /* 글자에 쓰지 않는다 */
+  --line: light-dark(rgb(16 16 20 / 0.16), rgb(242 241 238 / 0.14));
+  --line-strong: light-dark(rgb(16 16 20 / 0.52), rgb(242 241 238 / 0.46));
+  --invert-bg: light-dark(#101014, #f2f1ee);
+  --invert-fg: light-dark(#f2f1ee, #121316);
+
+  /* 강조: 파랑. accent는 면과 선, accent-ink는 글자와 어두운 쪽 대비용 */
+  --accent: #2d81ff;
+  --accent-ink: light-dark(#1659c4, #74aaff);
+
+  /* 상태. 빨강은 심각도와 오류에만 쓴다 */
+  --ok: light-dark(#17795a, #6fd3ae);
+  --danger: light-dark(#b3261e, #ff7a72);
+}
+
+:root {
+  color-scheme: light dark;
+
+  /* 글꼴 */
+  --font-body: "Pretendard Variable", "Apple SD Gothic Neo", "Malgun Gothic", system-ui, sans-serif;
+  --font-code: var(--font-geist-mono), "Pretendard Variable", ui-monospace, "SFMono-Regular", Menlo, monospace;
+
+  /* 모서리: 앱은 3px, 랜딩은 data-surface="landing" 안에서 0 */
+  --radius: 3px;
+
+  /* 움직임 */
+  --ease-out: cubic-bezier(0.215, 0.61, 0.355, 1);
+  --dur-hover: 120ms;
+  --dur-enter: 700ms;
+  --dur-marquee: 36s;
+}
+
+[data-theme="light"] {
+  color-scheme: light;
+}
+
+[data-theme="dark"] {
+  color-scheme: dark;
+}
+
+[data-surface="landing"] {
+  --radius: 0;
+}
+
+/* 포스터 디자인. html의 data-design은 서버가 aigo-design 쿠키로 정한다.
+   중첩된 [data-theme]에서도 light-dark()가 다시 계산되게 같은 값을 둔다. */
+[data-design="poster"],
+[data-design="poster"] [data-theme] {
+  --bg: light-dark(#f3f3ef, #0a0d3d);
+  --raised: light-dark(#ffffff, #141852);
+  --sunken: light-dark(#e6e6df, #070a2e);
+  --ink: light-dark(#101010, #f3f3ef);
+  --ink-strong: light-dark(#000000, #ffffff);
+  --muted: light-dark(rgb(16 16 16 / 0.74), rgb(243 243 239 / 0.78));
+  --faint: light-dark(rgb(16 16 16 / 0.46), rgb(243 243 239 / 0.44));
+  --line: light-dark(rgb(16 16 16 / 0.2), rgb(243 243 239 / 0.22));
+  --line-strong: light-dark(#101010, rgb(243 243 239 / 0.72));
+  --invert-bg: light-dark(#202ee6, #ffffff);
+  --invert-fg: light-dark(#ffffff, #0a0d3d);
+  --accent: light-dark(#202ee6, #4a58ff);
+  --accent-ink: light-dark(#1621b8, #ffe456);
+  --ok: light-dark(#0f6b4f, #6fd3ae);
+  --danger: light-dark(#b3261e, #ff9a93);
+}
+
+[data-design="poster"] {
+  --font-code: var(--font-body); /* 고정폭 표지 대신 굵은 글자 하나로 간다 */
+  --radius: 0;
+}
+
+/* 유틸리티보다 앞서야 해서 층 밖에 둔다 */
+[data-design="poster"] :is(h1, h2, h3):not(.hud) {
+  font-weight: 900;
+  letter-spacing: -0.035em;
+}
+
+/* 뒤집힌 면이 강조색과 같은 파랑이라 그 위의 막대가 묻히지 않게 한다 */
+[data-design="poster"] .bg-invert-bg {
+  --accent: light-dark(#ffe456, #4a58ff);
+}
+
+[data-design="poster"] .hud {
+  font-weight: 800;
+  letter-spacing: 0;
+  word-spacing: normal;
+}

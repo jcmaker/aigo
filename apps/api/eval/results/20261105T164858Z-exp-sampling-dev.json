@@ -1,0 +1,298 @@
+{
+ "meta": {
+  "at": "20261105T164858Z",
+  "model": "gpt-5.5",
+  "effort": "low",
+  "prompt_version": "2026-11-06.2"
+ },
+ "rows": [
+  {
+   "file": "ER8Z1776500669_770_com.mp4",
+   "status": "ok",
+   "involvement": "none",
+   "collision_t": null,
+   "chart_id": null,
+   "me": null,
+   "my_min": null,
+   "my_max": null,
+   "confidence": "low",
+   "severity": null,
+   "scene": "lane_change",
+   "extra_focus": true,
+   "unknown": [],
+   "serious": [],
+   "evidence": [],
+   "summary": null,
+   "reason": "좌측 회색 승용차가 촬영차 앞쪽에 매우 가까이 진입해 주행하지만, 프레임에서 접촉·파편·파손 또는 붙어 멈춘 모습은 보이지 않습니다.",
+   "seconds": 28.1,
+   "stage_seconds": {
+    "normalize": 1.36,
+    "scan": 3.16,
+    "locate": 0.06,
+    "focus": 0.35,
+    "observe": 23.18,
+    "assess": 0.0
+   },
+   "calls": 2,
+   "cost": 0.2504
+  },
+  {
+   "file": "Dg0d1775395335_250_com.mp4",
+   "status": "ok",
+   "involvement": "none",
+   "collision_t": null,
+   "chart_id": null,
+   "me": null,
+   "my_min": null,
+   "my_max": null,
+   "confidence": "low",
+   "severity": null,
+   "scene": "other",
+   "extra_focus": true,
+   "unknown": [],
+   "serious": [],
+   "evidence": [],
+   "summary": null,
+   "reason": "촬영차 왼쪽 옆에 흰색 SUV가 가까이 보이지만 프레임에서 접촉, 파편, 파손, 붙은 채 정지한 모습은 보이지 않습니다.",
+   "seconds": 28.4,
+   "stage_seconds": {
+    "normalize": 1.72,
+    "scan": 2.77,
+    "locate": 0.06,
+    "focus": 0.58,
+    "observe": 23.25,
+    "assess": 0.0
+   },
+   "calls": 2,
+   "cost": 0.2624
+  },
+  {
+   "file": "AQAX1775468470_1f5acf_414_com.mp4",
+   "status": "ok",
+   "involvement": "none",
+   "collision_t": null,
+   "chart_id": null,
+   "me": null,
+   "my_min": null,
+   "my_max": null,
+   "confidence": "low",
+   "severity": null,
+   "scene": "lane_change",
+   "extra_focus": true,
+   "unknown": [],
+   "serious": [],
+   "evidence": [],
+   "summary": null,
+   "reason": "오른쪽 흰색 승용차가 촬영차 앞쪽 가까이로 지나가지만 프레임에서 접촉, 파편, 파손, 붙은 상태가 보이지 않습니다.",
+   "seconds": 37.3,
+   "stage_seconds": {
+    "normalize": 2.47,
+    "scan": 5.25,
+    "locate": 0.03,
+    "focus": 1.07,
+    "observe": 28.43,
+    "assess": 0.0
+   },
+   "calls": 2,
+   "cost": 0.2686
+  },
+  {
+   "file": "GA4b1776480399_65d37a_682_com.mp4",
+   "status": "ok",
+   "involvement": "none",
+   "collision_t": null,
+   "chart_id": null,
+   "me": null,
+   "my_min": null,
+   "my_max": null,
+   "confidence": "low",
+   "severity": null,
+   "scene": "parking",
+   "extra_focus": true,
+   "unknown": [],
+   "serious": [],
+   "evidence": [],
+   "summary": null,
+   "reason": "촬영차 주변 차량들과 보행자는 보이지만 접촉, 파편, 파손, 접촉 후 정지 등 충돌 장면은 보이지 않습니다.",
+   "seconds": 37.0,
+   "stage_seconds": {
+    "normalize": 1.9,
+    "scan": 4.5,
+    "locate": 0.07,
+    "focus": 0.46,
+    "observe": 30.0,
+    "assess": 0.0
+   },
+   "calls": 2,
+   "cost": 0.2737
+  },
+  {
+   "file": "EQwC1774571573_752_com.mp4",
+   "status": "ok",
+   "involvement": "party",
+   "collision_t": 10.3,
+   "chart_id": "차43-2",
+   "me": "A",
+   "my_min": 0,
+   "my_max": 50,
+   "confidence": "medium",
+   "severity": "medium",
+   "scene": "lane_change",
+   "extra_focus": true,
+   "unknown": [
+    "상대 진로변경 신호불이행·지연",
+    "상대 진로변경 금지장소",
+    "내 현저한 과실",
+    "내 중대한 과실",
+    "상대 현저한 과실",
+    "상대 중대한 과실"
+   ],
+   "serious": [],
+   "evidence": [
+    {
+     "t": 4.93,
+     "text": "촬영차 전방 같은 방향 차로에 흰색 SUV가 멀리 보인다."
+    },
+    {
+     "t": 8.0,
+     "text": "흰색 SUV가 촬영차보다 앞 오른쪽 차로에 있으며, 교차로와 횡단보도가 가까워진다."
+    },
+    {
+     "t": 8.9,
+     "text": "촬영차는 도로를 직진하고 있으며, 앞 우측 차로에 흰색 SUV가 보인다. 좌측 반대편 차로에는 회색 차량이 마주 오는 방향으로 보인다."
+    },
+    {
+     "t": 9.5,
+     "text": "흰색 SUV가 우측 전방에서 촬영차 앞쪽으로 더 가까이 보인다."
+    },
+    {
+     "t": 9.7,
+     "text": "흰색 SUV가 촬영차 전방 우측 가장자리 가까이에 있고, 차량의 후면과 측면이 크게 보인다."
+    },
+    {
+     "t": 9.9,
+     "text": "흰색 SUV의 우측 측면과 후면이 촬영차 앞 우측에 매우 크게 보이며, 촬영차 앞부분과 가까워진다."
+    },
+    {
+     "t": 10.1,
+     "text": "흰색 SUV의 측면이 촬영차 앞 우측을 가로막듯 크게 보이고, 차량 하부와 촬영차 앞부분 사이의 간격이 거의 보이지 않는다."
+    },
+    {
+     "t": 10.3,
+     "text": "흰색 SUV의 측면과 앞바퀴 부근이 촬영차 앞 우측에 맞닿아 있는 모습으로 보이고, 촬영차 앞부분과 흰색 SUV가 겹쳐 보인다."
+    },
+    {
+     "t": 10.5,
+     "text": "흰색 SUV는 화면 오른쪽 바깥으로 벗어나 있으며, 화면이 크게 기울어져 도로와 건물이 비스듬히 보인다."
+    },
+    {
+     "t": 15.93,
+     "text": "촬영차가 정지한 상태로 보이며, 전방에는 조경 섬과 나무가 보인다."
+    }
+   ],
+   "summary": "촬영차는 도로를 직진 중이었고, 흰색 SUV는 촬영차보다 앞 오른쪽 차로에서 촬영차 앞쪽으로 가까워진 뒤 촬영차 앞 우측에 맞닿아 보였다. 이후 화면이 크게 기울어졌다.",
+   "reason": null,
+   "seconds": 42.3,
+   "stage_seconds": {
+    "normalize": 1.27,
+    "scan": 2.91,
+    "locate": 0.05,
+    "focus": 0.65,
+    "observe": 29.13,
+    "assess": 8.26
+   },
+   "calls": 3,
+   "cost": 0.211
+  },
+  {
+   "file": "GwwA1775547533_dc6fd8_898_com.mp4",
+   "status": "ok",
+   "involvement": "none",
+   "collision_t": null,
+   "chart_id": null,
+   "me": null,
+   "my_min": null,
+   "my_max": null,
+   "confidence": "low",
+   "severity": null,
+   "scene": "other",
+   "extra_focus": true,
+   "unknown": [],
+   "serious": [],
+   "evidence": [],
+   "summary": null,
+   "reason": "검은색 승용차가 촬영차 앞을 지나가지만 프레임에서 접촉, 파편, 파손, 붙은 채 정지한 장면은 보이지 않습니다.",
+   "seconds": 30.4,
+   "stage_seconds": {
+    "normalize": 3.08,
+    "scan": 3.65,
+    "locate": 0.07,
+    "focus": 1.7,
+    "observe": 21.89,
+    "assess": 0.0
+   },
+   "calls": 2,
+   "cost": 0.2436
+  },
+  {
+   "file": "noacc_GAQB.mp4",
+   "status": "ok",
+   "involvement": "none",
+   "collision_t": null,
+   "chart_id": null,
+   "me": null,
+   "my_min": null,
+   "my_max": null,
+   "confidence": "low",
+   "severity": null,
+   "scene": "other",
+   "extra_focus": false,
+   "unknown": [],
+   "serious": [],
+   "evidence": [],
+   "summary": null,
+   "reason": "영상 프레임들에서 차량들이 주행 중이며 접촉, 파편, 파손, 맞닿아 정지한 모습이 보이지 않는다.",
+   "seconds": 16.6,
+   "stage_seconds": {
+    "normalize": 1.62,
+    "scan": 1.37,
+    "locate": 0.06,
+    "focus": 0.43,
+    "observe": 13.08,
+    "assess": 0.0
+   },
+   "calls": 1,
+   "cost": 0.1289
+  },
+  {
+   "file": "noacc_Cgsf.mp4",
+   "status": "ok",
+   "involvement": "none",
+   "collision_t": null,
+   "chart_id": null,
+   "me": null,
+   "my_min": null,
+   "my_max": null,
+   "confidence": "low",
+   "severity": null,
+   "scene": "other",
+   "extra_focus": true,
+   "unknown": [],
+   "serious": [],
+   "evidence": [],
+   "summary": null,
+   "reason": "프레임들에서 촬영차와 다른 차량이 맞닿거나 파편·파손이 보이는 장면이 없다.",
+   "seconds": 30.9,
+   "stage_seconds": {
+    "normalize": 1.91,
+    "scan": 1.74,
+    "locate": 0.06,
+    "focus": 1.14,
+    "observe": 25.99,
+    "assess": 0.0
+   },
+   "calls": 2,
+   "cost": 0.2567
+  }
+ ]
+}

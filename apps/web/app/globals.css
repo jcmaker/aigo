@@ -1,0 +1,145 @@
+@import "tailwindcss";
+@import "../styles/tokens.css";
+
+@theme inline {
+  --color-bg: var(--bg);
+  --color-raised: var(--raised);
+  --color-sunken: var(--sunken);
+  --color-ink: var(--ink);
+  --color-ink-strong: var(--ink-strong);
+  --color-muted: var(--muted);
+  --color-line: var(--line);
+  --color-line-strong: var(--line-strong);
+  --color-invert-bg: var(--invert-bg);
+  --color-invert-fg: var(--invert-fg);
+  --color-accent: var(--accent);
+  --color-accent-ink: var(--accent-ink);
+  --color-ok: var(--ok);
+  --color-danger: var(--danger);
+
+  --font-sans: var(--font-body);
+  --font-mono: var(--font-code);
+
+  --radius-app: var(--radius);
+}
+
+@layer base {
+  html {
+    scroll-padding-top: 96px; /* 위 막대 + 고정 섹션 라벨 */
+  }
+
+  body {
+    background: var(--bg);
+    color: var(--ink);
+    font-family: var(--font-sans);
+    font-size: 15px;
+    line-height: 1.6;
+    word-break: keep-all;
+    overflow-wrap: anywhere;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  ::selection {
+    background: var(--accent);
+    color: #fff;
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+  }
+}
+
+/* 1280 틀: 좌우 1px 선 */
+@utility frame {
+  max-width: 80rem;
+  margin-inline: auto;
+  border-inline: 1px solid var(--line);
+}
+
+/* 1px 틈 칸: 안쪽 면이 바탕을 가리고 틈으로 선이 보인다 */
+@utility cells {
+  display: grid;
+  gap: 1px;
+  background: var(--line);
+  & > * {
+    background: var(--bg);
+  }
+}
+
+/* 고정폭 작은 표지 글자 */
+@utility hud {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  font-weight: 500;
+  line-height: 1.4;
+  letter-spacing: 0.06em;
+  word-spacing: -0.3em; /* Geist Mono 빈칸이 한글 사이에서 너무 넓다 */
+  text-transform: uppercase;
+}
+
+/* 틀 선과 섹션 선이 만나는 곳의 십자 표시 */
+.tick {
+  position: absolute;
+  width: 11px;
+  height: 11px;
+  pointer-events: none;
+  background:
+    linear-gradient(var(--line-strong), var(--line-strong)) center / 1px 100% no-repeat,
+    linear-gradient(var(--line-strong), var(--line-strong)) center / 100% 1px no-repeat;
+}
+
+.marquee-track {
+  animation: marquee var(--dur-marquee) linear infinite;
+}
+
+.marquee:hover .marquee-track {
+  animation-play-state: paused;
+}
+
+@keyframes marquee {
+  to {
+    transform: translateX(-100%);
+  }
+}
+
+[data-reveal="wait"] {
+  opacity: 0;
+}
+
+[data-reveal="in"] {
+  animation: reveal var(--dur-enter) var(--ease-out) both;
+}
+
+@keyframes reveal {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+}
+
+.skeleton {
+  background: linear-gradient(100deg, transparent 30%, var(--line) 50%, transparent 70%) 0 0 / 300% 100% var(--sunken);
+  animation: skeleton 1.8s linear infinite;
+}
+
+@keyframes skeleton {
+  from {
+    background-position-x: 100%;
+  }
+  to {
+    background-position-x: -50%;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  .marquee-track,
+  .skeleton,
+  [data-reveal] {
+    animation: none;
+  }
+}

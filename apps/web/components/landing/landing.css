@@ -1,0 +1,102 @@
+/* 히어로 장면. 기본 상태가 충돌 순간이고, 움직임은 reduced-motion이 아닐 때만 켠다. */
+
+.hero-strike {
+  position: relative;
+}
+
+.hero-strike::after {
+  content: "";
+  position: absolute;
+  inset-inline: -0.04em;
+  top: 54%;
+  height: 0.07em;
+  background: var(--accent);
+  transform-origin: left;
+}
+
+.scene-road { fill: var(--bg); stroke: none; }
+.scene-line { fill: none; stroke: var(--line-strong); stroke-width: 1.5; }
+.scene-thin { fill: none; stroke: var(--line-strong); stroke-width: 1; vector-effect: non-scaling-stroke; }
+.scene-dash { fill: none; stroke: var(--ink); stroke-width: 2; stroke-dasharray: 26 30; }
+.scene-fill { fill: var(--raised); stroke: var(--ink); stroke-width: 1.5; vector-effect: non-scaling-stroke; }
+.scene-hood { fill: var(--sunken); stroke: var(--ink); stroke-width: 1.5; }
+.scene-box { fill: none; stroke: var(--accent); stroke-width: 2.5; vector-effect: non-scaling-stroke; }
+.scene-box-ink { fill: none; stroke: var(--ink); stroke-width: 2; }
+.scene-box-unknown { fill: none; stroke: var(--ink); stroke-width: 2; stroke-dasharray: 7 6; }
+.scene-tag { fill: var(--invert-bg); }
+.scene-car .scene-tag { fill: var(--accent); }
+.scene-tag-text { fill: var(--invert-fg); font: 600 22px var(--font-mono); }
+.scene-car .scene-tag-text { fill: #fff; }
+.scene-hit-ring { fill: none; stroke: var(--accent); stroke-width: 3; }
+.scene-hit-dot { fill: var(--accent); }
+
+.scene-rail {
+  border-bottom: 1px solid var(--line-strong);
+  background: repeating-linear-gradient(90deg, var(--line-strong) 0 1px, transparent 1px calc(100% / 12)) bottom / 100% 6px no-repeat;
+}
+
+.scene-head {
+  position: absolute;
+  top: -2px;
+  bottom: -2px;
+  left: var(--collision);
+  width: 2px;
+  background: var(--accent);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .hero-in {
+    animation: hero-in var(--dur-enter) var(--ease-out) both;
+  }
+
+  .hero-strike::after {
+    animation: hero-strike 500ms var(--ease-out) 500ms both;
+  }
+
+  .scene-dash { animation: scene-dash 1.4s linear infinite; }
+  .scene-car { animation: scene-car 12s linear infinite; }
+  .scene-hit { animation: scene-hit 12s linear infinite; }
+  .scene-head { animation: scene-head 12s linear infinite; }
+}
+
+@keyframes hero-in {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+}
+
+@keyframes hero-strike {
+  from {
+    transform: scaleX(0);
+  }
+}
+
+@keyframes scene-dash {
+  to {
+    stroke-dashoffset: -56;
+  }
+}
+
+/* 12초 영상을 그대로 돈다. 61.7%가 충돌(0:07.4)이다. */
+@keyframes scene-car {
+  0% { transform: translate(30px, -134px) scale(0.26); opacity: 0; }
+  4% { opacity: 1; }
+  27% { transform: translate(62px, -118px) scale(0.36); }
+  51% { transform: translate(58px, -84px) scale(0.56); animation-timing-function: ease-in; }
+  61.7% { transform: none; }
+  92% { transform: none; opacity: 1; }
+  100% { transform: none; opacity: 0; }
+}
+
+@keyframes scene-hit {
+  0%, 61% { opacity: 0; transform: translate(450px, 370px) scale(0.5); }
+  63% { opacity: 1; transform: translate(450px, 370px) scale(1); }
+  92% { opacity: 1; transform: translate(450px, 370px) scale(1); }
+  100% { opacity: 0; transform: translate(450px, 370px) scale(1); }
+}
+
+@keyframes scene-head {
+  from { left: 0; }
+  to { left: 100%; }
+}
