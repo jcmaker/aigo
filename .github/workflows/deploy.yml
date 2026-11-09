@@ -1,0 +1,131 @@
+# 운영 배포 (ADR 0022)
+# main에 머지되어 CI가 통과하면 Railway production에 배포한다.
+# 순서: api(시작할 때 DB 마이그레이션) → worker → web. 바뀐 폴더에 해당하는 서비스만 배포한다.
+# 문서만 바뀌면 배포하지 않는다. Actions 탭에서 손으로 전체 배포할 수도 있다.
+name: 운영 배포
+
+on:
+  workflow_run:
+    workflows: [CI]
+    types: [completed]
+    branches: [main]
+  workflow_dispatch:
+    inputs:
+      services:
+        description: "배포할 서비스 (all, api, web)"
+        default: all
+        type: choice
+        options: [all, api, web]
+
+permissions:
+  contents: read
+
+# 배포는 한 번에 하나씩. 진행 중인 배포를 끊지 않고 다음 배포는 기다린다.
+concurrency:
+  group: deploy-production
+  cancel-in-progress: false
+
+env:
+  RAILWAY_CLI_VERSION: 5.71.0
+  API_URL: https://api-production-68ccb.up.railway.app
+  WEB_URL: https://aigo.up.railway.app
+
+jobs:
+  deploy:
+    name: Railway 배포
+    # 포크의 main 브랜치나 PR에서 온 CI 결과로는 배포하지 않는다. 이 저장소 main에 푸시된 커밋만 배포한다.
+    if: >-
+      github.event_name == 'workflow_dispatch' ||
+      (github.event.workflow_run.conclusion == 'success' &&
+       github.event.workflow_run.event == 'push' &&
+       github.event.workflow_run.head_repository.full_name == github.repository)
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    environment: production
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.workflow_run.head_sha || github.sha }}
+          fetch-depth: 2
+          persist-credentials: false
+
+      - name: 배포할 서비스 고르기
+        id: pick
+        env:
+          MANUAL: ${{ inputs.services }}
+        run: |
+          if [ -n "$MANUAL" ]; then
+            api=false; web=false
+            [ "$MANUAL" = all ] || [ "$MANUAL" = api ] && api=true
+            [ "$MANUAL" = all ] || [ "$MANUAL" = web ] && web=true
+          else
+            # main은 PR 머지로만 바뀐다. 머지 커밋의 첫 부모와 비교하면 이번에 들어온 변경 전체다.
+            changed="$(git diff --name-only HEAD^1 HEAD)"
+            echo "$changed"
+            api=false; web=false
+            echo "$changed" | grep -q '^apps/api/' && api=true
+            echo "$changed" | grep -q '^apps/web/' && web=true
+          fi
+          echo "api=$api" >> "$GITHUB_OUTPUT"
+          echo "web=$web" >> "$GITHUB_OUTPUT"
+          echo "배포: api·worker=$api, web=$web"
+
+      - name: 토큰 확인
+        if: steps.pick.outputs.api == 'true' || steps.pick.outputs.web == 'true'
+        env:
+          RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
+        run: |
+          if [ -z "$RAILWAY_TOKEN" ]; then
+            echo "::error::RAILWAY_TOKEN이 없습니다. 관리자가 Railway production Project Token을 'gh secret set RAILWAY_TOKEN'으로 넣어야 합니다."
+            exit 1
+          fi
+
+      - name: Railway CLI 설치
+        if: steps.pick.outputs.api == 'true' || steps.pick.outputs.web == 'true'
+        run: npm install -g "@railway/cli@${RAILWAY_CLI_VERSION}"
+
+      - name: api 배포 (DB 마이그레이션 포함)
+        if: steps.pick.outputs.api == 'true'
+        env:
+          RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
+        run: railway up --service api --ci
+
+      - name: api 상태 확인
+        if: steps.pick.outputs.api == 'true'
+        run: |
+          for i in $(seq 1 20); do
+            curl -sf -m 10 "$API_URL/api/v1/health" | grep -q '"ok"' && { echo "api ok"; exit 0; }
+            sleep 6
+          done
+          echo "::error::api 상태 확인 실패. worker와 web은 배포하지 않았습니다."; exit 1
+
+      - name: worker 배포
+        if: steps.pick.outputs.api == 'true'
+        env:
+          RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
+        run: railway up --service worker --ci
+
+      - name: web 배포
+        if: steps.pick.outputs.web == 'true'
+        env:
+          RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
+        run: railway up --service web --ci
+
+      - name: web 상태 확인
+        if: steps.pick.outputs.web == 'true'
+        run: |
+          for i in $(seq 1 20); do
+            [ "$(curl -s -o /dev/null -w '%{http_code}' -m 15 "$WEB_URL/")" = 200 ] && { echo "web ok"; exit 0; }
+            sleep 6
+          done
+          echo "::error::web 상태 확인 실패"; exit 1
+
+      - name: 요약
+        if: always()
+        run: |
+          {
+            echo "### 운영 배포"
+            echo "- 커밋: \`${{ github.event.workflow_run.head_sha || github.sha }}\`"
+            echo "- api·worker: ${{ steps.pick.outputs.api }}"
+            echo "- web: ${{ steps.pick.outputs.web }}"
+          } >> "$GITHUB_STEP_SUMMARY"

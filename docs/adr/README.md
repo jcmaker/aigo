@@ -41,3 +41,4 @@ ADR(Architecture Decision Record)은 "무엇을, 왜, 누가 바꿨는지" 남�
 | [0019](0019-quality-testing.md) | 분석 품질 테스트는 에뮬레이터 없이, 비용 25달러 안에서 | 채택 | 조준형 | 2026-11-08 |
 | [0020](0020-web-design.md) | 웹 디자인: rizz-shorts 토큰과 ArtCraft 구성 | 채택 | 조준형, Claude(AI) | 2026-11-05 |
 | [0021](0021-dashpi-upload.md) | DashPi 기기 클립을 AIGO에 올린다 | 채택 | 조준형, Claude(AI) | 2026-11-08 |
+| [0022](0022-auto-deploy.md) | main에 머지되면 Railway에 자동 배포한다 | 채택 | 조준형 | 2026-11-09 |

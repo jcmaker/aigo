@@ -154,7 +154,7 @@ docs/
 - **바꿀 때는 이유와 작업자를 남깁니다.** PR에 배경, 할 일, 한 일, 검증, 작업자를 쓰고, 결정 기록(ADR)을 하나 추가합니다. 관리자 조준형의 요청입니다. [ADR 0001](docs/adr/0001-record-decisions.md) · [PR 쓰는 법](CONTRIBUTING.md#pr-쓰는-법)
 - **백엔드(`apps/api`)는 관리자만 고칩니다.** 인증, 결제, 분석, 데이터베이스가 있어서 잘못 고치면 되돌리기 어렵습니다. [ADR 0003](docs/adr/0003-api-owner-only.md)
 - **비밀값은 올리지 않습니다.** 키, 비밀번호, `.env` 파일이 들어가면 자동 검사가 막고 PR에 없애 달라는 댓글이 달립니다. [ADR 0005](docs/adr/0005-secret-scan.md)
-- **브랜치는 `dev`와 `main` 둘입니다.** PR은 `dev`로 엽니다. 확인이 끝난 `dev`를 관리자가 `main`에 반영합니다. 머지는 관리자만 합니다. [ADR 0002](docs/adr/0002-branches-and-ci.md)
+- **브랜치는 `dev`와 `main` 둘입니다.** PR은 `dev`로 엽니다. 확인이 끝난 `dev`를 관리자가 `main`에 반영하면 운영 사이트에 자동으로 배포됩니다. 머지는 관리자만 합니다. [ADR 0002](docs/adr/0002-branches-and-ci.md) · [ADR 0022](docs/adr/0022-auto-deploy.md)
 - **AI 도구(Claude Code 등)를 써도 됩니다.** 도구가 [AGENTS.md](AGENTS.md)를 읽고 작업 전에 이유와 작업자를 먼저 묻습니다.
 
 PR을 열면 자동 검사 5개가 돕니다. 모두 초록색이어야 머지할 수 있습니다.
@@ -274,10 +274,11 @@ DashPi는 화면 로그인을 할 수 없어서 계정에 묶인 Clerk API Key�
 | worker | `apps/api` | `python -m app.worker` | 없음 |
 
 ```bash
-railway up --service api --detach   # 저장소 루트에서 실행한다. web, worker도 같다. api를 worker보다 먼저 올린다.
+railway up --service api --detach   # 손으로 배포할 때. 저장소 루트에서 실행한다. web, worker도 같다. api를 worker보다 먼저 올린다.
 ```
 
-- GitHub 머지는 배포를 일으키지 않습니다. 배포는 관리자가 따로 합니다.
+- **`main`에 머지되고 CI가 통과하면 자동으로 배포됩니다**(GitHub Actions "운영 배포"). `apps/api`가 바뀌면 api → worker, `apps/web`이 바뀌면 web을 배포합니다. 문서만 바뀌면 배포하지 않습니다. Actions 탭에서 손으로도 실행할 수 있습니다. [ADR 0022](docs/adr/0022-auto-deploy.md)
+- 자동 배포는 저장소 비밀값 `RAILWAY_TOKEN`(production Project Token)을 씁니다.
 - `railway up`은 작업 폴더를 그대로 올립니다. 커밋하지 않은 변경이 있으면 `git archive HEAD`로 푼 폴더에서 `-p`, `-e`를 주고 실행합니다.
 - `NEXT_PUBLIC_*`를 바꾸면 web을 다시 빌드해야 합니다. Bucket CORS의 AllowedOrigins는 웹 주소들과 `http://localhost:3100`만 허용합니다.
 - API 주소: https://api-production-68ccb.up.railway.app (상태 확인 `/api/v1/health`)
