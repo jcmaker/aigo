@@ -13,6 +13,8 @@ ADR(Architecture Decision Record)은 "무엇을, 왜, 누가 바꿨는지" 남�
 3. 작업 내용, 변경 사유, 변경 작업자를 빠짐없이 적습니다.
 4. 아래 목록에 한 줄을 추가합니다.
 
+0007~0021은 2026-11-09에 지난 설계 문서(`docs/superpowers/specs/`), PR, 작업 세션의 결정을 옮겨 적은 것입니다. 날짜는 결정한 날입니다. 작업자의 "조준형, Claude(AI)"는 조준형이 정하고 Claude가 세부를 설계해 조준형이 승인한 결정입니다.
+
 이미 머지된 ADR은 고치지 않습니다. 결정이 바뀌면 새 ADR을 쓰고, 옛 ADR의 상태를 "대체됨(000N)"으로 바꿉니다.
 
 ## 목록
@@ -24,3 +26,18 @@ ADR(Architecture Decision Record)은 "무엇을, 왜, 누가 바꿨는지" 남�
 | [0004](0004-app-release-apk.md) | 앱은 GitHub Releases APK로 배포한다 | 채택 | 조준형 | 2026-11-09 |
 | [0005](0005-secret-scan.md) | 비밀값 검사와 자동 댓글 | 채택 | 조준형 | 2026-11-09 |
 | [0006](0006-pr-template.md) | PR은 배경, 할 일, 한 일, 검증, 작업자로 쓴다 | 채택 | 조준형 | 2026-11-09 |
+| [0007](0007-stack.md) | 서비스 구성: 모노레포와 기술 스택 | 채택 | 조준형, Claude(AI) | 2026-11-05 |
+| [0008](0008-api-contract.md) | API 계약: /api/v1과 OpenAPI 타입 | 채택 | 조준형, Claude(AI) | 2026-11-05 |
+| [0009](0009-auth-clerk.md) | 인증은 Clerk, 화면은 직접 만든다 | 채택 | 조준형, Claude(AI) | 2026-11-05 |
+| [0010](0010-payments-toss-test.md) | 결제는 토스 테스트 키만, 금액은 서버가 계산 | 채택 | 조준형, Claude(AI) | 2026-11-05 |
+| [0011](0011-analysis-principles.md) | 사고 분석 원칙과 파이프라인 | 채택 | 조준형, Claude(AI) | 2026-11-05 |
+| [0012](0012-fault-charts.md) | 과실 기준은 과실비율정보포털 도표 | 채택 | 조준형, Claude(AI) | 2026-11-05 |
+| [0013](0013-collision-estimate.md) | 센서 신호로 충돌 추정, Jev는 쓰지 않는다 | 채택 | 조준형, Claude(AI) | 2026-11-08 |
+| [0014](0014-legal-refs.md) | 관련 법규와 참고 판례는 사실 정보와 링크만 | 채택 | 조준형, Claude(AI) | 2026-11-08 |
+| [0015](0015-privacy-videos.md) | 영상과 개인정보 처리 | 채택 | 조준형, Claude(AI) | 2026-11-05 |
+| [0016](0016-usage-limits.md) | 분석 이용 한도 | 채택 | 조준형, Claude(AI) | 2026-11-05 |
+| [0017](0017-mobile-app.md) | 모바일 앱: Expo 한 코드, 오프라인 현장 모드 | 채택 | 조준형, Claude(AI) | 2026-11-06 |
+| [0018](0018-app-design.md) | 앱 디자인: Supabase 색, TennisIQ 하단 메뉴, 없는 기능은 만들지 않는다 | 채택 | 조준형, Claude(AI) | 2026-11-08 |
+| [0019](0019-quality-testing.md) | 분석 품질 테스트는 에뮬레이터 없이, 비용 25달러 안에서 | 채택 | 조준형 | 2026-11-08 |
+| [0020](0020-web-design.md) | 웹 디자인: rizz-shorts 토큰과 ArtCraft 구성 | 채택 | 조준형, Claude(AI) | 2026-11-05 |
+| [0021](0021-dashpi-upload.md) | DashPi 기기 클립을 AIGO에 올린다 | 채택 | 조준형, Claude(AI) | 2026-11-08 |
