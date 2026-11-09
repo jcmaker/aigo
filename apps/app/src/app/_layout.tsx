@@ -47,6 +47,7 @@ function Routes() {
       <Stack.Protected guard={isLoaded && !!isSignedIn}>
         <Stack.Screen name="(tabs)" />
         <Stack.Screen name="analyses/[id]" options={{ headerShown: true }} />
+        <Stack.Screen name="notifications" />
       </Stack.Protected>
       <Stack.Protected guard={isLoaded && !isSignedIn}>
         <Stack.Screen name="(auth)" />

@@ -15,7 +15,7 @@ export function StepList({ steps, current, state }: { steps: { title: string; de
         return (
           <View key={i} accessible accessibilityLabel={`${i + 1}단계 ${s.title} ${status}`} style={{ flexDirection: 'row', alignItems: 'center', gap: space[3] }}>
             <View style={{ width: 28, height: 28, borderRadius: 14, backgroundColor: bg, alignItems: 'center', justifyContent: 'center' }}>
-              {done ? <Icon name="check" size={16} color={color.ink} /> : <Text style={[type.micro, { fontWeight: '800', color: failed ? color.white : color.ink }]}>{i + 1}</Text>}
+              {done ? <Icon name="check" size={16} color={color.onBrand} /> : <Text style={[type.micro, { fontWeight: '800', color: failed ? color.white : color.ink }]}>{i + 1}</Text>}
             </View>
             <View style={{ flex: 1 }}>
               <Text style={[type.label, { color: done || active || failed ? color.gray12 : color.gray9 }]}>{s.title}</Text>

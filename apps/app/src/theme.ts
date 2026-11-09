@@ -1,13 +1,15 @@
 import type { TextStyle } from 'react-native';
 
 export const color = {
-  brand200: '#D3F8E4',
-  brand400: '#72E3AD',
-  brand: '#3FCF8E',
-  brand600: '#097C4F',
-  ink: '#1C1C1C',
-  ink2: '#2E2E2E',
-  ink3: '#3E3E3E',
+  brand200: '#EAF0FB',
+  brand400: '#9DB4E6',
+  brand: '#3A64C4',
+  brand600: '#2A4E9E',
+  onBrand: '#FFFFFF', // brand 바탕 위 글자·아이콘
+  online: '#30A46C', // 기기 연결됨 점
+  ink: '#1A2B4C',
+  ink2: '#26395E',
+  ink3: '#344A73',
   white: '#FFFFFF',
   gray2: '#F9F9F9',
   gray3: '#F0F0F0',

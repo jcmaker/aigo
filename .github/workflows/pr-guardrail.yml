@@ -1,0 +1,39 @@
+# PR 가드레일 (ADR 0001, 0003)
+# pull_request_target이라 항상 기준 브랜치(dev/main)의 검사 스크립트를 쓴다.
+# PR 쪽 코드는 받아 오거나 실행하지 않는다. 바뀐 파일 목록과 본문만 API로 읽는다.
+name: PR 가드레일
+
+on:
+  pull_request_target:
+    types: [opened, edited, synchronize, reopened]
+    branches: [dev, main]
+
+permissions:
+  contents: read
+  pull-requests: read
+
+jobs:
+  guardrail:
+    name: PR 가드레일
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.base.sha }}
+          sparse-checkout: .github/scripts
+      - name: 검사 스크립트 자체 시험
+        run: python3 .github/scripts/pr_guardrail.py --selftest
+      - name: 바뀐 파일 목록
+        env:
+          GH_TOKEN: ${{ github.token }}
+          PR: ${{ github.event.pull_request.number }}
+        run: |
+          gh api "repos/$GITHUB_REPOSITORY/pulls/$PR/files" --paginate \
+            -q '.[] | "\(.status)\t\(.filename)"' > "$RUNNER_TEMP/files.txt"
+          cat "$RUNNER_TEMP/files.txt"
+      - name: 검사
+        env:
+          PR_AUTHOR: ${{ github.event.pull_request.user.login }}
+          PR_BODY: ${{ github.event.pull_request.body }}
+        run: CHANGED_FILES="$(cat "$RUNNER_TEMP/files.txt")" python3 .github/scripts/pr_guardrail.py

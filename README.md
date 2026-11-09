@@ -96,6 +96,8 @@ cd apps/app && pnpm exec tsc --noEmit && pnpm test
 cd apps/web && E2E_VIDEO=<영상 경로> BASE_URL=<웹 주소> pnpm playwright test e2e/journey.spec.ts
 ```
 
+GitHub Actions(`.github/workflows/ci.yml`)가 `dev`·`main`으로 가는 PR과 푸시마다 위 세 줄을 돌린다. 느린 YOLO 테스트와 e2e는 CI에서 돌리지 않는다. 비밀값은 쓰지 않는다. 팀원 참여 방법은 [CONTRIBUTING.md](CONTRIBUTING.md), 결정 기록은 [docs/adr](docs/adr/README.md), AI 도구 규칙은 [AGENTS.md](AGENTS.md). 관리자가 아닌 사람의 PR은 "PR 가드레일" 검사가 본문(배경, 할 일, 한 일, 검증, 작업자)과 ADR을 확인하고 `apps/api` 변경을 막는다. "비밀값 검사"(gitleaks, `.gitleaks.toml`)는 모든 PR과 푸시에서 키·비밀번호·`.env` 파일을 찾고, PR이면 없애 달라는 댓글을 단다.
+
 API 응답을 바꾸면 타입을 다시 만든다.
 
 ```bash

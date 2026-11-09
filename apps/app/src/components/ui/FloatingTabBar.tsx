@@ -55,7 +55,7 @@ export function FloatingTabBar({ state, emitter, navigateToTab, insets }: Bottom
             const event = emitter.emit({ type: 'tabPress', target: route.key, canPreventDefault: true });
             if (!selected && !event.defaultPrevented) navigateToTab(route.key);
           };
-          const tint = selected ? color.ink : item.route === 'emergency' ? color.sceneIcon : color.white;
+          const tint = selected ? color.onBrand : item.route === 'emergency' ? color.sceneIcon : color.white;
           return (
             <Pressable key={route.key} accessibilityRole="tab" accessibilityLabel={item.label} accessibilityState={{ selected }} onPress={onPress} style={{ width: CELL, height: CELL, alignItems: 'center', justifyContent: 'center' }}>
               <Icon name={item.icon} size={22} color={tint} />

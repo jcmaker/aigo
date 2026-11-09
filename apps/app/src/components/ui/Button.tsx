@@ -6,7 +6,7 @@ import { Icon, type IconName } from './Icon';
 export type ButtonVariant = 'primary' | 'secondary' | 'dark' | 'danger' | 'emergency';
 
 const look: Record<ButtonVariant, { bg: string; fg: string; border?: string }> = {
-  primary: { bg: color.brand, fg: color.ink },
+  primary: { bg: color.brand, fg: color.onBrand },
   secondary: { bg: color.white, fg: color.ink, border: color.gray4 },
   dark: { bg: color.ink, fg: color.white },
   danger: { bg: color.danger300, fg: color.danger600 },

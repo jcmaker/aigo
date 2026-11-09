@@ -45,7 +45,7 @@ jest.mock('expo-file-system', () => {
   return { File, Directory, Paths: { document: { uri: 'doc' } } };
 });
 
-import { addScenePhoto, deleteScenePhoto, getInsurerPhone, listScenePhotos, setInsurerPhone } from './scene-store';
+import { addContact, addScenePhoto, deleteScenePhoto, getContacts, getInsurerPhone, listScenePhotos, MAX_CONTACTS, removeContact, setInsurerPhone } from './scene-store';
 
 beforeEach(() => {
   mockFs.clear();
@@ -88,4 +88,21 @@ test('rejects_empty_insurer_phone', async () => {
   expect(await getInsurerPhone()).toBeNull();
   await setInsurerPhone(' 1588-0000 ');
   expect(await getInsurerPhone()).toBe('1588-0000');
+});
+
+test('contacts_add_validate_remove', async () => {
+  expect(await getContacts()).toEqual([]);
+  await expect(addContact(' ', '가족', '010-1234-5678')).rejects.toThrow();
+  await expect(addContact('엄마', '가족', '12')).rejects.toThrow();
+  const list = await addContact(' 엄마 ', '가족', ' 010-1234-5678 ');
+  expect(list).toHaveLength(1);
+  expect(list[0]).toMatchObject({ name: '엄마', relation: '가족', phone: '010-1234-5678' });
+  expect(await removeContact(list[0].id)).toEqual([]);
+});
+
+test('contacts_limit_and_corrupt_file', async () => {
+  for (let i = 0; i < MAX_CONTACTS; i++) await addContact(`사람${i}`, '지인', '010-0000-0000');
+  await expect(addContact('한 명 더', '지인', '010-0000-0000')).rejects.toThrow();
+  mockFs.set('doc/scene/contacts.json', '{not json');
+  expect(await getContacts()).toEqual([]);
 });

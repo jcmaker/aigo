@@ -3,7 +3,8 @@ import Svg, { Circle, Path, Rect } from 'react-native-svg';
 
 export type IconName =
   | 'home' | 'list' | 'video' | 'alert' | 'user' | 'back' | 'share' | 'chevron'
-  | 'check' | 'camera' | 'phone' | 'lock' | 'upload' | 'trash' | 'image' | 'file' | 'logout';
+  | 'check' | 'camera' | 'phone' | 'lock' | 'upload' | 'trash' | 'image' | 'file' | 'logout'
+  | 'dashcam' | 'message' | 'plus' | 'close' | 'bell';
 
 // 24x24 선 아이콘 모양
 const shapes: Record<IconName, ReactNode> = {
@@ -23,6 +24,11 @@ const shapes: Record<IconName, ReactNode> = {
   trash: <Path d="M4 7h16M9 7V4h6v3M6 7l1 13h10l1-13M10 11v6M14 11v6" />,
   file: <><Path d="M6 3h8l4 4v14H6z" /><Path d="M14 3v4h4M9 12h6M9 16h4" /></>,
   logout: <Path d="M10 4H5v16h5M15 8l4 4-4 4M19 12H9" />,
+  dashcam: <><Rect x="3" y="7" width="18" height="12" rx="3" /><Circle cx="12" cy="13" r="3" /><Path d="M8 4h8M17.5 10h.01" /></>,
+  message: <Path d="M4 5h16a1 1 0 011 1v10a1 1 0 01-1 1H9l-5 4V6a1 1 0 011-1z" />,
+  plus: <Path d="M12 5v14M5 12h14" />,
+  close: <Path d="M6 6l12 12M18 6L6 18" />,
+  bell: <Path d="M18 9a6 6 0 00-12 0c0 6-2.5 7.5-2.5 7.5h17S18 15 18 9zM10 20a2 2 0 004 0" />,
   image: <><Rect x="3" y="4" width="18" height="16" rx="2" /><Circle cx="9" cy="10" r="1.5" /><Path d="M21 16l-5-5-9 9" /></>,
 };
 

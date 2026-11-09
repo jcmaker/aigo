@@ -1,0 +1,32 @@
+# 비밀값 검사 설정 (ADR 0005). gitleaks 기본 규칙에 이 저장소 규칙을 더한다.
+# 검사는 항상 기준 브랜치(dev/main)의 이 파일로 한다. PR에서 고쳐도 반영되지 않는다.
+title = "aigo"
+
+[extend]
+useDefault = true
+
+[[rules]]
+id = "clerk-secret-key"
+description = "Clerk 비밀키"
+regex = '''\bsk_(?:test|live)_[A-Za-z0-9]{20,}'''
+keywords = ["sk_test_", "sk_live_"]
+
+[[rules]]
+id = "toss-secret-key"
+description = "토스페이먼츠 비밀키"
+regex = '''\b(?:test|live)_(?:sk|gsk)_[A-Za-z0-9]{16,}'''
+keywords = ["_sk_", "_gsk_"]
+
+[[rules]]
+id = "database-url-with-password"
+description = "비밀번호가 들어간 DB 주소"
+regex = '''postgres(?:ql)?(?:\+psycopg)?://[^:\s/]+:[^@\s]{6,}@[^\s'"]+'''
+keywords = ["postgres"]
+
+[[allowlists]]
+description = "공개해도 되는 값: Clerk 공개키(publishable key), 토스 테스트 클라이언트 키, 내 컴퓨터(localhost) DB 주소"
+regexes = [
+  '''pk_(?:test|live)_[A-Za-z0-9]+''',
+  '''test_gck_[A-Za-z0-9]+''',
+  '''postgres(?:ql)?(?:\+psycopg)?://\S*@(?:localhost|127\.0\.0\.1)[:/]''',
+]

@@ -3,6 +3,7 @@ import * as Location from 'expo-location';
 import { useRouter } from 'expo-router';
 import { useEffect, useState } from 'react';
 import { Alert, Linking, Pressable, Text, View } from 'react-native';
+import { ContactsCard } from '@/components/ContactsCard';
 import { Button, Card, Icon, ListRow, Screen, TextField, TopBar } from '@/components/ui';
 import { color, space, type } from '@/theme';
 import { addScenePhoto, getInsurerPhone, setInsurerPhone, type SceneLocation } from '@/lib/scene-store';
@@ -110,7 +111,7 @@ export function SceneBody({ tabInset, onBack }: { tabInset?: boolean; onBack?: (
             style={{ flexDirection: 'row', alignItems: 'center', gap: space[3], minHeight: 44 }}
           >
             <View style={{ width: 24, height: 24, borderRadius: 8, alignItems: 'center', justifyContent: 'center', backgroundColor: checked[i] ? color.brand : color.white, borderWidth: checked[i] ? 0 : 1.5, borderColor: color.gray9 }}>
-              {checked[i] ? <Icon name="check" size={16} color={color.ink} /> : null}
+              {checked[i] ? <Icon name="check" size={16} color={color.onBrand} /> : null}
             </View>
             <Text style={[type.body, { flex: 1, color: checked[i] ? color.gray9 : color.gray12, textDecorationLine: checked[i] ? 'line-through' : 'none' }]}>{text}</Text>
           </Pressable>
@@ -128,6 +129,7 @@ export function SceneBody({ tabInset, onBack }: { tabInset?: boolean; onBack?: (
         <Button label="번호 저장" variant="secondary" size="md" onPress={savePhone} />
         <Button label="보험사에 전화" icon="phone" disabled={!saved} onPress={() => saved && call(saved)} />
       </Card>
+      <ContactsCard />
     </Screen>
   );
 }

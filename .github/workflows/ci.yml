@@ -1,0 +1,99 @@
+# PR과 dev/main 푸시마다 API, 웹, 앱을 검사한다.
+# 비밀값을 쓰지 않는다. 포크 PR도 같은 검사를 받고, 저장소 권한은 읽기만 준다.
+name: CI
+
+on:
+  pull_request:
+    branches: [dev, main]
+  push:
+    branches: [dev, main]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  api:
+    name: API 테스트
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: dashpi_test
+        ports: ["5432:5432"]
+        options: >-
+          --health-cmd "pg_isready -U postgres" --health-interval 5s --health-timeout 5s --health-retries 10
+    env:
+      DATABASE_URL: postgresql+psycopg://postgres:postgres@localhost:5432/dashpi_test
+    defaults:
+      run:
+        working-directory: apps/api
+    steps:
+      - uses: actions/checkout@v4
+      - name: ffmpeg 설치
+        run: sudo apt-get update -q && sudo apt-get install -yq ffmpeg
+      - uses: astral-sh/setup-uv@v5
+        with:
+          enable-cache: true
+          cache-dependency-glob: apps/api/uv.lock
+      - name: 패키지 설치
+        run: uv sync --frozen
+      - name: pytest (느린 YOLO 테스트 제외)
+        run: uv run pytest -m 'not model' -q
+
+  web:
+    name: 웹 테스트·빌드
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    defaults:
+      run:
+        working-directory: apps/web
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10.33.0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+          cache-dependency-path: apps/web/pnpm-lock.yaml
+      - name: 패키지 설치
+        run: pnpm install --frozen-lockfile
+      - name: Vitest
+        run: pnpm test
+      - name: 빌드
+        run: pnpm build
+        env:
+          NEXT_PUBLIC_API_URL: http://localhost:8000
+
+  app:
+    name: 앱 검사
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    defaults:
+      run:
+        working-directory: apps/app
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10.33.0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+          cache-dependency-path: apps/app/pnpm-lock.yaml
+      - name: 패키지 설치
+        run: pnpm install --frozen-lockfile
+      - name: 타입 검사
+        run: pnpm exec tsc --noEmit
+      - name: Jest
+        run: pnpm test
