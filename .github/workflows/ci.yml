@@ -1,5 +1,7 @@
 # PR과 dev/main 푸시마다 API, 웹, 앱을 검사한다.
 # 비밀값을 쓰지 않는다. 포크 PR도 같은 검사를 받고, 저장소 권한은 읽기만 준다.
+# 문서만 바뀌면(docs/, *.md, *.txt) 세 검사를 건너뛴다(ADR 0024). 건너뛴 검사는 브랜치 보호에서 통과로 친다.
+# PR 가드레일과 비밀값 검사는 다른 워크플로라 문서 변경에도 그대로 돈다.
 name: CI
 
 on:
@@ -16,8 +18,49 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  changes:
+    name: 바뀐 파일 분류
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    outputs:
+      code: ${{ steps.classify.outputs.code }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - name: 문서만 바뀌었는지 확인
+        id: classify
+        env:
+          BASE: ${{ github.event.pull_request.base.sha }}
+          BEFORE: ${{ github.event.before }}
+        run: |
+          if [ -n "$BASE" ]; then
+            files="$(git diff --name-only "$BASE...$GITHUB_SHA")"
+          elif [ -n "$BEFORE" ] && [ "$BEFORE" != 0000000000000000000000000000000000000000 ]; then
+            files="$(git diff --name-only "$BEFORE" "$GITHUB_SHA")"
+          else
+            files=""
+          fi
+          echo "$files"
+          # 목록을 못 구했으면 안전하게 검사한다.
+          code=true
+          if [ -n "$files" ]; then
+            code=false
+            while IFS= read -r f; do
+              case "$f" in
+                docs/*|*.md|*.txt) ;;
+                *) code=true ;;
+              esac
+            done <<< "$files"
+          fi
+          echo "code=$code" >> "$GITHUB_OUTPUT"
+          echo "코드 변경: $code"
+
   api:
     name: API 테스트
+    needs: changes
+    if: needs.changes.outputs.code == 'true'
     runs-on: ubuntu-latest
     timeout-minutes: 20
     services:
@@ -50,6 +93,8 @@ jobs:
 
   web:
     name: 웹 테스트·빌드
+    needs: changes
+    if: needs.changes.outputs.code == 'true'
     runs-on: ubuntu-latest
     timeout-minutes: 15
     defaults:
@@ -76,6 +121,8 @@ jobs:
 
   app:
     name: 앱 검사
+    needs: changes
+    if: needs.changes.outputs.code == 'true'
     runs-on: ubuntu-latest
     timeout-minutes: 15
     defaults:

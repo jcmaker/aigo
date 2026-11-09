@@ -149,7 +149,7 @@ docs/
 
 ## 함께 만드는 방식
 
-팀원 누구나 GitHub 웹에서 문구, 맞춤법, 문서를 고쳐 참여할 수 있습니다. 개발 도구가 없어도 됩니다. **처음이라면 [참여 안내(CONTRIBUTING.md)](CONTRIBUTING.md)부터 읽어 주세요.**
+팀원 누구나 AI 에이전트(Claude Code, Codex, Cursor 등)와 함께 고쳐 참여할 수 있습니다. 코드를 몰라도 됩니다. 무엇을, 왜 바꾸고 싶은지 말하면 에이전트가 고치고 PR까지 올립니다. **처음이라면 [참여 안내(CONTRIBUTING.md)](CONTRIBUTING.md)부터 읽어 주세요.**
 
 - **바꿀 때는 이유와 작업자를 남깁니다.** PR에 배경, 할 일, 한 일, 검증, 작업자를 쓰고, 결정 기록(ADR)을 하나 추가합니다. 관리자 조준형의 요청입니다. [ADR 0001](docs/adr/0001-record-decisions.md) · [PR 쓰는 법](CONTRIBUTING.md#pr-쓰는-법)
 - **백엔드(`apps/api`)는 관리자만 고칩니다.** 인증, 결제, 분석, 데이터베이스가 있어서 잘못 고치면 되돌리기 어렵습니다. [ADR 0003](docs/adr/0003-api-owner-only.md)
@@ -217,7 +217,7 @@ cd apps/web && E2E_VIDEO=<영상 경로> BASE_URL=<웹 주소> pnpm playwright t
 cd apps/api && DATABASE_URL=postgresql+psycopg:///dashpi_test uv run python -m app.evaluate --videos eval/videos --draft --budget 20
 ```
 
-- CI(`.github/workflows/ci.yml`)는 위 세 줄을 돌립니다. 느린 YOLO 테스트와 e2e는 CI에서 돌리지 않고, 비밀값을 쓰지 않습니다.
+- CI(`.github/workflows/ci.yml`)는 위 세 줄을 돌립니다. 느린 YOLO 테스트와 e2e는 CI에서 돌리지 않고, 비밀값을 쓰지 않습니다. 문서만 바뀌면(`docs/`, `.md`, `.txt`) 세 검사를 건너뜁니다. [ADR 0024](docs/adr/0024-skip-ci-for-docs.md)
 - 분석 품질 작업은 에뮬레이터 없이 평가 도구, pytest, 웹·API로 확인합니다. [ADR 0019](docs/adr/0019-quality-testing.md)
 
 API 응답을 바꾸면 웹·앱 타입을 다시 만듭니다. [ADR 0008](docs/adr/0008-api-contract.md)
@@ -302,7 +302,7 @@ Android APK는 [GitHub Releases](https://github.com/jcmaker/aigo/releases)에 �
 
 | 알고 싶은 것 | 먼저 읽을 문서 | 담긴 내용 |
 |---|---|---|
-| **수정에 참여하려면?** | [CONTRIBUTING.md](CONTRIBUTING.md) | GitHub 웹에서 고치는 순서, PR 쓰는 법, 올리면 안 되는 것 |
+| **수정에 참여하려면?** | [CONTRIBUTING.md](CONTRIBUTING.md) | 에이전트와 고치는 순서, 에이전트에게 쓸 말, PR 쓰는 법, 올리면 안 되는 것 |
 | **왜 이렇게 만들었나요?** | [결정 기록(ADR) 목록](docs/adr/README.md) | 결정마다 작업 내용, 변경 사유, 변경 작업자 |
 | **분석이 얼마나 정확한가요?** | [분석 품질 문서](docs/analysis-quality.md) | 측정 결과, 원인, 실험 기록, 다음 할 일 |
 | **처음에 무엇을 설계했나요?** | [설계 문서](docs/superpowers/specs/) | 서비스, 앱, 앱 디자인, 분석 품질, DashPi 업로드 설계 |
