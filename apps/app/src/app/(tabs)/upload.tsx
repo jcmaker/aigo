@@ -185,11 +185,11 @@ export default function UploadScreen() {
           <Button label="다른 영상 고르기" variant="secondary" disabled={busy} onPress={pick} />
         </>
       ) : (
-        <Card>
-          <EmptyState icon="video" title="어떤 영상을 분석할까요?">
-            <Button label="갤러리에서 영상 고르기" icon="image" disabled={busy} onPress={pick} />
+        <View style={{ backgroundColor: color.brand, borderRadius: radius.card, paddingHorizontal: space[4] }}>
+          <EmptyState tone="brand" icon="video" title="어떤 영상을 분석할까요?">
+            <Button label="갤러리에서 영상 고르기" variant="secondary" icon="image" disabled={busy} onPress={pick} />
           </EmptyState>
-        </Card>
+        </View>
       )}
       <ErrorLine>{fileError}</ErrorLine>
       <Text style={muted}>mp4, mov, webm, avi · 200MB · 2분 이하</Text>
