@@ -9,7 +9,7 @@ export function Screen({ scroll, tabInset, children, style, refreshControl, scro
   const insets = useSafeAreaInsets();
   const pad = { paddingHorizontal: space[4], paddingBottom: space[4] + insets.bottom + (tabInset ? tabBarSpace : 0), gap: space[3] };
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: color.gray3 }} edges={['top', 'left', 'right']}>
+    <SafeAreaView style={{ flex: 1, backgroundColor: color.bg }} edges={['top', 'left', 'right']}>
       <StatusBar barStyle="dark-content" />
       {scroll ? (
         <ScrollView ref={scrollRef} contentContainerStyle={[pad, style]} keyboardShouldPersistTaps="handled" refreshControl={refreshControl}>{children}</ScrollView>

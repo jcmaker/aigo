@@ -1,6 +1,6 @@
 # 0018. 앱 디자인: Supabase 색, TennisIQ 하단 메뉴, 없는 기능은 만들지 않는다
 
-- 상태: 채택
+- 상태: 채택 (앱 색과 홈 배치 일부는 0025로 대체)
 - 날짜: 2026-11-08
 - 변경 작업자: 조준형 (jcmaker), Claude(AI) 디자인 시스템 설계
 - 관련: 설계 `docs/superpowers/specs/2026-11-08-aigo-app-ui-design.md`, PR #32~#38, #51
