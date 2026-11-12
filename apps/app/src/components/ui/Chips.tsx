@@ -1,5 +1,5 @@
 import { Pressable, Text } from 'react-native';
-import { formatTime } from '@/lib/analysis';
+import { formatTimePrecise } from '@/lib/analysis';
 import { color, radius, space, type } from '@/theme';
 
 export type Tone = 'good' | 'warn' | 'bad' | 'neutral';
@@ -32,10 +32,12 @@ export function SourceChip({ source }: { source: string }) {
   return source === 'dashpi' ? <StatusChip tone="neutral" label="DashPi" /> : null;
 }
 
-// onPress가 없으면(재생 영상 없음) 버튼이 아닌 글자로 그린다
-export function TimeChip({ seconds, onPress }: { seconds: number; onPress?: (seconds: number) => void }) {
-  const t = formatTime(seconds);
-  const style = [type.micro, { fontSize: 12, fontWeight: '800', color: color.brand600, backgroundColor: color.brand200, borderRadius: 8, paddingHorizontal: 9, paddingVertical: space[1], overflow: 'hidden' }] as const;
+// onPress가 없으면(재생 영상 없음) 버튼이 아닌 글자로 그린다. tone='mint'는 리포트 화면용(ADR 0027).
+export function TimeChip({ seconds, onPress, tone = 'brand' }: { seconds: number; onPress?: (seconds: number) => void; tone?: 'brand' | 'mint' }) {
+  const t = formatTimePrecise(seconds);
+  const fg = tone === 'mint' ? color.mintDeep : color.brand600;
+  const bg = tone === 'mint' ? color.mintSoft : color.brand200;
+  const style = [type.micro, { fontSize: 12, fontWeight: '800', color: fg, backgroundColor: bg, borderRadius: 8, paddingHorizontal: 9, paddingVertical: space[1], overflow: 'hidden' }] as const;
   if (!onPress) return <Text style={style}>{t}</Text>;
   return (
     <Pressable accessibilityRole="button" accessibilityLabel={`${t} 장면으로 이동`} onPress={() => onPress(seconds)} hitSlop={8}>
