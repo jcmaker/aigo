@@ -7,6 +7,7 @@ export const color = {
   brand600: '#2A4E9E',
   onBrand: '#FFFFFF', // brand 바탕 위 글자·아이콘
   online: '#30A46C', // 기기 연결됨 점
+  mint: '#3FCF8E', // 로고 민트. 어두운 바탕 위 포인트로만 쓴다(흰 바탕 글씨 금지, ADR 0026)
   ink: '#1A2B4C',
   ink2: '#26395E',
   ink3: '#344A73',
