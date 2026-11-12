@@ -6,7 +6,10 @@ import { color } from '@/theme';
 const S = 273;
 const WORD_W = 200;
 const WORD_H = (WORD_W * 410) / 1374;
-const TOTAL = 1400;
+const MOTION = 1400;
+// 모션이 끝난 뒤 완성된 로고를 0.8초 더 보여 준다(ADR 0026).
+const HOLD = 800;
+const TOTAL = MOTION + HOLD;
 
 const layerA = require('../../../assets/brand/layer-a.png');
 const layerRoad = require('../../../assets/brand/layer-road.png');
@@ -16,7 +19,7 @@ const wordText = require('../../../assets/brand/wordtext-light.png');
 const run = (v: Animated.Value, to: number, duration: number, delay: number, easing: (t: number) => number, native = true) =>
   Animated.timing(v, { toValue: to, duration, delay, easing, useNativeDriver: native });
 
-// 진입 모션 "길 그리기": A(0~0.45s) → 길(0.3~1.0s) → 별(1.0~1.4s), 글자 1.05s부터.
+// 진입 모션 "길 그리기": A(0~0.45s) → 길(0.3~1.0s) → 별(1.0~1.4s), 글자 1.05s부터. 그 뒤 0.8초 멈춰 보여 주고 2.2s에 onDone.
 // still이면 모션 없이 마지막 장면만 그린다(이미 한 번 재생한 뒤 index가 다시 마운트될 때).
 export function Splash({ onDone, still = false }: { onDone?: () => void; still?: boolean }) {
   const from = still ? 1 : 0;
