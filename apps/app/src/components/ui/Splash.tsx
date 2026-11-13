@@ -6,7 +6,17 @@ import { color } from '@/theme';
 const S = 273;
 const WORD_W = 200;
 const WORD_H = (WORD_W * 410) / 1374;
-const TOTAL = 1400;
+// 로고 PNG(1134px)는 위아래에 투명 여백이 있다. 눈에 보이는 모양은 x 157~955, y 222~920px(ADR 0026).
+// 여백만큼 음수 margin을 주어 보이는 모양 기준으로 배치하고, 모양이 왼쪽으로 치우친 만큼 오른쪽으로 민다.
+const PNG = 1134;
+const MARK_TOP_PAD = (S * 222) / PNG; // 약 53.4
+const MARK_BOTTOM_PAD = (S * (PNG - 920)) / PNG; // 약 51.5
+const MARK_SHIFT_X = (S * (PNG / 2 - (157 + 955) / 2)) / PNG; // 약 2.6
+const WORD_GAP = 28; // 보이는 심벌 아래와 글자 사이
+const MOTION = 1400;
+// 모션이 끝난 뒤 완성된 로고를 0.8초 더 보여 준다(ADR 0026).
+const HOLD = 800;
+const TOTAL = MOTION + HOLD;
 
 const layerA = require('../../../assets/brand/layer-a.png');
 const layerRoad = require('../../../assets/brand/layer-road.png');
@@ -16,7 +26,7 @@ const wordText = require('../../../assets/brand/wordtext-light.png');
 const run = (v: Animated.Value, to: number, duration: number, delay: number, easing: (t: number) => number, native = true) =>
   Animated.timing(v, { toValue: to, duration, delay, easing, useNativeDriver: native });
 
-// 진입 모션 "길 그리기": A(0~0.45s) → 길(0.3~1.0s) → 별(1.0~1.4s), 글자 1.05s부터.
+// 진입 모션 "길 그리기": A(0~0.45s) → 길(0.3~1.0s) → 별(1.0~1.4s), 글자 1.05s부터. 그 뒤 0.8초 멈춰 보여 주고 2.2s에 onDone.
 // still이면 모션 없이 마지막 장면만 그린다(이미 한 번 재생한 뒤 index가 다시 마운트될 때).
 export function Splash({ onDone, still = false }: { onDone?: () => void; still?: boolean }) {
   const from = still ? 1 : 0;
@@ -50,28 +60,31 @@ export function Splash({ onDone, still = false }: { onDone?: () => void; still?:
 
   return (
     <View style={s.root} accessible accessibilityLabel="AIGO">
-      <Animated.Image source={layerA} style={[s.layer, rise(a)]} />
-      <Animated.View style={[s.layer, { width: road.interpolate({ inputRange: [0, 1], outputRange: [0, S] }), overflow: 'hidden' }]}>
-        <Image source={layerRoad} style={{ width: S, height: S }} />
-      </Animated.View>
-      <Animated.Image
-        source={layerStar}
-        style={[s.layer, {
-          opacity: star.interpolate({ inputRange: [0, 0.01, 1], outputRange: [0, 1, 1] }),
-          transform: [
-            { scale: star },
-            { rotate: star.interpolate({ inputRange: [0, 1], outputRange: ['-90deg', '0deg'] }) },
-          ],
-        }]}
-      />
-      <Animated.Image source={wordText} style={[s.word, rise(word)]} />
+      <View style={s.mark}>
+        <Animated.Image source={layerA} style={[s.layer, rise(a)]} />
+        <Animated.View style={[s.layer, { width: road.interpolate({ inputRange: [0, 1], outputRange: [0, S] }), overflow: 'hidden' }]}>
+          <Image source={layerRoad} style={{ width: S, height: S }} />
+        </Animated.View>
+        <Animated.Image
+          source={layerStar}
+          style={[s.layer, {
+            opacity: star.interpolate({ inputRange: [0, 0.01, 1], outputRange: [0, 1, 1] }),
+            transform: [
+              { scale: star },
+              { rotate: star.interpolate({ inputRange: [0, 1], outputRange: ['-90deg', '0deg'] }) },
+            ],
+          }]}
+        />
+      </View>
+      <Animated.Image source={wordText} resizeMode="contain" style={[s.word, rise(word)]} />
     </View>
   );
 }
 
+// 심벌과 글자를 한 묶음(로고 그룹)으로 그린다. 화면 안의 세로 위치는 index가 정한다.
 const s = StyleSheet.create({
-  root: { flex: 1, backgroundColor: color.ink },
-  // 로고는 화면 한가운데(네이티브 스플래시와 같은 자리), 글자는 그 아래에 둔다.
-  layer: { position: 'absolute', left: '50%', top: '50%', width: S, height: S, marginLeft: -S / 2, marginTop: -S / 2 },
-  word: { position: 'absolute', left: '50%', top: '50%', width: WORD_W, height: WORD_H, marginLeft: -WORD_W / 2, marginTop: S / 2 },
+  root: { alignItems: 'center' },
+  mark: { width: S, height: S, marginTop: -MARK_TOP_PAD, marginBottom: -MARK_BOTTOM_PAD, transform: [{ translateX: MARK_SHIFT_X }] },
+  layer: { position: 'absolute', left: 0, top: 0, width: S, height: S },
+  word: { width: WORD_W, height: WORD_H, marginTop: WORD_GAP },
 });
