@@ -11,11 +11,16 @@ test('버튼은 비활성일 때 누를 수 없고 role이 button이다', async 
   expect(onPress).not.toHaveBeenCalled();
 });
 
-test('시각 칩은 "0:11 장면으로 이동"으로 읽히고 누르면 초를 넘긴다', async () => {
+test('시각 칩은 0.1초까지 "0:11.6 장면으로 이동"으로 읽히고 누르면 초를 넘긴다', async () => {
   const onPress = jest.fn();
   await render(<TimeChip seconds={11.6} onPress={onPress} />);
-  await fireEvent.press(screen.getByRole('button', { name: '0:11 장면으로 이동' }));
+  await fireEvent.press(screen.getByRole('button', { name: '0:11.6 장면으로 이동' }));
   expect(onPress).toHaveBeenCalledWith(11.6);
+});
+
+test('시각 칩은 정수 초면 소수점을 붙이지 않는다', async () => {
+  await render(<TimeChip seconds={11} onPress={() => {}} />);
+  expect(screen.getByRole('button', { name: '0:11 장면으로 이동' })).toBeTruthy();
 });
 
 test('게이지는 라벨과 값을 읽을 수 있게 노출한다', async () => {
