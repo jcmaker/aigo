@@ -7,20 +7,17 @@ import {
   DISCLAIMER,
   FAILURES,
   LEVEL,
-  LIKELIHOOD,
   STAGES,
   caseSource,
   isCaseUrl,
-  faultRange,
-  signed,
   formatTime,
   type Analysis,
   type Evidence,
-  type FaultAssessment,
   type Report,
 } from '@/lib/analysis';
-import { faultSegments, stageSegments } from '@/lib/ui-logic';
-import { Card, Icon, ListRow, Notice, SegmentGauge, SegmentedControl, StatTile, StepList, TimeChip } from '@/components/ui';
+import { stageSegments } from '@/lib/ui-logic';
+import { Card, Icon, ListRow, Notice, SegmentGauge, StepList } from '@/components/ui';
+import { CautionCard, CautionText, ChartSource, DarkCard, DotList, EvidenceLine, FaultHeadline, FaultProcess, Footer, LinkRow, NumberedList, RangeWhy, ReportTabs, SeriousViolations, VerticalTimeline, ClaimLines, type Seek } from '@/components/report-sections';
 import { color, radius, space, type } from '@/theme';
 
 // 웹 ReportView와 같은 항목·문구.
@@ -30,7 +27,6 @@ const MAX_VIDEO_RELOADS = 2; // 만료가 아닌 이유로 계속 실패해도 �
 const body = [type.body, { color: color.gray12 }];
 const muted = [type.caption, { color: color.gray11 }];
 const strong = [type.label, { color: color.gray12 }];
-const CONFIDENCE_COLOR = { high: color.brand600, medium: color.warning600, low: color.danger600 } as const;
 
 export type ReportTab = 'summary' | 'evidence' | 'basis';
 const TABS: { value: ReportTab; label: string }[] = [
@@ -39,72 +35,11 @@ const TABS: { value: ReportTab; label: string }[] = [
   { value: 'basis', label: '기준' },
 ];
 
-type Seek = ((t: number) => void) | undefined;
 
 /** 위험·실패 문구 한 줄 */
 export function ErrorLine({ children }: { children: ReactNode }) {
   if (!children) return null;
   return <Text style={[type.caption, { color: color.danger600 }]}>{children}</Text>;
-}
-
-function Row({ label, value }: { label: string; value: ReactNode }) {
-  return (
-    <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', gap: space[3] }}>
-      <Text style={strong}>{label}</Text>
-      {typeof value === 'string' ? <Text style={strong}>{value}</Text> : value}
-    </View>
-  );
-}
-
-function EvidenceRows({ items, onSeek }: { items: Evidence[]; onSeek: Seek }) {
-  return items.map((e) => <ListRow key={`${e.t}-${e.text}`} leading={<TimeChip seconds={e.t} onPress={onSeek} />} title={e.text} />);
-}
-
-/** 파이프라인이 문장 끝에 붙인 "(7.8초)"를 눌러서 이동하는 근거로 바꾼다. */
-function Claims({ items, onSeek }: { items: string[]; onSeek: Seek }) {
-  return items.map((claim) => {
-    const m = claim.match(/^(.*?)\s*\((\d+(?:\.\d+)?)초\)$/);
-    return <ListRow key={claim} title={m ? m[1] : claim} trailing={m ? <TimeChip seconds={Number(m[2])} onPress={onSeek} /> : undefined} />;
-  });
-}
-
-function Steps({ title, items }: { title: string; items: string[] }) {
-  if (items.length === 0) return null;
-  return (
-    <Card title={title}>
-      {items.map((item, i) => (
-        <Text key={item} style={body}>
-          {i + 1}. {item}
-        </Text>
-      ))}
-    </Card>
-  );
-}
-
-function FaultBreakdown({ fault, onSeek }: { fault: FaultAssessment; onSeek: Seek }) {
-  return (
-    <Card title="과실 근거">
-      <Row label="기본과실" value={`${fault.base}%`} />
-      {fault.steps.map((s) => (
-        <View key={s.label} style={{ flexDirection: 'row', alignItems: 'center', gap: space[3] }}>
-          <View style={{ flex: 1 }}>
-            <Text style={strong}>{s.label}</Text>
-            <Text style={muted}>{s.evidence.text}</Text>
-          </View>
-          <TimeChip seconds={s.evidence.t} onPress={onSeek} />
-          <Text style={[type.headline, { color: color.gray12 }]}>{signed(s.delta)}</Text>
-        </View>
-      ))}
-      <View style={{ height: 1, backgroundColor: color.gray4 }} />
-      <Row label="내 과실 예상" value={<Text style={[type.headline, { color: color.brand600 }]}>{faultRange(fault)}</Text>} />
-      <View style={{ gap: space[1] }}>
-        <Text style={strong}>기준 도표</Text>
-        <Text style={body}>{fault.chart_title}</Text>
-        <Text style={muted}>이 도표에서 내 차는 {fault.me}입니다.</Text>
-        <Text style={muted}>출처: 과실비율정보포털 ({fault.source_url})</Text>
-      </View>
-    </Card>
-  );
 }
 
 function RefCard({ title, items, source }: { title: string; items: { text: string; url: string }[]; source?: string }) {
@@ -217,6 +152,24 @@ function involvementLabel(r: Report) {
   return r.involvement === 'party' ? '내 차 사고' : '제3자 사고';
 }
 
+/** 영상이 없을 때. 임의의 영상을 넣지 않고 상태만 알린다. */
+function NoVideo() {
+  return (
+    <DarkCard>
+      <Text style={[type.headline, { color: color.white }]}>재생할 수 있는 영상이 없습니다</Text>
+      <Text style={[type.caption, { lineHeight: 19, color: color.brand400 }]}>원본 영상이 제공되면 시각을 눌러 해당 장면으로 이동할 수 있습니다.</Text>
+    </DarkCard>
+  );
+}
+
+// 요약 탭에는 타임라인에서 접촉 장면과 그 앞뒤까지 최대 3개만 보이고, 나머지는 근거 탭으로 보낸다.
+function keyScenes(timeline: Evidence[], collisionT: number | null): Evidence[] {
+  if (timeline.length <= 3) return timeline;
+  const hit = collisionT === null ? -1 : timeline.findIndex((e) => Math.abs(e.t - collisionT) < 0.05);
+  const start = hit < 0 ? 0 : Math.max(0, Math.min(hit - 1, timeline.length - 3));
+  return timeline.slice(start, start + 3);
+}
+
 export function ReportView({ analysis, onReload, tab, onTab }: { analysis: Analysis; onReload: () => void; tab: ReportTab; onTab: (t: ReportTab) => void }) {
   const report = analysis.report as Report;
   const url = analysis.playback_url;
@@ -242,111 +195,117 @@ export function ReportView({ analysis, onReload, tab, onTab }: { analysis: Analy
       }
     : undefined;
   const { fault, timeline } = report;
-
-  const video = url ? <Video url={url} player={player} onReload={onReload} reloads={reloads} /> : <Text style={muted}>재생할 수 있는 영상이 없습니다.</Text>;
-  const notice = (
-    <View accessible accessibilityLabel={`주의 ${DISCLAIMER}`}>
-      <Notice tone="warn">주의: {DISCLAIMER}</Notice>
-    </View>
-  );
+  const video = url ? <Video url={url} player={player} onReload={onReload} reloads={reloads} /> : <NoVideo />;
 
   if (report.involvement === 'none') {
     return (
       <View style={{ gap: space[3] }}>
-        {notice}
         <Card>
           <Text style={[type.title, { color: color.gray12 }]}>{NO_SCENE}</Text>
           {report.reason ? <Text style={body}>{report.reason}</Text> : null}
           <Text style={muted}>분석이 실제 충돌을 놓쳤을 수 있습니다. 아래 영상을 직접 확인해 주세요.</Text>
         </Card>
         {video}
+        <Footer text={DISCLAIMER} />
       </View>
     );
   }
 
   const others = report.facts.filter((f) => !timeline.some((e) => e.t === f.t && e.text === f.text));
   const noFault = report.involvement === 'witness' ? '촬영 차가 당사자가 아니어서 과실비율을 내지 않습니다.' : report.fault_note;
-  const confidence = <StatTile label="신뢰도" value={LEVEL[report.confidence]} valueColor={CONFIDENCE_COLOR[report.confidence]} />;
+  // 영상으로 확인하지 못한 것: 사실(unseen)과 과실 수정요소(fault.unknown)를 한 곳에 모은다. 겹치면 한 번만.
+  const unconfirmed = Array.from(new Set([...report.unseen, ...(fault?.unknown ?? [])]));
+  const scenes = keyScenes(timeline, report.collision_t);
 
   return (
     <View style={{ gap: space[3] }}>
-      <SegmentedControl options={TABS} value={tab} onChange={onTab} />
+      <ReportTabs options={TABS} value={tab} onChange={onTab} />
 
       {tab === 'summary' && (
         <>
-          {notice}
-          <Card>
-            <Text style={muted}>{involvementLabel(report)}</Text>
-            <Text style={[type.title, { color: color.gray12 }]}>{report.accident_type ?? '사고 분석 결과'}</Text>
-            {report.summary ? <Text style={body}>{report.summary}</Text> : null}
-          </Card>
-          <Card title={fault ? '내 과실 예상' : '과실비율'}>
-            {fault ? (
-              <>
-                <SegmentGauge segments={faultSegments(fault.my_min, fault.my_max)} label="예상 범위" value={faultRange(fault)} />
-                <View style={{ flexDirection: 'row', gap: space[2] }}>
-                  {confidence}
-                  <StatTile label="기준 도표" value={fault.chart_id} />
-                  <StatTile label="기본과실" value={`${fault.base}%`} />
-                </View>
-              </>
-            ) : (
-              <>
-                <Text style={strong}>{noFault}</Text>
-                <View style={{ flexDirection: 'row' }}>{confidence}</View>
-              </>
-            )}
-            <Text style={muted}>{CONFIDENCE_MEANS}</Text>
-            {report.severity && <Row label="심각도" value={LEVEL[report.severity]} />}
-            {report.collision_t !== null && <Row label="충돌 시각" value={<TimeChip seconds={report.collision_t} onPress={seekToEvidence} />} />}
-          </Card>
-          <Steps title="지금 할 일" items={report.actions_now} />
-          <Steps title="이후 대응" items={report.actions_later} />
+          {report.actions_now.length > 0 && (
+            <Card title="지금 먼저 할 일">
+              <NumberedList items={report.actions_now} />
+            </Card>
+          )}
+          <DarkCard label="사고 분석 요약">
+            <Text style={[type.caption, { color: color.brand400 }]}>{involvementLabel(report)}</Text>
+            <Text style={[type.title, { color: color.white }]}>{report.accident_type ?? '사고 분석 결과'}</Text>
+            {report.summary ? <Text style={[type.body, { lineHeight: 22, color: '#DCE4F2' }]}>{report.summary}</Text> : null}
+            {report.severity && <Text style={[type.caption, { color: color.brand400 }]}>심각도 {LEVEL[report.severity]}</Text>}
+            <View style={{ height: 1, backgroundColor: color.ink3, marginVertical: space[1] }} />
+            <FaultHeadline fault={fault} note={noFault} confidence={report.confidence} collisionT={report.collision_t} onSeek={seekToEvidence} onBasis={() => onTab('basis')} />
+          </DarkCard>
+          {scenes.length > 0 && (
+            <Card title="영상에서 확인한 장면">
+              {scenes.map((e) => (
+                <EvidenceLine key={`${e.t}-${e.text}`} e={e} onSeek={seekToEvidence} />
+              ))}
+              {timeline.length > scenes.length && <LinkRow label="전체 타임라인 보기" onPress={() => onTab('evidence')} />}
+            </Card>
+          )}
+          {unconfirmed.length > 0 && (
+            <CautionCard title="확인되지 않은 조건">
+              <CautionText>{unconfirmed.join(', ')}은(는) 영상만으로 확인하기 어렵습니다. 예상 과실 범위에도 영향을 줄 수 있어요.</CautionText>
+            </CautionCard>
+          )}
+          {report.actions_later.length > 0 && (
+            <Card title="이후 대응">
+              <DotList items={report.actions_later} tone="gray" />
+            </Card>
+          )}
+          <Footer text={DISCLAIMER} />
         </>
       )}
 
       {tab === 'evidence' && (
         <>
           {video}
-          <Card title="타임라인">
-            <EvidenceRows items={timeline} onSeek={onSeek} />
+          <Card title="장면 타임라인">
+            <Text style={muted}>영상에서 관찰된 장면을 시간 순서대로 정리했어요.{onSeek ? ' 항목을 누르면 그 장면으로 이동해요.' : ''}</Text>
+            {timeline.length > 0 ? <VerticalTimeline items={timeline} collisionT={report.collision_t} onSeek={onSeek} /> : <Text style={body}>정리된 장면이 없습니다.</Text>}
           </Card>
           {others.length > 0 && (
-            <Card title="그 밖에 확인된 사실">
-              <EvidenceRows items={others} onSeek={onSeek} />
-            </Card>
-          )}
-          {report.favorable.length > 0 && (
-            <Card title="유리한 점">
-              <Claims items={report.favorable} onSeek={onSeek} />
-            </Card>
-          )}
-          {report.unfavorable.length > 0 && (
-            <Card title="불리한 점">
-              <Claims items={report.unfavorable} onSeek={onSeek} />
-            </Card>
-          )}
-          {report.unseen.length > 0 && (
-            <Card title="확인할 수 없는 사실">
-              {report.unseen.map((u) => (
-                <Text key={u} style={body}>
-                  {u}
-                </Text>
+            <Card title="추가로 확인한 사실">
+              {others.map((e) => (
+                <EvidenceLine key={`${e.t}-${e.text}`} e={e} onSeek={onSeek} />
               ))}
             </Card>
           )}
+          {(report.favorable.length > 0 || report.unfavorable.length > 0) && (
+            <Card title="판단에 사용한 근거">
+              {report.favorable.length > 0 && (
+                <View style={{ gap: space[2] }}>
+                  <Text style={strong}>유리한 점</Text>
+                  <ClaimLines items={report.favorable} onSeek={onSeek} />
+                </View>
+              )}
+              {report.unfavorable.length > 0 && (
+                <View style={{ gap: space[2] }}>
+                  <Text style={strong}>불리한 점</Text>
+                  <ClaimLines items={report.unfavorable} onSeek={onSeek} />
+                </View>
+              )}
+            </Card>
+          )}
+          {report.unseen.length > 0 && (
+            <CautionCard title="영상만으로 확인할 수 없는 사실">
+              <CautionText>{report.unseen.join(', ')}</CautionText>
+            </CautionCard>
+          )}
+          <Footer text={DISCLAIMER} />
         </>
       )}
 
       {tab === 'basis' && (
         <>
-          {fault ? (
-            <FaultBreakdown fault={fault} onSeek={seekToEvidence} />
-          ) : (
-            <Card title="과실비율">
-              <Text style={strong}>{noFault}</Text>
-            </Card>
-          )}
+          <DarkCard label="과실 판단 기준">
+            <FaultHeadline fault={fault} note={noFault} confidence={report.confidence} collisionT={null} onSeek={undefined} />
+            <Text style={[type.caption, { lineHeight: 19, color: color.brand400 }]}>{CONFIDENCE_MEANS}</Text>
+          </DarkCard>
+          {fault && <FaultProcess fault={fault} onSeek={seekToEvidence} />}
+          {fault && <RangeWhy fault={fault} />}
+          {fault && <ChartSource fault={fault} />}
           {/* 옛 레포트에는 laws/cases가 없을 수 있다 */}
           <RefCard title="관련 법규" items={(fault?.laws ?? []).map((l) => ({ text: `${l.name} ${l.article}(${l.title})`, url: l.url }))} />
           <RefCard
@@ -354,33 +313,8 @@ export function ReportView({ analysis, onReload, tab, onTab }: { analysis: Analy
             items={(fault?.cases ?? []).map((c) => ({ text: `${c.court} ${c.date} ${c.number}`, url: isCaseUrl(c.url) ? c.url : '' }))}
             source={caseSource(fault?.cases ?? [])}
           />
-          {fault && fault.unknown.length > 0 && (
-            <Card title="영상으로 판단하지 못한 요소">
-              <Text style={muted}>이 요소 때문에 예상 범위가 넓어질 수 있습니다.</Text>
-              {fault.unknown.map((u) => (
-                <Text key={u} style={strong}>
-                  {u}
-                </Text>
-              ))}
-            </Card>
-          )}
-          {report.serious_violations.length > 0 && (
-            <Card title="12대 중과실">
-              {report.serious_violations.map((v) => (
-                <View key={v.item} style={{ gap: space[1] }}>
-                  <Text style={strong}>
-                    {v.item} · {LIKELIHOOD[v.likelihood]}
-                  </Text>
-                  {v.evidence && (
-                    <View style={{ flexDirection: 'row', alignItems: 'center', gap: space[2] }}>
-                      <TimeChip seconds={v.evidence.t} onPress={seekToEvidence} />
-                      <Text style={[muted, { flex: 1 }]}>{v.evidence.text}</Text>
-                    </View>
-                  )}
-                </View>
-              ))}
-            </Card>
-          )}
+          <SeriousViolations items={report.serious_violations} onSeek={seekToEvidence} />
+          <Footer text={DISCLAIMER} />
         </>
       )}
     </View>

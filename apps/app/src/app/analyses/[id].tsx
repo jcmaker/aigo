@@ -1,15 +1,15 @@
 import { Stack, useLocalSearchParams, useRouter } from 'expo-router';
 import { useEffect, useRef, useState } from 'react';
-import { ActivityIndicator, Alert, Pressable, Text, type ScrollViewInstance } from 'react-native';
+import { ActivityIndicator, Alert, Dimensions, Pressable, Text, type ScrollViewInstance, type ViewInstance } from 'react-native';
 import { ErrorLine, FailureNotice, ProgressView, ReportView, type ReportTab } from '@/components/analysis';
-import { Button, Card, Icon, Screen, TopBar, SourceChip } from '@/components/ui';
-import { circleButtonStyle } from '@/components/ui/TopBar';
+import { Button, Card, Icon, Screen } from '@/components/ui';
+import { ReportHeader, ReportMenu, headerCircle, type MenuAction, type MenuAnchor } from '@/components/report-sections';
 import { analysisTitle, seoulDate, useAnalysis } from '@/lib/analysis';
 import { useApi } from '@/lib/api';
 import type { ApiFailure } from '@/lib/api';
 import { shareReportPdf } from '@/lib/share-report';
 import { deleteReportPdf } from '@/lib/cache';
-import { color, type } from '@/theme';
+import { color, space, type } from '@/theme';
 
 export default function AnalysisScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
@@ -18,6 +18,8 @@ export default function AnalysisScreen() {
   const { analysis, notFound, stale, stop, reload } = useAnalysis(id);
   const [deleting, setDeleting] = useState(false);
   const [sharing, setSharing] = useState(false);
+  const [menu, setMenu] = useState<MenuAnchor | null>(null);
+  const menuRef = useRef<ViewInstance>(null);
   const [error, setError] = useState<string | null>(null);
   const [tab, setTab] = useState<ReportTab>('summary');
   const scroll = useRef<ScrollViewInstance>(null);
@@ -73,20 +75,33 @@ export default function AnalysisScreen() {
   const back = () => (router.canGoBack() ? router.back() : router.replace('/analyses'));
   const report = analysis?.status === 'done' ? analysis.report : null;
   const tabbed = !!report && report.involvement !== 'none';
-  const subtitle = analysis ? [tabbed ? (report.involvement === 'party' ? '내 차 사고' : '제3자 사고') : null, seoulDate(analysis.created_at)].filter(Boolean).join(' · ') : undefined;
-  const shareButton = report ? (
-    <Pressable accessibilityRole="button" accessibilityLabel="PDF로 공유" accessibilityState={{ disabled: sharing }} disabled={sharing} onPress={share} style={circleButtonStyle}>
-      {sharing ? <ActivityIndicator color={color.ink} /> : <Icon name="share" size={16} color={color.ink} />}
+  const subtitle = analysis ? [tabbed ? (report.involvement === 'party' ? '내 차 사고' : '제3자 사고') : null, seoulDate(analysis.created_at), analysis.source === 'dashpi' ? 'DashPi' : null].filter(Boolean).join(' · ') : undefined;
+  // 오른쪽 위 "더 보기": 공유·다시 올리기·삭제를 글자로 된 메뉴에 모은다. 분석 중에는 다시 올리기를 숨긴다.
+  const busy = analysis?.status === 'queued' || analysis?.status === 'processing';
+  const actions: MenuAction[] = analysis
+    ? [
+        ...(report ? [{ label: '리포트 PDF로 보내기', icon: 'file' as const, onPress: share, disabled: sharing }] : []),
+        ...(!busy ? [{ label: '영상 다시 올리기', icon: 'upload' as const, onPress: () => router.dismissTo('/upload') }] : []),
+        { label: '분석 삭제', icon: 'trash' as const, onPress: remove, danger: true, disabled: deleting },
+      ]
+    : [];
+  // ⋯ 버튼의 화면 위치를 재서 메뉴 상자를 바로 아래 오른쪽 끝에 맞춘다.
+  const openMenu = () =>
+    menuRef.current?.measureInWindow((x, y, w, h) => setMenu({ top: y + h + 6, right: Math.max(space[2], Dimensions.get('window').width - (x + w)) }));
+  const menuButton = analysis ? (
+    <Pressable ref={menuRef} accessibilityRole="button" accessibilityLabel="더 보기" accessibilityHint="리포트 PDF 보내기, 영상 다시 올리기, 분석 삭제" onPress={openMenu} style={headerCircle}>
+      {sharing || deleting ? <ActivityIndicator color={color.white} /> : <Icon name="dots" size={20} color={color.white} />}
     </Pressable>
   ) : undefined;
 
   return (
-    <Screen scroll scrollRef={scroll}>
+    <Screen scroll scrollRef={scroll} background={color.reportBg} topColor={color.ink} barStyle="light-content">
       <Stack.Screen options={{ headerShown: false }} />
-      <TopBar title={analysis ? analysisTitle(analysis) : `분석 #${id}`} subtitle={subtitle} onBack={back} right={shareButton} />
+      <ReportHeader title={analysis ? analysisTitle(analysis) : `분석 #${id}`} subtitle={subtitle} onBack={back} right={menuButton} />
+      <ReportMenu visible={menu !== null} anchor={menu} actions={actions} onClose={() => setMenu(null)} />
       {analysis ? (
         <>
-          <SourceChip source={analysis.source} />
+          {/* 출처(DashPi)는 머리글 날짜 줄에 붙인다. 머리글과 탭 사이를 비워 두기 위해서다. */}
           <ErrorLine>{error}</ErrorLine>
           {analysis.status !== 'done' ? (
             <ProgressView analysis={analysis} stale={stale} />
@@ -97,15 +112,9 @@ export default function AnalysisScreen() {
               <FailureNotice code="REPORT_MISSING" message="분석은 끝났지만 레포트가 없습니다. 영상을 다시 올려 주세요." />
             </Card>
           )}
+          {/* 실패했을 때는 다시 올리기를 본문에도 크게 둔다. 삭제·공유는 오른쪽 위 메뉴에 있다. */}
           {analysis.status !== 'queued' && analysis.status !== 'processing' && analysis.status !== 'done' ? (
             <Button label="영상 다시 올리기" onPress={() => router.dismissTo('/upload')} />
-          ) : null}
-          {/* 레포트 탭이 있으면 삭제는 기준 탭 맨 아래에 둔다. 오류는 맨 위와 버튼 바로 위에 모두 보인다. */}
-          {!tabbed || tab === 'basis' ? (
-            <>
-              <ErrorLine>{error}</ErrorLine>
-              <Button label="분석 삭제" variant="danger" icon="trash" disabled={deleting} onPress={remove} />
-            </>
           ) : null}
         </>
       ) : notFound ? null : (
