@@ -7,6 +7,7 @@ export const color = {
   brand600: '#2A4E9E',
   onBrand: '#FFFFFF', // brand 바탕 위 글자·아이콘
   online: '#30A46C', // 기기 연결됨 점
+  mint: '#3FCF8E', // 로고 민트. 어두운 바탕 위 포인트로만 쓴다(흰 바탕 글씨 금지, ADR 0026)
   ink: '#1A2B4C',
   ink2: '#26395E',
   ink3: '#344A73',
@@ -25,6 +26,12 @@ export const color = {
   danger: '#E54D2E',
   danger600: '#CA3214',
   sceneIcon: '#FF7A5C',
+  // 리포트 화면(ADR 0027): 흰 바탕에서는 진한 민트 글씨와 연한 민트 바탕을 쓴다(대비 4.5:1 이상).
+  mintDeep: '#0B7A4D',
+  mintSoft: '#E3F8EE',
+  reportBg: '#F4F7F9',
+  tabInactive: '#64748B', // 리포트 탭 비선택 글씨(흰 바탕 대비 4.76:1)
+  tabLine: '#E2E8F0', // 리포트 탭 아래 구분선
 } as const;
 
 export const space = { 1: 4, 2: 8, 3: 12, 4: 16, 5: 20, 6: 24, 8: 32 } as const;

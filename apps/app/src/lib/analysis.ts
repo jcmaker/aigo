@@ -69,6 +69,16 @@ export function formatTime(sec: number): string {
   return `${Math.floor(s / 60)}:${String(s % 60).padStart(2, '0')}`;
 }
 
+/** 소수점이 있는 시각은 0.1초까지 보인다(8.5 → 0:08.5). 정수 초는 formatTime과 같다. */
+export function formatTimePrecise(sec: number): string {
+  const s = Math.max(0, sec);
+  const tenths = Math.round(s * 10);
+  const whole = Math.floor(tenths / 10);
+  const frac = tenths % 10;
+  const base = `${Math.floor(whole / 60)}:${String(whole % 60).padStart(2, '0')}`;
+  return frac ? `${base}.${frac}` : base;
+}
+
 // 판례 url이 법제처 판례가 아니면 도표 출처 페이지다. 판례는 글로만 두고 목록 아래 출처를 한 번만 보인다.
 export const isCaseUrl = (url: string) => /^https:\/\/(www\.)?law\.go\.kr\/판례\//i.test(url);
 export const caseSource = (cases: { url: string }[]) => cases.find((c) => !isCaseUrl(c.url))?.url;

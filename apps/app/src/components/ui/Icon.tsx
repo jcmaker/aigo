@@ -6,7 +6,7 @@ export type IconName =
   | 'check' | 'camera' | 'phone' | 'lock' | 'upload' | 'trash' | 'image' | 'file' | 'logout'
   | 'dashcam' | 'message' | 'plus' | 'close' | 'bell'
   | 'hazard' | 'trunk' | 'exit' | 'warnsign' | 'siren' | 'medical' | 'carmove' | 'idcard' | 'shield' | 'tow'
-  | 'car' | 'bike' | 'parking' | 'barrier' | 'paw' | 'rock' | 'fire' | 'users' | 'hospital' | 'handshake' | 'arrow' | 'carhit' | 'collide' | 'more' | 'roadcrack';
+  | 'car' | 'bike' | 'parking' | 'barrier' | 'paw' | 'rock' | 'fire' | 'users' | 'hospital' | 'handshake' | 'arrow' | 'carhit' | 'collide' | 'more' | 'dots' | 'roadcrack';
 
 // 24x24 선 아이콘 모양
 const shapes: Record<IconName, ReactNode> = {
@@ -55,6 +55,7 @@ const shapes: Record<IconName, ReactNode> = {
   collide: <><Path d="M2 12h6M5 9l3 3-3 3M22 12h-6M19 9l-3 3 3 3" /><Path d="M12 5v3M12 16v3M9.5 6.5l1 1.5M14.5 6.5l-1 1.5" /></>,
   roadcrack: <><Path d="M4 21L9 3M20 21L15 3" /><Path d="M12.5 7l-2 3.5 2.5 2-2 4 1 2" /></>,
   more: <><Circle cx="12" cy="12" r="9" /><Path d="M8 12h.01M12 12h.01M16 12h.01" strokeWidth={3} /></>,
+  dots: <Path d="M5 12h.01M12 12h.01M19 12h.01" strokeWidth={3.5} />,
   arrow: <Path d="M5 12h14M13 6l6 6-6 6" />,
   image: <><Rect x="3" y="4" width="18" height="16" rx="2" /><Circle cx="9" cy="10" r="1.5" /><Path d="M21 16l-5-5-9 9" /></>,
 };
