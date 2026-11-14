@@ -4,7 +4,7 @@ import { color, space, type } from '@/theme';
 import { Icon } from './Icon';
 
 // 흰 원형 버튼 38
-const circle = { width: 38, height: 38, borderRadius: 19, backgroundColor: color.white, alignItems: 'center', justifyContent: 'center' } as const;
+const circle = { width: 38, height: 38, borderRadius: 19, backgroundColor: color.white, borderWidth: 1, borderColor: color.line,  alignItems: 'center', justifyContent: 'center' } as const;
 
 export function TopBar({ title, subtitle, onBack, right }: { title: string; subtitle?: string; onBack?: () => void; right?: ReactNode }) {
   return (

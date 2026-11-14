@@ -5,7 +5,7 @@ import { color, radius, space, type } from '@/theme';
 export type Tone = 'good' | 'warn' | 'bad' | 'neutral';
 
 const tones: Record<Tone, { bg: string; fg: string }> = {
-  good: { bg: color.brand200, fg: color.brand600 },
+  good: { bg: color.mintSoft, fg: color.mintDeep }, // 완료: 리포트와 같은 민트(ADR 0032), 대비 4.85:1
   warn: { bg: color.warning300, fg: color.warning600 },
   bad: { bg: color.danger300, fg: color.danger600 },
   neutral: { bg: color.gray3, fg: color.gray11 },

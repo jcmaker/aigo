@@ -248,7 +248,7 @@ export function SceneGuide({ handlers }: { handlers: GuideHandlers }) {
 
   return (
     <>
-      <View style={{ backgroundColor: color.white, borderRadius: radius.card, padding: space[4], gap: space[3] }}>
+      <View style={{ backgroundColor: color.white, borderWidth: 1, borderColor: color.line, borderRadius: radius.card, padding: space[4], gap: space[3] }}>
         <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: space[2] }}>
           {guide.summary.map((t) => (
             <View key={t} style={{ backgroundColor: color.gray3, borderRadius: radius.pill, paddingHorizontal: space[3], paddingVertical: 6 }}>
