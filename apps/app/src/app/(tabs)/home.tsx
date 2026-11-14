@@ -33,7 +33,7 @@ function IconBox({ name, bg, fg, size = 40 }: { name: IconName; bg: string; fg: 
 // 홈의 작은 설명 글씨는 13px 대신 15px로 키운다(ADR 0028).
 const small = { fontSize: 15, lineHeight: 21 } as const;
 
-// 사고 났어요 / 분석 결과 두 갈래
+// 사고 현장 모드 / 분석 결과 두 갈래
 // danger면 빨간 바탕으로 가장 먼저 눈에 띄게 한다
 function ActionTile({ icon, iconBg, iconFg, title, caption, onPress, danger }: { icon: IconName; iconBg: string; iconFg: string; title: string; caption: string; onPress: () => void; danger?: boolean }) {
   return (
@@ -88,7 +88,7 @@ export default function HomeScreen() {
       </View>
 
       <View style={{ flexDirection: 'row', gap: space[3] }}>
-        <ActionTile danger icon="alert" iconBg="rgba(255,255,255,0.2)" iconFg={color.white} title="사고 났어요" caption="신고 · 현장 기록" onPress={() => router.push('/emergency')} />
+        <ActionTile danger icon="alert" iconBg="rgba(255,255,255,0.2)" iconFg={color.white} title="사고 현장 모드" caption="신고 · 현장 기록" onPress={() => router.push('/emergency')} />
         <ActionTile
           icon="file" iconBg={color.mintSoft} iconFg={color.mintDeep} title="분석 결과"
           caption={n.running ? `분석 중 ${n.running}건` : `완료 ${n.done}건`}
