@@ -4,7 +4,7 @@ import { color, radius, space, type } from '@/theme';
 
 export function Card({ title, action, children }: { title?: string; action?: { label: string; onPress: () => void }; children: ReactNode }) {
   return (
-    <View style={{ backgroundColor: color.white, borderRadius: radius.card, padding: space[4], gap: space[3] }}>
+    <View style={{ backgroundColor: color.white, borderWidth: 1, borderColor: color.line, borderRadius: radius.card, padding: space[4], gap: space[3] }}>
       {(title || action) && (
         <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
           <Text accessibilityRole="header" style={[type.headline, { color: color.gray12 }]}>{title}</Text>

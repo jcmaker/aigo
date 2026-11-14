@@ -40,7 +40,7 @@ export function IconTile({ name, danger, size = 44 }: { name: IconName; danger?:
 
 // 한 카드 안에 구분선으로 나뉜 메뉴 줄들
 export function MenuGroup({ children }: { children: ReactNode }) {
-  return <View style={{ backgroundColor: color.white, borderRadius: radius.card, paddingHorizontal: space[4] }}>{children}</View>;
+  return <View style={{ backgroundColor: color.white, borderWidth: 1, borderColor: color.line, borderRadius: radius.card, paddingHorizontal: space[4] }}>{children}</View>;
 }
 
 // danger: 제목까지 빨갛게(탈퇴). urgent: 아이콘만 빨갛게(현장 모드).

@@ -4,11 +4,12 @@ import { Animated, Keyboard, Pressable, View } from 'react-native';
 import { color } from '@/theme';
 import { Icon, type IconName } from './Icon';
 
+// 사고 현장 모드는 가장 급한 기능이라 가운데(3번째) 칸에 둔다(ADR 0029). 이름은 홈 카드·시작 화면 버튼과 같은 "사고 현장 모드".
 export const TAB_ITEMS: { route: 'home' | 'analyses' | 'upload' | 'emergency' | 'account'; label: string; icon: IconName }[] = [
   { route: 'home', label: '홈', icon: 'home' },
   { route: 'analyses', label: '내 분석', icon: 'list' },
+  { route: 'emergency', label: '사고 현장 모드', icon: 'alert' },
   { route: 'upload', label: '분석하기', icon: 'video' },
-  { route: 'emergency', label: '현장 모드', icon: 'alert' },
   { route: 'account', label: '계정', icon: 'user' },
 ];
 
@@ -21,7 +22,7 @@ export function FloatingTabBar({ state, emitter, navigateToTab, insets }: Bottom
     Animated.spring(x, { toValue: state.index * CELL, useNativeDriver: true }).start();
   }, [state.index, x]);
 
-  // 키보드가 열리면 숨긴다(현장 모드 탭의 보험사 번호 입력이 가려지지 않게).
+  // 키보드가 열리면 숨긴다(사고 현장 모드 탭의 보험사 번호 입력이 가려지지 않게).
   const [keyboard, setKeyboard] = useState(false);
   useEffect(() => {
     const show = Keyboard.addListener('keyboardDidShow', () => setKeyboard(true));
