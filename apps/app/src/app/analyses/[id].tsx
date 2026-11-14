@@ -95,7 +95,7 @@ export default function AnalysisScreen() {
   ) : undefined;
 
   return (
-    <Screen scroll scrollRef={scroll} background={color.reportBg} topColor={color.ink} barStyle="light-content">
+    <Screen scroll scrollRef={scroll} topColor={color.ink} barStyle="light-content">
       <Stack.Screen options={{ headerShown: false }} />
       <ReportHeader title={analysis ? analysisTitle(analysis) : `분석 #${id}`} subtitle={subtitle} onBack={back} right={menuButton} />
       <ReportMenu visible={menu !== null} anchor={menu} actions={actions} onClose={() => setMenu(null)} />

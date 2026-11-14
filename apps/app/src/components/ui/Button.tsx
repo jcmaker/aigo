@@ -3,7 +3,7 @@ import { ActivityIndicator, Animated, Pressable, Text, type StyleProp, type View
 import { color, radius, space, type } from '@/theme';
 import { Icon, type IconName } from './Icon';
 
-export type ButtonVariant = 'primary' | 'secondary' | 'dark' | 'danger' | 'emergency';
+export type ButtonVariant = 'primary' | 'secondary' | 'dark' | 'danger' | 'emergency' | 'mint';
 
 const look: Record<ButtonVariant, { bg: string; fg: string; border?: string }> = {
   primary: { bg: color.brand, fg: color.onBrand },
@@ -11,6 +11,7 @@ const look: Record<ButtonVariant, { bg: string; fg: string; border?: string }> =
   dark: { bg: color.ink, fg: color.white },
   danger: { bg: color.danger300, fg: color.danger600 },
   emergency: { bg: color.danger, fg: color.white },
+  mint: { bg: color.mint, fg: color.ink }, // 남색 카드 위 버튼(남색 글씨 대비 7.05:1)
 };
 
 export function Button({ label, onPress, variant = 'primary', size = 'lg', icon, disabled, loading, style }: {
