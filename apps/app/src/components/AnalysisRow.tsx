@@ -38,12 +38,12 @@ export function AnalysisRow({ a, onPress, onDelete }: { a: Analysis; onPress: ()
   );
 }
 
-export function RecentAnalyses({ items }: { items: Analysis[] }) {
+export function RecentAnalyses({ items, limit = 3, title = '최근 분석 기록' }: { items: Analysis[]; limit?: number; title?: string }) {
   const router = useRouter();
   return (
     <>
-      <SectionTitle title="최근 분석 기록" action={{ label: '전체 보기', onPress: () => router.push('/analyses') }} />
-      {items.slice(0, 3).map((a) => (
+      <SectionTitle title={title} action={{ label: '전체 보기', onPress: () => router.push('/analyses') }} />
+      {items.slice(0, limit).map((a) => (
         <AnalysisRow key={a.id} a={a} onPress={() => router.push(`/analyses/${a.id}`)} />
       ))}
     </>
