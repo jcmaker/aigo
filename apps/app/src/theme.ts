@@ -13,7 +13,8 @@ export const color = {
   ink3: '#344A73',
   sceneCard: '#5580C8', // 사고 현장 질문 카드: 파랑과 하늘색 사이의 차분한 색
   white: '#FFFFFF',
-  bg: '#EBEBEB', // 화면 바탕: 흰 카드가 또렷하게 보이도록 gray3보다 살짝 어둡다
+  bg: '#F3F5F8', // 화면 바탕: 남색 기운의 밝은 회색(ADR 0028). 흰 카드는 line 테두리로 구분한다
+  line: '#E6E9EF', // 바탕 위 흰 카드·버튼 테두리
   gray2: '#F9F9F9',
   gray3: '#F0F0F0',
   gray4: '#E8E8E8',
@@ -29,7 +30,6 @@ export const color = {
   // 리포트 화면(ADR 0027): 흰 바탕에서는 진한 민트 글씨와 연한 민트 바탕을 쓴다(대비 4.5:1 이상).
   mintDeep: '#0B7A4D',
   mintSoft: '#E3F8EE',
-  reportBg: '#F4F7F9',
   tabInactive: '#64748B', // 리포트 탭 비선택 글씨(흰 바탕 대비 4.76:1)
   tabLine: '#E2E8F0', // 리포트 탭 아래 구분선
 } as const;

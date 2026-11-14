@@ -23,7 +23,7 @@ function NoticeRow({ n, unread, now, onPress }: { n: Notice; unread: boolean; no
       <View style={{ flex: 1, gap: 2 }}>
         <View style={{ flexDirection: 'row', alignItems: 'center', gap: space[2] }}>
           <Text style={[type.label, { flex: 1, fontSize: 14, color: unread ? color.gray12 : color.gray11 }]}>{n.title}</Text>
-          <Text style={[type.micro, { color: color.gray9 }]}>{timeAgo(n.at, now)}</Text>
+          <Text style={[type.micro, { color: color.gray11 }]}>{timeAgo(n.at, now)}</Text>
           {unread ? <View style={{ width: 6, height: 6, borderRadius: 3, backgroundColor: color.brand }} /> : null}
         </View>
         <Text style={[type.caption, { color: unread ? color.gray12 : color.gray11 }]} numberOfLines={2}>{n.body}</Text>
@@ -37,7 +37,7 @@ function Group({ title, items, seen, now, open }: { title: string; items: Notice
   return (
     <View style={{ gap: space[2] }}>
       <Text style={[type.label, { color: color.gray11, paddingHorizontal: space[1] }]}>{title}</Text>
-      <View style={{ backgroundColor: color.white, borderRadius: radius.card, paddingVertical: space[2], paddingHorizontal: space[3] }}>
+      <View style={{ backgroundColor: color.white, borderWidth: 1, borderColor: color.line, borderRadius: radius.card, paddingVertical: space[2], paddingHorizontal: space[3] }}>
         {items.map((n) => <NoticeRow key={n.id} n={n} unread={!seen.has(n.id)} now={now} onPress={() => open(n)} />)}
       </View>
     </View>

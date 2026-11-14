@@ -331,12 +331,17 @@ export function Footer({ text }: { text: string }) {
 const SIDE = 38;
 export const headerCircle = { width: SIDE, height: SIDE, borderRadius: SIDE / 2, backgroundColor: color.ink2, alignItems: 'center', justifyContent: 'center' } as const;
 
-export function ReportHeader({ title, subtitle, onBack, right }: { title: string; subtitle?: string; onBack: () => void; right?: ReactNode }) {
+export function ReportHeader({ title, subtitle, onBack, right }: { title: string; subtitle?: string; onBack?: () => void; right?: ReactNode }) {
   return (
     <View style={{ backgroundColor: color.ink, marginHorizontal: -space[4], paddingHorizontal: space[4], paddingTop: space[2], paddingBottom: space[4], flexDirection: 'row', alignItems: 'center', gap: space[2] }}>
-      <Pressable accessibilityRole="button" accessibilityLabel="뒤로" onPress={onBack} style={headerCircle}>
-        <Icon name="back" size={18} color={color.white} />
-      </Pressable>
+      {/* 탭 화면(내 분석)처럼 뒤로 갈 곳이 없으면 같은 너비의 빈 칸을 둬 제목이 가운데에 오게 한다. */}
+      {onBack ? (
+        <Pressable accessibilityRole="button" accessibilityLabel="뒤로" onPress={onBack} style={headerCircle}>
+          <Icon name="back" size={18} color={color.white} />
+        </Pressable>
+      ) : (
+        <View style={{ width: SIDE }} />
+      )}
       <View style={{ flex: 1, alignItems: 'center', gap: 2 }}>
         <Text accessibilityRole="header" style={[type.title, { color: color.white, fontSize: 20, textAlign: 'center' }]} numberOfLines={2}>{title}</Text>
         {subtitle ? <Text style={[type.caption, { color: color.brand400, textAlign: 'center' }]} numberOfLines={1}>{subtitle}</Text> : null}

@@ -10,15 +10,20 @@ import { AnalysisRow, RecentAnalyses } from '../AnalysisRow';
 const done = (id: number) =>
   ({ id, status: 'done', created_at: '2026-11-08T03:00:00Z', report: { accident_type: '차선 변경 사고', involvement: 'involved', fault: { my_min: 20, my_max: 40 } } }) as unknown as Analysis;
 
-test('분석 행은 제목, 번호, 과실, 상태를 보이고 누르면 onPress를 부른다', async () => {
+test('분석 행은 제목, 상태, 내 과실 범위를 크게 보이고 누르면 onPress, 길게 누르면 onDelete를 부른다', async () => {
   const onPress = jest.fn();
-  await render(<AnalysisRow a={done(12)} onPress={onPress} />);
+  const onDelete = jest.fn();
+  await render(<AnalysisRow a={done(12)} onPress={onPress} onDelete={onDelete} />);
   expect(screen.getByText('차선 변경 사고')).toBeTruthy();
-  expect(screen.getByText(/#12/)).toBeTruthy();
-  expect(screen.getByText(/내 과실 20~40%/)).toBeTruthy();
   expect(screen.getByText('완료')).toBeTruthy();
-  await fireEvent.press(screen.getByText('차선 변경 사고'));
+  expect(screen.getByText('내 과실')).toBeTruthy();
+  expect(screen.getByText('20~40%')).toBeTruthy();
+  expect(screen.queryByText(/#12/)).toBeNull(); // 사용자에게 의미 없는 번호는 보이지 않는다
+  const row = screen.getByRole('button', { name: /차선 변경 사고, 완료, 내 과실 20~40%/ });
+  await fireEvent.press(row);
   expect(onPress).toHaveBeenCalled();
+  await fireEvent(row, 'longPress');
+  expect(onDelete).toHaveBeenCalled();
 });
 
 test('최근 분석은 앞의 3개만 보이고 전체 보기로 목록에 간다', async () => {

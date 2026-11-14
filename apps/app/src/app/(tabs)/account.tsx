@@ -55,7 +55,7 @@ export default function AccountScreen() {
   return (
     <Screen scroll tabInset>
       <PageTitle title="계정" />
-      <View style={{ flexDirection: 'row', alignItems: 'center', gap: space[3], backgroundColor: color.white, borderRadius: radius.card, padding: space[4] }}>
+      <View style={{ flexDirection: 'row', alignItems: 'center', gap: space[3], backgroundColor: color.white, borderWidth: 1, borderColor: color.line, borderRadius: radius.card, padding: space[4] }}>
         <View style={{ width: 56, height: 56, borderRadius: 18, backgroundColor: color.brand, alignItems: 'center', justifyContent: 'center' }}>
           <Text style={[t.title, { color: color.ink }]}>{email.slice(0, 1).toUpperCase()}</Text>
         </View>
@@ -84,7 +84,7 @@ export default function AccountScreen() {
       </MenuGroup>
 
       <Button variant="secondary" icon="logout" label="로그아웃" onPress={logout} style={{ marginTop: space[2] }} />
-      <Text style={[t.micro, { color: color.gray9, textAlign: 'center' }]}>AIGO 앱 v{Constants.expoConfig?.version ?? ''}</Text>
+      <Text style={[t.micro, { color: color.gray11, textAlign: 'center' }]}>AIGO 앱 v{Constants.expoConfig?.version ?? ''}</Text>
     </Screen>
   );
 }
