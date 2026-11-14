@@ -1,6 +1,6 @@
 import { useFocusEffect, useRouter } from 'expo-router';
 import { useCallback, useRef, useState, type ReactNode } from 'react';
-import { Animated, Pressable, Text, View } from 'react-native';
+import { Animated, Pressable, Text, View, useWindowDimensions } from 'react-native';
 import { RecentAnalyses } from '@/components/AnalysisRow';
 import { Wordmark } from '@/components/Wordmark';
 import { Button, Icon, Screen, StatusChip, type IconName } from '@/components/ui';
@@ -71,8 +71,9 @@ export default function HomeScreen() {
   const deviceConnected = false; // 기기 연결 기능 전까지는 항상 연결 안 됨
   // 분석 결과는 영상을 올린 뒤에야 의미가 있다. 분석이 있을 때만 가장 최근 1건을 보인다(목록은 "내 분석" 탭).
   const latest = items[0];
-  // 최근 분석 줄이 보이면 분석 카드의 카메라 그림을 빼서, 작은 화면(320×640)에서도 사고 현장 모드 버튼이 스크롤 없이 보이게 한다.
-  const compact = !!latest;
+  // 최근 분석 줄이 보이고 화면 높이가 낮으면(720 미만) 분석 카드의 카메라 그림을 빼서, 사고 현장 모드 버튼이 스크롤 없이 보이게 한다.
+  const { height } = useWindowDimensions();
+  const compact = !!latest && height < 720;
 
   return (
     <Screen scroll tabInset style={{ flexGrow: 1 }}>
