@@ -2,14 +2,81 @@ import { useFocusEffect, useRouter } from 'expo-router';
 import { useCallback, useState } from 'react';
 import { Alert, Pressable, RefreshControl, Text, View } from 'react-native';
 import { AnalysisRow } from '@/components/AnalysisRow';
-import { Button, Card, EmptyState, Icon, PageTitle, Screen, SectionTitle, SegmentedControl } from '@/components/ui';
+import { Button, Card, Icon, PageTitle, Screen, SectionTitle, SegmentedControl } from '@/components/ui';
 import { circleButtonStyle } from '@/components/ui/TopBar';
 import type { Analysis } from '@/lib/analysis';
 import { useApi } from '@/lib/api';
 import type { ApiFailure } from '@/lib/api';
 import { deleteReportPdf } from '@/lib/cache';
 import { matches, type ListFilter } from '@/lib/ui-logic';
-import { color, space, type as t } from '@/theme';
+import { color, radius, space, type as t } from '@/theme';
+
+// 필터 결과가 0건일 때의 짧은 문구(분석이 1건 이상 있을 때만 쓰인다).
+const FILTER_EMPTY: Record<ListFilter, string> = { all: '해당하는 분석이 없어요', done: '완료된 분석이 없어요', running: '진행 중인 분석이 없어요' };
+
+// 블랙박스마다 방법이 달라 단정하지 않는다.
+const FIND_TIPS = [
+  '대부분 블랙박스 제조사 앱(와이파이 연결)에서 휴대폰으로 저장할 수 있어요',
+  '메모리카드를 빼서 휴대폰이나 PC로 옮겨도 돼요',
+  '사고 영상은 보통 "충격"이나 "이벤트" 폴더에 따로 저장돼요',
+  '사고 앞뒤가 함께 담긴 2분 이하 영상이면 돼요',
+  '원본 영상은 지우지 말고 보관해 두세요',
+];
+const STEPS = [
+  { title: '영상 올리기', body: '사고 앞뒤가 담긴 2분 이하 영상' },
+  { title: 'AI가 장면 분석', body: '분석이 끝나면 알림을 보내요' },
+  { title: '리포트 받기', body: '과실 범위 · 근거 장면 · PDF' },
+];
+
+// 분석이 하나도 없을 때(ADR 0031): 무엇을 받는지 3단계로 알리고, 영상 찾는 법은 접어 둔다.
+function EmptyGuide({ onUpload }: { onUpload: () => void }) {
+  const [open, setOpen] = useState(false);
+  return (
+    <>
+      <View style={{ backgroundColor: color.ink, borderRadius: radius.card, padding: space[5], gap: space[1] }}>
+        <Text accessibilityRole="header" style={[t.title, { fontSize: 21, color: color.white }]}>아직 분석한 사고가 없어요</Text>
+        <Text style={[t.body, { color: color.brand400, lineHeight: 21 }]}>블랙박스 영상을 올리면 과실 범위와 근거 장면을 정리해 드려요.</Text>
+        <Button label="영상 올리기" variant="onDark" icon="upload" onPress={onUpload} style={{ marginTop: space[3] }} />
+      </View>
+      <Card title="이렇게 진행돼요">
+        {STEPS.map((st, i) => (
+          <View key={st.title} style={{ flexDirection: 'row', gap: space[3], alignItems: 'flex-start' }}>
+            <View style={{ width: 28, height: 28, borderRadius: 14, backgroundColor: color.mintSoft, alignItems: 'center', justifyContent: 'center' }}>
+              <Text style={[t.label, { fontSize: 14, fontWeight: '800', color: color.mintDeep }]}>{i + 1}</Text>
+            </View>
+            <View style={{ flex: 1, gap: 2 }}>
+              <Text style={[t.body, { fontWeight: '700', color: color.gray12 }]}>{st.title}</Text>
+              <Text style={[t.caption, { fontSize: 14, color: color.gray11 }]}>{st.body}</Text>
+            </View>
+          </View>
+        ))}
+      </Card>
+      <View style={{ backgroundColor: color.white, borderWidth: 1, borderColor: color.line, borderRadius: radius.card, paddingHorizontal: space[4] }}>
+        <Pressable
+          accessibilityRole="button"
+          accessibilityLabel="블랙박스 영상, 어떻게 찾나요?"
+          accessibilityState={{ expanded: open }}
+          onPress={() => setOpen((v) => !v)}
+          style={{ minHeight: 52, flexDirection: 'row', alignItems: 'center', gap: space[2] }}
+        >
+          <Icon name="dashcam" size={18} color={color.mintDeep} />
+          <Text style={[t.body, { flex: 1, fontWeight: '700', color: color.gray12 }]}>블랙박스 영상, 어떻게 찾나요?</Text>
+          <View style={{ transform: [{ rotate: open ? '-90deg' : '90deg' }] }}><Icon name="chevron" size={16} color={color.gray11} /></View>
+        </Pressable>
+        {open ? (
+          <View style={{ gap: space[2], paddingBottom: space[4] }}>
+            {FIND_TIPS.map((tip) => (
+              <View key={tip} style={{ flexDirection: 'row', gap: space[2] }}>
+                <View style={{ width: 6, height: 6, borderRadius: 3, marginTop: 8, backgroundColor: color.mintDeep }} />
+                <Text style={[t.body, { flex: 1, fontSize: 14.5, lineHeight: 21, color: color.gray12 }]}>{tip}</Text>
+              </View>
+            ))}
+          </View>
+        ) : null}
+      </View>
+    </>
+  );
+}
 
 const FILTERS: { value: ListFilter; label: string }[] = [
   { value: 'all', label: '전체' },
@@ -80,31 +147,26 @@ export default function AnalysesScreen() {
           </Pressable>
         }
       />
-      <SegmentedControl options={FILTERS} value={filter} onChange={setFilter} />
+      {/* 분석이 0건이면 필터·개수는 눌러도 바뀌는 게 없으니 숨긴다. */}
+      {items?.length ? <SegmentedControl options={FILTERS} value={filter} onChange={setFilter} /> : null}
       {error ? <Text style={{ ...t.caption, color: color.danger600 }}>{error}</Text> : null}
       {items === null ? (
         <Text style={{ ...t.body, color: color.gray11 }}>불러오는 중</Text>
+      ) : items.length === 0 ? (
+        <EmptyGuide onUpload={() => router.push('/upload')} />
       ) : (
         <>
           <SectionTitle title="분석 목록" meta={`${shown.length}건`} />
-          {items.length === 0 ? (
-            <Card>
-              <EmptyState icon="video" title="아직 분석한 영상이 없어요">
-                <Button label="영상 올리기" onPress={() => router.push('/upload')} />
-              </EmptyState>
-            </Card>
-          ) : (
-            <View style={{ gap: space[2] }}>
+          <View style={{ gap: space[2] }}>
               {shown.length ? (
                 shown.map((a) => (
                   <AnalysisRow key={a.id} a={a} onPress={() => router.push(`/analyses/${a.id}`)} onDelete={() => remove(a.id)} />
                 ))
               ) : (
-                <Text style={{ ...t.body, color: color.gray11, textAlign: 'center', paddingVertical: space[4] }}>해당하는 분석이 없어요</Text>
+                <Text style={{ ...t.body, color: color.gray11, textAlign: 'center', paddingVertical: space[4] }}>{FILTER_EMPTY[filter]}</Text>
               )}
             </View>
-          )}
-          {items.length ? <Button variant="secondary" icon="upload" label="영상 올리기" onPress={() => router.push('/upload')} /> : null}
+          <Button variant="secondary" icon="upload" label="영상 올리기" onPress={() => router.push('/upload')} />
         </>
       )}
     </Screen>
