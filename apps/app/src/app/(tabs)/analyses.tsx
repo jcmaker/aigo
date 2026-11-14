@@ -2,7 +2,7 @@ import { useFocusEffect, useRouter } from 'expo-router';
 import { useCallback, useState } from 'react';
 import { Alert, Pressable, RefreshControl, Text, View } from 'react-native';
 import { AnalysisRow } from '@/components/AnalysisRow';
-import { ReportHeader, ReportTabs, headerCircle } from '@/components/report-sections';
+import { ReportHeader, ReportTabs } from '@/components/report-sections';
 import { Button, Card, Icon, Screen } from '@/components/ui';
 import type { Analysis } from '@/lib/analysis';
 import { useApi } from '@/lib/api';
@@ -142,15 +142,8 @@ export default function AnalysesScreen() {
   return (
     <Screen scroll tabInset topColor={color.ink} barStyle="light-content" refreshControl={<RefreshControl refreshing={refreshing} onRefresh={refresh} />}>
       {/* 리포트 화면과 같은 남색 머리글 + 흰 탭(ADR 0032). 개수는 머리글 아래 줄에 보인다. */}
-      <ReportHeader
-        title="내 분석"
-        subtitle={summary}
-        right={
-          <Pressable accessibilityRole="button" accessibilityLabel="영상 올리기" onPress={() => router.push('/upload')} style={headerCircle}>
-            <Icon name="upload" size={18} color={color.white} />
-          </Pressable>
-        }
-      />
+      {/* 영상 올리기는 하단 메뉴 "분석하기"와 화면 안 버튼으로 충분해 머리글 버튼은 두지 않는다(ADR 0032). */}
+      <ReportHeader title="내 분석" subtitle={summary} />
       {/* 분석이 0건이면 필터는 눌러도 바뀌는 게 없으니 숨긴다. */}
       {items?.length ? <ReportTabs options={FILTERS} value={filter} onChange={setFilter} /> : null}
       {error ? <Text style={{ ...t.caption, color: color.danger600 }}>{error}</Text> : null}
