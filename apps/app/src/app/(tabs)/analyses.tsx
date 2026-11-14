@@ -2,8 +2,8 @@ import { useFocusEffect, useRouter } from 'expo-router';
 import { useCallback, useState } from 'react';
 import { Alert, Pressable, RefreshControl, Text, View } from 'react-native';
 import { AnalysisRow } from '@/components/AnalysisRow';
-import { Button, Card, Icon, PageTitle, Screen, SectionTitle, SegmentedControl } from '@/components/ui';
-import { circleButtonStyle } from '@/components/ui/TopBar';
+import { ReportHeader, ReportTabs, headerCircle } from '@/components/report-sections';
+import { Button, Card, Icon, Screen } from '@/components/ui';
 import type { Analysis } from '@/lib/analysis';
 import { useApi } from '@/lib/api';
 import type { ApiFailure } from '@/lib/api';
@@ -110,6 +110,8 @@ export default function AnalysesScreen() {
   );
 
   const shown = items?.filter((a) => matches(filter, a.status)) ?? [];
+  const running = items?.filter((a) => matches('running', a.status)).length ?? 0;
+  const summary = items === null ? undefined : items.length === 0 ? '영상을 올리면 과실 범위를 알려드려요' : [`분석 ${items.length}건`, running ? `진행 중 ${running}건` : null].filter(Boolean).join(' · ');
 
   const refresh = async () => {
     setRefreshing(true);
@@ -138,17 +140,19 @@ export default function AnalysesScreen() {
     ]);
 
   return (
-    <Screen scroll tabInset refreshControl={<RefreshControl refreshing={refreshing} onRefresh={refresh} />}>
-      <PageTitle
+    <Screen scroll tabInset topColor={color.ink} barStyle="light-content" refreshControl={<RefreshControl refreshing={refreshing} onRefresh={refresh} />}>
+      {/* 리포트 화면과 같은 남색 머리글 + 흰 탭(ADR 0032). 개수는 머리글 아래 줄에 보인다. */}
+      <ReportHeader
         title="내 분석"
+        subtitle={summary}
         right={
-          <Pressable accessibilityRole="button" accessibilityLabel="영상 올리기" onPress={() => router.push('/upload')} style={circleButtonStyle}>
-            <Icon name="upload" size={18} color={color.ink} />
+          <Pressable accessibilityRole="button" accessibilityLabel="영상 올리기" onPress={() => router.push('/upload')} style={headerCircle}>
+            <Icon name="upload" size={18} color={color.white} />
           </Pressable>
         }
       />
-      {/* 분석이 0건이면 필터·개수는 눌러도 바뀌는 게 없으니 숨긴다. */}
-      {items?.length ? <SegmentedControl options={FILTERS} value={filter} onChange={setFilter} /> : null}
+      {/* 분석이 0건이면 필터는 눌러도 바뀌는 게 없으니 숨긴다. */}
+      {items?.length ? <ReportTabs options={FILTERS} value={filter} onChange={setFilter} /> : null}
       {error ? <Text style={{ ...t.caption, color: color.danger600 }}>{error}</Text> : null}
       {items === null ? (
         <Text style={{ ...t.body, color: color.gray11 }}>불러오는 중</Text>
@@ -156,7 +160,6 @@ export default function AnalysesScreen() {
         <EmptyGuide onUpload={() => router.push('/upload')} />
       ) : (
         <>
-          <SectionTitle title="분석 목록" meta={`${shown.length}건`} />
           <View style={{ gap: space[2] }}>
               {shown.length ? (
                 shown.map((a) => (
