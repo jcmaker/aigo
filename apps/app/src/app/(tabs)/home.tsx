@@ -100,13 +100,13 @@ export default function HomeScreen() {
           </View>
           <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', gap: space[2] }}>
             {compact ? null : (
-              <View style={{ width: 64, height: 64, borderRadius: 32, backgroundColor: 'rgba(63,207,142,0.16)', alignItems: 'center', justifyContent: 'center' }}>
+              <View style={{ width: 64, height: 64, borderRadius: 32, backgroundColor: 'rgba(63,207,142,0.12)', alignItems: 'center', justifyContent: 'center' }}>
                 <Icon name="video" size={30} color={color.mint} />
               </View>
             )}
             <Text style={[type.caption, { color: color.brand400 }]}>mp4, mov, webm, avi · 200MB · 2분 이하</Text>
           </View>
-          <Button label="갤러리에서 영상 고르기" variant="mint" icon="upload" onPress={upload} />
+          <Button label="갤러리에서 영상 고르기" variant="onDark" icon="upload" onPress={upload} />
         </View>
       </PressCard>
 
