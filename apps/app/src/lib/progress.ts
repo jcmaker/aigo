@@ -13,11 +13,12 @@ const since = (iso: string | null | undefined, nowMs: number) => {
 };
 
 /** 서버 progress의 단계 시각으로 지금 화면에 보일 진행을 계산한다. 시각은 인자로 받아 테스트한다. */
-export function liveProgress(a: Pick<Analysis, 'status' | 'stage' | 'progress'>, nowMs: number): Live {
+// startMs: 화면이 본 가장 이른 시작 시각. 첫 단계가 끝나면 서버가 그 시각을 완료 시각으로 덮어써 경과가 줄어 보이지 않게 한다.
+export function liveProgress(a: Pick<Analysis, 'status' | 'stage' | 'progress'>, nowMs: number, startMs?: number): Live {
   const finished = a.status === 'done';
   const current = STAGES.findIndex((s) => s.id === a.stage);
   const first = a.progress[0];
-  const elapsedSec = first ? since(first.at, nowMs) : null;
+  const elapsedSec = startMs !== undefined ? Math.max(0, Math.floor((nowMs - startMs) / 1000)) : first ? since(first.at, nowMs) : null;
   const entry = a.progress.find((p) => p.stage === a.stage && p.status === 'running');
   const stageSec = entry ? since(entry.at, nowMs) : null;
   if (finished) return { current, finished, elapsedSec, stageSec, ratio: 1 };

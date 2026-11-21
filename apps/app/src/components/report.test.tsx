@@ -90,6 +90,15 @@ describe('진행 화면', () => {
     expect(screen.getByLabelText('2단계 객체 추적 진행 중')).toBeTruthy();
   });
 
+  test('첫 단계가 끝나 시각이 덮어써져도 전체 경과는 줄지 않는다', async () => {
+    const running = [at('normalize', 'running', '2026-11-21T06:00:00Z')];
+    const { rerender } = await render(<ProgressView analysis={analysis({ status: 'processing', stage: 'normalize', progress: running, report: null })} stale={false} />);
+    expect(screen.getByText('경과 0:30')).toBeTruthy();
+    const done = [at('normalize', 'done', '2026-11-21T06:00:25Z'), at('scan', 'running', '2026-11-21T06:00:25Z')];
+    await rerender(<ProgressView analysis={analysis({ status: 'processing', stage: 'scan', progress: done, report: null })} stale={false} />);
+    expect(screen.getByText('경과 0:30')).toBeTruthy();
+  });
+
   test('대기열에서는 시간을 세지 않는다', async () => {
     await render(<ProgressView analysis={analysis({ status: 'queued', stage: null, report: null })} stale={false} />);
     expect(screen.getByText('곧 분석을 시작해요')).toBeTruthy();

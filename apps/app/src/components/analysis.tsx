@@ -138,7 +138,11 @@ export function ProgressView({ analysis, stale }: { analysis: Analysis; stale: b
   const running = !failed && !abandoned;
   const still = useReduceMotion();
   const now = useNow(running);
-  const live = liveProgress(analysis, now);
+  // 처음 본 시작 시각을 기억한다. 첫 단계가 끝나면 서버가 그 시각을 완료 시각으로 덮어쓴다.
+  const start = useRef<number | null>(null);
+  const firstAt = Date.parse(analysis.progress[0]?.at ?? '');
+  if (!Number.isNaN(firstAt)) start.current = start.current === null ? firstAt : Math.min(start.current, firstAt);
+  const live = liveProgress(analysis, now, start.current ?? undefined);
   const current = live.current;
   const byStage = new Map(analysis.progress.map((p) => [p.stage, p]));
   const headline = failed
