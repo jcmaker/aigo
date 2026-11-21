@@ -56,12 +56,19 @@ export const STATUS_LABEL: Record<string, string> = {
 };
 
 export const STAGES = [
-  { id: 'normalize', title: '영상 준비', doing: '영상을 준비하는 중', about: '재생용과 분석용 파일을 만듭니다.' },
-  { id: 'scan', title: '객체 추적', doing: '차량과 사람을 추적하는 중', about: '차량과 사람을 프레임마다 따라갑니다.' },
-  { id: 'locate', title: '충돌 후보 찾기', doing: '충돌 후보를 찾는 중', about: '급접근, 화면 흔들림, 소리 변화를 봅니다.' },
-  { id: 'focus', title: '장면 고르기', doing: '볼 장면을 고르는 중', about: '후보 앞뒤에서 프레임을 뽑습니다.' },
-  { id: 'observe', title: '장면 관찰', doing: '고른 장면을 읽는 중', about: 'AI가 프레임에서 보이는 사실만 적습니다.' },
-  { id: 'assess', title: '기준과 대조', doing: '기준 도표와 대조하는 중', about: '확인한 사실을 과실 기준에 맞춰 봅니다.' },
+  // hints: 진행 중에 2.6초마다 바뀌는 안내. 실제로 잰 값이 아니므로 숫자를 넣지 않는다(ADR 0033).
+  { id: 'normalize', title: '영상 준비', doing: '영상을 준비하고 있어요', about: '재생용과 분석용 파일을 만듭니다.',
+    hints: ['영상 길이와 화질을 확인하고 있어요', '재생용 파일을 만들고 있어요'] },
+  { id: 'scan', title: '객체 추적', doing: '차와 사람을 따라가고 있어요', about: '차량과 사람을 프레임마다 따라갑니다.',
+    hints: ['프레임을 한 장씩 살펴보고 있어요', '차와 사람을 찾고 있어요', '움직이는 물체마다 번호를 붙이고 있어요'] },
+  { id: 'locate', title: '충돌 후보 찾기', doing: '충돌 순간을 찾고 있어요', about: '급접근, 화면 흔들림, 소리 변화를 봅니다.',
+    hints: ['갑자기 가까워진 차를 찾고 있어요', '화면 흔들림과 소리 변화를 보고 있어요'] },
+  { id: 'focus', title: '장면 고르기', doing: '볼 장면을 고르고 있어요', about: '후보 앞뒤에서 프레임을 뽑습니다.',
+    hints: ['충돌 후보 앞뒤를 자르고 있어요', '가장 잘 보이는 장면을 고르고 있어요'] },
+  { id: 'observe', title: '장면 관찰', doing: 'AI가 장면을 읽고 있어요', about: 'AI가 프레임에서 보이는 사실만 적습니다.',
+    hints: ['신호등과 차선을 확인하고 있어요', '상대 차가 어디서 들어왔는지 보고 있어요', '충돌 직전 장면을 다시 보고 있어요', '보이는 사실만 적고 있어요'] },
+  { id: 'assess', title: '기준과 대조', doing: '과실 기준과 맞춰 보고 있어요', about: '확인한 사실을 과실 기준에 맞춰 봅니다.',
+    hints: ['비슷한 사고 유형을 찾고 있어요', '과실 기준표와 맞춰 보고 있어요', '레포트를 쓰고 있어요'] },
 ];
 
 export function formatTime(sec: number): string {
