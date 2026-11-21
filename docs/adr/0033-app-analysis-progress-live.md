@@ -3,7 +3,7 @@
 - 상태: 채택
 - 날짜: 2026-11-21
 - 변경 작업자: 조준형 (jcmaker), Claude(AI)
-- 관련 PR: (PR 번호)
+- 관련 PR: #94
 
 ## 작업 내용
 앱 분석 진행 화면(`components/analysis.tsx`의 `ProgressView`, `components/ui/StepList.tsx`)을 바꿨다.
