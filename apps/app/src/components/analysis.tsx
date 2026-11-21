@@ -1,6 +1,7 @@
 import { useEvent } from 'expo';
 import { useVideoPlayer, VideoView, type VideoPlayer } from 'expo-video';
 import { useEffect, useRef, type MutableRefObject, type ReactNode } from 'react';
+import { Animated, Easing } from 'react-native';
 import * as WebBrowser from 'expo-web-browser';
 import { Text, View } from 'react-native';
 import {
@@ -15,8 +16,10 @@ import {
   type Evidence,
   type Report,
 } from '@/lib/analysis';
-import { stageSegments } from '@/lib/ui-logic';
-import { Card, Icon, ListRow, Notice, SegmentGauge, StepList } from '@/components/ui';
+import { hintAt, liveProgress } from '@/lib/progress';
+import { useNow } from '@/lib/use-now';
+import { useReduceMotion } from '@/lib/use-reduce-motion';
+import { Card, Icon, ListRow, Notice, StepList } from '@/components/ui';
 import { CautionCard, CautionText, ChartSource, DarkCard, DotList, EvidenceLine, FaultHeadline, FaultProcess, Footer, LinkRow, NumberedList, RangeWhy, ReportTabs, SeriousViolations, VerticalTimeline, ClaimLines, type Seek } from '@/components/report-sections';
 import { color, radius, space, type } from '@/theme';
 
@@ -93,38 +96,92 @@ function stageResult(id: string, d: Detail) {
   }
 }
 
+// 안내 문구가 바뀔 때마다 살짝 떠오르며 나타난다.
+function FadeText({ text, still, style }: { text: string; still: boolean; style: object }) {
+  const show = useRef(new Animated.Value(1)).current;
+  useEffect(() => {
+    if (still) return;
+    show.setValue(0);
+    Animated.timing(show, { toValue: 1, duration: 300, useNativeDriver: true }).start();
+  }, [text, show, still]);
+  const translateY = show.interpolate({ inputRange: [0, 1], outputRange: [6, 0] });
+  return <Animated.Text style={[style, { opacity: show, transform: [{ translateY }] }]}>{text}</Animated.Text>;
+}
+
+// 진행 막대: 폭은 1초 동안 부드럽게 따라가고, 위로 빛 띠가 지나간다. 100%는 완료 때만(liveProgress).
+function ProgressBar({ ratio, still }: { ratio: number; still: boolean }) {
+  const width = useRef(new Animated.Value(ratio)).current;
+  const sheen = useRef(new Animated.Value(0)).current;
+  useEffect(() => {
+    Animated.timing(width, { toValue: ratio, duration: still ? 0 : 900, easing: Easing.linear, useNativeDriver: false }).start();
+  }, [ratio, width, still]);
+  useEffect(() => {
+    if (still) return;
+    const loop = Animated.loop(Animated.timing(sheen, { toValue: 1, duration: 1600, easing: Easing.inOut(Easing.quad), useNativeDriver: true }));
+    loop.start();
+    return () => loop.stop();
+  }, [sheen, still]);
+  const pct = width.interpolate({ inputRange: [0, 1], outputRange: ['0%', '100%'] });
+  const translateX = sheen.interpolate({ inputRange: [0, 1], outputRange: [-120, 360] });
+  return (
+    <View style={{ height: 8, borderRadius: 999, backgroundColor: color.brand200, overflow: 'hidden' }}>
+      <Animated.View style={{ width: pct, height: '100%', borderRadius: 999, backgroundColor: color.brand, overflow: 'hidden' }}>
+        {!still && <Animated.View style={{ position: 'absolute', top: 0, bottom: 0, width: 60, backgroundColor: 'rgba(255,255,255,0.35)', transform: [{ translateX }] }} />}
+      </Animated.View>
+    </View>
+  );
+}
+
 export function ProgressView({ analysis, stale }: { analysis: Analysis; stale: boolean }) {
   const failed = analysis.status === 'failed';
   const abandoned = analysis.status === 'created';
+  const running = !failed && !abandoned;
+  const still = useReduceMotion();
+  const now = useNow(running);
+  const live = liveProgress(analysis, now);
+  const current = live.current;
   const byStage = new Map(analysis.progress.map((p) => [p.stage, p]));
-  const current = STAGES.findIndex((s) => s.id === analysis.stage);
   const headline = failed
     ? '분석을 끝내지 못했습니다'
     : abandoned
       ? '영상이 끝까지 올라가지 않았습니다'
-      : (STAGES[current]?.doing ?? '분석 순서를 기다리는 중');
-  const label = failed || abandoned ? '분석 중단' : current >= 0 ? `단계 ${current + 1}/${STAGES.length}` : '대기열';
+      : (STAGES[current]?.doing ?? '곧 분석을 시작해요');
+  const label = failed || abandoned ? '분석 중단' : current >= 0 ? `${current + 1}/${STAGES.length} 단계` : '대기 중';
   const state = failed ? 'failed' : 'running';
-  const steps = STAGES.map((s) => {
+  const hint = running && current >= 0 ? hintAt(current, live.stageSec ?? 0) : null;
+  const steps = STAGES.map((s, i) => {
     const p = byStage.get(s.id);
     const line = p?.status === 'done' ? stageResult(s.id, (p.detail ?? {}) as Detail) : null;
-    return { title: s.title, detail: line ?? s.about };
+    const active = running && i === current;
+    return {
+      title: s.title,
+      detail: active && hint ? hint : (line ?? s.about),
+      time: active && live.stageSec !== null ? `${live.stageSec}초` : undefined,
+    };
   });
 
   return (
     <View style={{ gap: space[3] }}>
       <Card>
-        <SegmentGauge segments={stageSegments(current, STAGES.length, state)} label={label} value={headline} valueSize={17} />
+        <View style={{ gap: space[3] }}>
+          <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+            <Text style={[type.label, { color: failed || abandoned ? color.danger600 : color.brand }]}>{label}</Text>
+            {running && live.elapsedSec !== null ? <Text style={muted}>{`경과 ${formatTime(live.elapsedSec)}`}</Text> : null}
+          </View>
+          <Text accessibilityRole="header" style={[type.title, { color: color.gray12 }]}>{headline}</Text>
+          {hint ? <FadeText text={hint} still={still} style={[type.body, { color: color.gray11 }]} /> : null}
+          {running && <ProgressBar ratio={live.ratio} still={still} />}
+        </View>
         {failed && analysis.error && <FailureNotice code={analysis.error.code} message={analysis.error.message} />}
         {abandoned && <Text style={body}>이 분석은 시작되지 않았습니다. 영상을 다시 올려 주세요.</Text>}
         {stale && <Text style={muted}>연결이 불안정합니다. 계속 다시 확인하고 있습니다.</Text>}
       </Card>
       {!abandoned && (
         <Card title="진행 단계">
-          <StepList steps={steps} current={current} state={state} />
+          <StepList steps={steps} current={current} state={state} reduceMotion={still} />
         </Card>
       )}
-      {!failed && !abandoned && <Notice>화면을 닫아도 분석은 계속됩니다. 끝나면 내 분석에서 레포트를 볼 수 있습니다.</Notice>}
+      {running && <Notice>화면을 닫아도 분석은 계속됩니다. 끝나면 내 분석에서 레포트를 볼 수 있습니다.</Notice>}
     </View>
   );
 }

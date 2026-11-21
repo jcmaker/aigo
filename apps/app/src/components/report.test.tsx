@@ -72,9 +72,36 @@ test('사고 장면이 없으면 탭이 없다', async () => {
   expect(screen.getByText('충돌이 보이지 않습니다')).toBeTruthy();
 });
 
-test('진행 화면은 단계 4/6을 보인다', async () => {
-  await render(<ProgressView analysis={analysis({ status: 'processing', stage: 'focus', report: null })} stale={false} />);
-  expect(screen.getByLabelText(/단계 4\/6/)).toBeTruthy();
+describe('진행 화면', () => {
+  beforeEach(() => jest.useFakeTimers({ now: Date.parse('2026-11-21T06:00:30Z') }));
+  afterEach(() => jest.useRealTimers());
+  const at = (stage: string, status: string, t: string) => ({ stage, status, detail: null, at: t });
+
+  test('단계 4/6을 보인다', async () => {
+    await render(<ProgressView analysis={analysis({ status: 'processing', stage: 'focus', report: null })} stale={false} />);
+    expect(screen.getByText('4/6 단계')).toBeTruthy();
+  });
+
+  test('전체 경과와 진행 중 단계의 초를 보이고, 읽기 문구에는 초를 넣지 않는다', async () => {
+    const progress = [at('normalize', 'done', '2026-11-21T06:00:05Z'), at('scan', 'running', '2026-11-21T06:00:10Z')];
+    await render(<ProgressView analysis={analysis({ status: 'processing', stage: 'scan', progress, report: null })} stale={false} />);
+    expect(screen.getByText('경과 0:25')).toBeTruthy();
+    expect(screen.getByText('20초')).toBeTruthy();
+    expect(screen.getByLabelText('2단계 객체 추적 진행 중')).toBeTruthy();
+  });
+
+  test('대기열에서는 시간을 세지 않는다', async () => {
+    await render(<ProgressView analysis={analysis({ status: 'queued', stage: null, report: null })} stale={false} />);
+    expect(screen.getByText('곧 분석을 시작해요')).toBeTruthy();
+    expect(screen.queryByText(/경과/)).toBeNull();
+  });
+
+  test('실패하면 시간 없이 실패 문구만', async () => {
+    const progress = [at('normalize', 'done', '2026-11-21T06:00:05Z')];
+    await render(<ProgressView analysis={analysis({ status: 'failed', stage: 'scan', progress, report: null, error: { code: 'ANALYSIS_FAILED', message: '분석 오류' } })} stale={false} />);
+    expect(screen.getAllByText('분석을 끝내지 못했습니다').length).toBeGreaterThan(0);
+    expect(screen.queryByText(/경과/)).toBeNull();
+  });
 });
 
 test('주의 문구는 "주의"로 읽힌다', async () => {
