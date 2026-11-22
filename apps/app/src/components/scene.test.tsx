@@ -40,6 +40,19 @@ test('현장 도구 타일 네 개가 보인다', async () => {
   }
 });
 
+test('결과 화면의 "이전 질문"을 누르면 마지막 질문으로 돌아가고 앞의 답은 남는다', async () => {
+  await render(<SceneBody />);
+  for (const label of ['시작하기', '다른 차', '나는 멈춰 있는데 상대가 와서 부딪혔어요', '아니요', '아니요, 다친 사람은 없어요', '일반 도로', '현장에 함께 있어요', '네, 움직일 수 있어요']) {
+    await fireEvent.press(screen.getByRole('button', { name: label }));
+  }
+  expect(screen.getByText('지금 할 일')).toBeTruthy();
+  expect(screen.queryByText('다시 답하기')).toBeNull();
+  await fireEvent.press(screen.getByRole('button', { name: '이전 질문' }));
+  expect(screen.getByText('차를 움직일 수 있나요?')).toBeTruthy();
+  await fireEvent.press(screen.getByRole('button', { name: '아니요, 견인이 필요해요' }));
+  expect(screen.getByText('지금 할 일')).toBeTruthy();
+});
+
 test('상황 안내: 질문 카드에 차례로 답하면 지금 할 일이 나오고, 아이콘을 누르면 완료된다', async () => {
   await render(<SceneBody />);
   expect(screen.queryAllByRole('checkbox')).toHaveLength(0);

@@ -244,11 +244,16 @@ export function SceneGuide({ handlers }: { handlers: GuideHandlers }) {
   const guide = buildGuide(answers, notes);
   const doneCount = guide.now.filter((s) => done.has(s.id)).length;
   const toggle = (id: string) => setDone((d) => { const n = new Set(d); n.has(id) ? n.delete(id) : n.add(id); return n; });
-  const restart = () => { setAnswers({}); setNotes({}); setDone(new Set()); setOpen(null); };
 
   return (
     <>
       <View style={{ backgroundColor: color.white, borderWidth: 1, borderColor: color.line, borderRadius: radius.card, padding: space[4], gap: space[3] }}>
+        {/* 결과에서도 질문 카드처럼 왼쪽 위 뒤로 버튼으로 마지막 질문에 돌아간다. 앞의 답은 그대로 남는다(ADR 0040). */}
+        <Pressable accessibilityRole="button" accessibilityLabel="이전 질문" onPress={back} hitSlop={10}
+          style={{ flexDirection: 'row', alignItems: 'center', gap: space[1], alignSelf: 'flex-start', minHeight: 32 }}>
+          <Icon name="back" size={20} color={color.gray12} />
+          <Text style={[type.label, { fontSize: 15, color: color.gray12 }]}>이전 질문</Text>
+        </Pressable>
         <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: space[2] }}>
           {guide.summary.map((t) => (
             <View key={t} style={{ backgroundColor: color.gray3, borderRadius: radius.pill, paddingHorizontal: space[3], paddingVertical: 6 }}>
@@ -256,10 +261,7 @@ export function SceneGuide({ handlers }: { handlers: GuideHandlers }) {
             </View>
           ))}
         </View>
-        <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
-          <Text style={[type.caption, { color: color.gray11 }]}>이 상황에 맞춰 안내해요.</Text>
-          <Pressable accessibilityRole="button" onPress={restart} hitSlop={10}><Text style={[type.label, { color: color.mintDeep }]}>다시 답하기</Text></Pressable>
-        </View>
+        <Text style={[type.caption, { color: color.gray11 }]}>이 상황에 맞춰 안내해요.</Text>
       </View>
 
       <Card title="지금 할 일" action={{ label: `${doneCount}/${guide.now.length} 완료`, onPress: () => setDone(new Set()) }}>
