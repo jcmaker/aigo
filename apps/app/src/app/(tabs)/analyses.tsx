@@ -1,9 +1,10 @@
 import { useFocusEffect, useRouter } from 'expo-router';
 import { useCallback, useState } from 'react';
-import { Alert, Pressable, RefreshControl, Text, View } from 'react-native';
+import { Alert, RefreshControl, Text, View } from 'react-native';
 import { AnalysisRow } from '@/components/AnalysisRow';
+import { FindVideoTips } from '@/components/FindVideoTips';
 import { ReportHeader, ReportTabs } from '@/components/report-sections';
-import { Button, Card, Icon, Screen } from '@/components/ui';
+import { Button, Card, Screen } from '@/components/ui';
 import type { Analysis } from '@/lib/analysis';
 import { useApi } from '@/lib/api';
 import type { ApiFailure } from '@/lib/api';
@@ -14,14 +15,6 @@ import { color, radius, space, type as t } from '@/theme';
 // 필터 결과가 0건일 때의 짧은 문구(분석이 1건 이상 있을 때만 쓰인다).
 const FILTER_EMPTY: Record<ListFilter, string> = { all: '해당하는 분석이 없어요', done: '완료된 분석이 없어요', running: '진행 중인 분석이 없어요' };
 
-// 블랙박스마다 방법이 달라 단정하지 않는다.
-const FIND_TIPS = [
-  '대부분 블랙박스 제조사 앱(와이파이 연결)에서 휴대폰으로 저장할 수 있어요',
-  '메모리카드를 빼서 휴대폰이나 PC로 옮겨도 돼요',
-  '사고 영상은 보통 "충격"이나 "이벤트" 폴더에 따로 저장돼요',
-  '사고 앞뒤가 함께 담긴 2분 이하 영상이면 돼요',
-  '원본 영상은 지우지 말고 보관해 두세요',
-];
 const STEPS = [
   { title: '영상 올리기', body: '사고 앞뒤가 담긴 2분 이하 영상' },
   { title: 'AI가 장면 분석', body: '분석이 끝나면 알림을 보내요' },
@@ -30,7 +23,6 @@ const STEPS = [
 
 // 분석이 하나도 없을 때(ADR 0031): 무엇을 받는지 3단계로 알리고, 영상 찾는 법은 접어 둔다.
 function EmptyGuide({ onUpload }: { onUpload: () => void }) {
-  const [open, setOpen] = useState(false);
   return (
     <>
       <View style={{ backgroundColor: color.ink, borderRadius: radius.card, padding: space[5], gap: space[1] }}>
@@ -51,29 +43,7 @@ function EmptyGuide({ onUpload }: { onUpload: () => void }) {
           </View>
         ))}
       </Card>
-      <View style={{ backgroundColor: color.white, borderWidth: 1, borderColor: color.line, borderRadius: radius.card, paddingHorizontal: space[4] }}>
-        <Pressable
-          accessibilityRole="button"
-          accessibilityLabel="블랙박스 영상, 어떻게 찾나요?"
-          accessibilityState={{ expanded: open }}
-          onPress={() => setOpen((v) => !v)}
-          style={{ minHeight: 52, flexDirection: 'row', alignItems: 'center', gap: space[2] }}
-        >
-          <Icon name="dashcam" size={18} color={color.mintDeep} />
-          <Text style={[t.body, { flex: 1, fontWeight: '700', color: color.gray12 }]}>블랙박스 영상, 어떻게 찾나요?</Text>
-          <View style={{ transform: [{ rotate: open ? '-90deg' : '90deg' }] }}><Icon name="chevron" size={16} color={color.gray11} /></View>
-        </Pressable>
-        {open ? (
-          <View style={{ gap: space[2], paddingBottom: space[4] }}>
-            {FIND_TIPS.map((tip) => (
-              <View key={tip} style={{ flexDirection: 'row', gap: space[2] }}>
-                <View style={{ width: 6, height: 6, borderRadius: 3, marginTop: 8, backgroundColor: color.mintDeep }} />
-                <Text style={[t.body, { flex: 1, fontSize: 14.5, lineHeight: 21, color: color.gray12 }]}>{tip}</Text>
-              </View>
-            ))}
-          </View>
-        ) : null}
-      </View>
+      <FindVideoTips />
     </>
   );
 }
