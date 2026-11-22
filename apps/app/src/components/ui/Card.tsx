@@ -10,7 +10,7 @@ export function Card({ title, action, children }: { title?: string; action?: { l
           <Text accessibilityRole="header" style={[type.headline, { color: color.gray12 }]}>{title}</Text>
           {action && (
             <Pressable accessibilityRole="link" onPress={action.onPress} hitSlop={8}>
-              <Text style={[type.label, { color: color.brand600 }]}>{action.label}</Text>
+              <Text style={[type.label, { color: color.mintDeep }]}>{action.label}</Text>
             </Pressable>
           )}
         </View>
