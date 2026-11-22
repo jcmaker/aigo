@@ -108,7 +108,7 @@ export function SceneBody({ tabInset, onBack }: { tabInset?: boolean; onBack?: (
 
   return (
     <>
-    <Screen scroll tabInset={tabInset} scrollRef={scrollRef}>
+    <Screen scroll tabInset={tabInset} scrollRef={scrollRef} topColor={color.ink} barStyle="light-content">
       <ReportHeader title="사고 현장 모드" subtitle="로그인·인터넷 없이 쓸 수 있어요" onBack={onBack} />
       <SceneGuide
         handlers={{
