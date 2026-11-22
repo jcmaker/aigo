@@ -1,10 +1,10 @@
 import { useFocusEffect, useRouter } from 'expo-router';
 import { useCallback, useState } from 'react';
-import { Alert, RefreshControl, Text, View } from 'react-native';
+import { RefreshControl, Text, View } from 'react-native';
 import { AnalysisRow } from '@/components/AnalysisRow';
 import { FindVideoTips } from '@/components/FindVideoTips';
 import { ReportHeader, ReportTabs } from '@/components/report-sections';
-import { Button, Card, Screen } from '@/components/ui';
+import { Button, Card, Screen, useConfirm } from '@/components/ui';
 import type { Analysis } from '@/lib/analysis';
 import { useApi } from '@/lib/api';
 import type { ApiFailure } from '@/lib/api';
@@ -61,6 +61,7 @@ export default function AnalysesScreen() {
   const [error, setError] = useState<string | null>(null);
   const [refreshing, setRefreshing] = useState(false);
   const [filter, setFilter] = useState<ListFilter>('all');
+  const [ask, dialog] = useConfirm();
 
   // ponytail: 서버 최대 100건까지만 보여 준다. 더 쌓이면 offset으로 이어 받는다.
   const load = useCallback(async () => {
@@ -90,30 +91,31 @@ export default function AnalysesScreen() {
   };
 
   const remove = (id: number) =>
-    Alert.alert('분석 삭제', '이 분석과 영상 파일을 지웁니다. 되돌릴 수 없습니다.', [
-      { text: '취소', style: 'cancel' },
-      {
-        text: '삭제',
-        style: 'destructive',
-        onPress: async () => {
-          try {
-            await api(`/api/v1/analyses/${id}`, { method: 'DELETE' });
-            deleteReportPdf(id);
-            setItems((cur) => cur?.filter((a) => a.id !== id) ?? null);
-          } catch (e) {
-            const err = e as ApiFailure;
-            if (err.status === 404) setItems((cur) => cur?.filter((a) => a.id !== id) ?? null); // 이미 지워졌다.
-            else setError(err.message);
-          }
-        },
+    ask({
+      title: '분석을 지울까요?',
+      body: '이 분석과 영상 파일을 지워요. 되돌릴 수 없어요.',
+      confirmLabel: '삭제',
+      danger: true,
+      icon: 'trash',
+      onConfirm: async () => {
+        try {
+          await api(`/api/v1/analyses/${id}`, { method: 'DELETE' });
+          deleteReportPdf(id);
+          setItems((cur) => cur?.filter((a) => a.id !== id) ?? null);
+        } catch (e) {
+          const err = e as ApiFailure;
+          if (err.status === 404) setItems((cur) => cur?.filter((a) => a.id !== id) ?? null); // 이미 지워졌다.
+          else setError(err.message);
+        }
       },
-    ]);
+    });
 
   return (
     <Screen scroll tabInset topColor={color.ink} barStyle="light-content" refreshControl={<RefreshControl refreshing={refreshing} onRefresh={refresh} />}>
       {/* 리포트 화면과 같은 남색 머리글 + 흰 탭(ADR 0032). 개수는 머리글 아래 줄에 보인다. */}
       {/* 영상 올리기는 하단 메뉴 "분석하기"와 화면 안 버튼으로 충분해 머리글 버튼은 두지 않는다(ADR 0032). */}
       <ReportHeader title="내 분석" subtitle={summary} />
+      {dialog}
       {/* 분석이 0건이면 필터는 눌러도 바뀌는 게 없으니 숨긴다. */}
       {items?.length ? <ReportTabs options={FILTERS} value={filter} onChange={setFilter} /> : null}
       {error ? <Text style={{ ...t.caption, color: color.danger600 }}>{error}</Text> : null}

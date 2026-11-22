@@ -8,8 +8,8 @@ export function EmptyState({ icon, title, body, children, tone }: { icon: IconNa
   const onBrand = tone === 'brand';
   return (
     <View style={{ alignItems: 'center', gap: space[2], paddingVertical: space[8], paddingHorizontal: space[4] }}>
-      <View style={{ width: 56, height: 56, borderRadius: 28, backgroundColor: onBrand ? 'rgba(255,255,255,0.16)' : color.brand200, alignItems: 'center', justifyContent: 'center' }}>
-        <Icon name={icon} size={24} color={onBrand ? color.onBrand : color.brand600} />
+      <View style={{ width: 56, height: 56, borderRadius: 28, backgroundColor: onBrand ? 'rgba(255,255,255,0.16)' : color.mintSoft, alignItems: 'center', justifyContent: 'center' }}>
+        <Icon name={icon} size={24} color={onBrand ? color.onBrand : color.mintDeep} />
       </View>
       <Text style={[type.headline, { color: onBrand ? color.onBrand : color.gray12, textAlign: 'center' }]}>{title}</Text>
       {body ? <Text style={[type.body, { color: onBrand ? color.brand200 : color.gray11, textAlign: 'center' }]}>{body}</Text> : null}

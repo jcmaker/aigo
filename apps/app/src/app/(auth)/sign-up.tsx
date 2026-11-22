@@ -81,7 +81,7 @@ export default function SignUpScreen() {
       <TextField value={password} onChangeText={setPassword} secureTextEntry autoCapitalize="none" autoComplete="new-password" placeholder="비밀번호 (15자 이상)" />
       {errorText}
       <Button label="가입하기" disabled={pending || !email || !password} onPress={submit} />
-      <Link href="/sign-in" style={{ ...t.label, color: color.brand600, textAlign: 'center', paddingVertical: 8 }}>이미 계정이 있어요</Link>
+      <Link href="/sign-in" style={{ ...t.label, color: color.mintDeep, textAlign: 'center', paddingVertical: 8 }}>이미 계정이 있어요</Link>
       <SocialButtons />
     </Screen>
   );

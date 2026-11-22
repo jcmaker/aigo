@@ -5,7 +5,7 @@ import { color } from '@/theme';
 
 // 시안(design-system-v3)과 같은 기하: 반지름 96~134, 칸 사이 0.13rad
 const CX = 150, CY = 150, R1 = 96, R2 = 134, GAP = 0.13;
-const fill: Record<Seg, string> = { on: color.brand, soft: color.brand400, off: color.gray4 };
+const fill: Record<Seg, string> = { on: color.mintDeep, soft: color.mint, off: color.gray4 };
 const pt = (r: number, a: number) => `${CX + r * Math.cos(a)},${CY + r * Math.sin(a)}`;
 
 export function SegmentGauge({ segments, label, value, valueSize = 36 }: { segments: Seg[]; label: string; value: string; valueSize?: number }) {

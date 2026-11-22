@@ -2,10 +2,10 @@ import * as ImagePicker from 'expo-image-picker';
 import * as Location from 'expo-location';
 import { useRouter } from 'expo-router';
 import { useEffect, useRef, useState } from 'react';
-import { Alert, Linking, Modal, Pressable, Text, View, type ScrollViewInstance } from 'react-native';
+import { Alert, Animated, Linking, Pressable, Text, View, type ScrollViewInstance } from 'react-native';
 import { ContactsCard } from '@/components/ContactsCard';
 import { SceneGuide } from '@/components/SceneGuide';
-import { Button, Card, Icon, Screen, TextField } from '@/components/ui';
+import { Button, Card, Icon, Screen, TextField, useConfirm } from '@/components/ui';
 import { color, radius, space, tabBarSpace, type } from '@/theme';
 import { ReportHeader } from '@/components/report-sections';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -44,13 +44,23 @@ const EMERGENCY = [
 ] as const;
 
 function call(number: string) {
-  Linking.openURL(`tel:${number}`).catch(() => Alert.alert('전화를 걸 수 없습니다.', `${number}로 직접 전화해 주세요.`));
+  Linking.openURL(`tel:${number}`).catch(() => Alert.alert('전화를 걸 수 없어요.', `${number}로 직접 전화해 주세요.`));
 }
 
 export function SceneBody({ tabInset, onBack }: { tabInset?: boolean; onBack?: () => void }) {
   const router = useRouter();
   // 아래 고정 112·119 버튼은 잘못 눌러도 바로 걸리지 않게 확인 창을 한 번 거친다.
-  const [confirm, setConfirm] = useState<(typeof EMERGENCY)[number] | null>(null);
+  const [ask, dialog] = useConfirm();
+  // 사진 저장 같은 짧은 알림은 확인을 누를 필요 없이 화면 아래에 잠깐 떴다 사라진다(ADR 0042).
+  const [toast, setToast] = useState<string | null>(null);
+  const toastOpacity = useRef(new Animated.Value(0)).current;
+  const showToast = (msg: string) => {
+    setToast(msg);
+    toastOpacity.setValue(1);
+    Animated.timing(toastOpacity, { toValue: 0, delay: 1800, duration: 400, useNativeDriver: true }).start(() => setToast(null));
+  };
+  const confirmCall = (e: (typeof EMERGENCY)[number]) =>
+    ask({ title: e.title, body: `누르면 전화 앱이 ${e.number} 번호로 열려요.`, confirmLabel: `${e.number}에 전화 걸기`, danger: true, icon: e.icon, onConfirm: () => call(e.number) });
   const scrollRef = useRef<ScrollViewInstance>(null);
   const insurerY = useRef(0);
   const contactsY = useRef(0);
@@ -87,7 +97,7 @@ export function SceneBody({ tabInset, onBack }: { tabInset?: boolean; onBack?: (
     try {
       const cam = await ImagePicker.requestCameraPermissionsAsync();
       if (!cam.granted) {
-        Alert.alert('카메라 권한이 필요합니다.', '설정에서 AIGO의 카메라 권한을 허용해 주세요.', [
+        Alert.alert('카메라 권한이 필요해요.', '설정에서 AIGO의 카메라 권한을 허용해 주세요.', [
           { text: '닫기', style: 'cancel' },
           { text: '설정 열기', onPress: () => Linking.openSettings() },
         ]);
@@ -98,9 +108,9 @@ export function SceneBody({ tabInset, onBack }: { tabInset?: boolean; onBack?: (
       const result = await ImagePicker.launchCameraAsync({ mediaTypes: ['images'], quality: 0.8 });
       if (result.canceled) return;
       await addScenePhoto(result.assets[0].uri, new Date().toISOString(), await location);
-      Alert.alert('사진을 저장했습니다.');
+      showToast('사진을 저장했어요');
     } catch {
-      Alert.alert('사진을 저장하지 못했습니다.', '다시 시도해 주세요.');
+      Alert.alert('사진을 저장하지 못했어요.', '다시 시도해 주세요.');
     } finally {
       setShooting(false);
     }
@@ -115,7 +125,7 @@ export function SceneBody({ tabInset, onBack }: { tabInset?: boolean; onBack?: (
           call112: () => call('112'),
           call119: () => call('119'),
           callEx: () => call('1588-2504'),
-          insurer: () => (saved ? call(saved) : Alert.alert('보험사 번호가 없습니다.', '아래 보험사 카드에 번호를 저장해 주세요.')),
+          insurer: () => (saved ? call(saved) : Alert.alert('보험사 번호가 없어요.', '아래 보험사 카드에 번호를 저장해 주세요.')),
           photo: shoot,
         }}
       />
@@ -141,23 +151,22 @@ export function SceneBody({ tabInset, onBack }: { tabInset?: boolean; onBack?: (
       {/* 신고는 엄지가 닿는 아래에 고정한다. 스크롤 위치와 상관없이 늘 보인다. */}
       <View pointerEvents="box-none" style={{ position: 'absolute', left: space[4], right: space[4], bottom: barBottom, flexDirection: 'row', gap: space[2] }}>
         {EMERGENCY.map((e) => (
-          <Pressable key={e.number} accessibilityRole="button" accessibilityLabel={e.label} onPress={() => setConfirm(e)}
+          <Pressable key={e.number} accessibilityRole="button" accessibilityLabel={e.label} onPress={() => confirmCall(e)}
             style={({ pressed }) => ({ flex: 1, height: 56, borderRadius: radius.pill, backgroundColor: pressed ? '#A8270F' : color.danger600, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8, shadowColor: '#000', shadowOpacity: 0.18, shadowRadius: 10, shadowOffset: { width: 0, height: 4 }, elevation: 6 })}>
             <Icon name={e.icon} size={20} color={color.white} />
             <Text style={[type.label, { fontSize: 16, color: color.white }]}>{e.label}</Text>
           </Pressable>
         ))}
       </View>
-      <Modal visible={!!confirm} transparent animationType="fade" onRequestClose={() => setConfirm(null)}>
-        <Pressable accessibilityLabel="닫기" onPress={() => setConfirm(null)} style={{ flex: 1, backgroundColor: 'rgba(0,0,0,0.45)', justifyContent: 'center', padding: space[5] }}>
-          <Pressable onPress={() => {}} style={{ backgroundColor: color.white, borderRadius: radius.card, padding: space[5], gap: space[3] }}>
-            <Text accessibilityRole="header" style={[type.title, { fontSize: 21, color: color.gray12 }]}>{confirm?.title}</Text>
-            <Text style={[type.body, { fontSize: 15, color: color.gray11, lineHeight: 22 }]}>누르면 전화 앱이 {confirm?.number} 번호로 열려요.</Text>
-            <Button label={`${confirm?.number ?? ''}에 전화 걸기`} variant="emergency" icon={confirm?.icon} onPress={() => { const n = confirm?.number; setConfirm(null); if (n) call(n); }} />
-            <Button label="취소" variant="secondary" onPress={() => setConfirm(null)} />
-          </Pressable>
-        </Pressable>
-      </Modal>
+      {dialog}
+      {toast ? (
+        <Animated.View pointerEvents="none" style={{ position: 'absolute', left: space[5], right: space[5], bottom: barBottom + 68, opacity: toastOpacity, alignItems: 'center' }}>
+          <View accessibilityLiveRegion="polite" style={{ flexDirection: 'row', alignItems: 'center', gap: space[2], backgroundColor: color.ink, borderRadius: radius.pill, paddingHorizontal: space[4], paddingVertical: space[3] }}>
+            <Icon name="check" size={16} color={color.mint} />
+            <Text style={[type.label, { color: color.white }]}>{toast}</Text>
+          </View>
+        </Animated.View>
+      ) : null}
     </>
   );
 }

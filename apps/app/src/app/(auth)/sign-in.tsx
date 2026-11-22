@@ -90,7 +90,7 @@ export default function SignInScreen() {
       <TextField value={password} onChangeText={setPassword} secureTextEntry autoCapitalize="none" autoComplete="current-password" placeholder="비밀번호" />
       {errorText}
       <Button label="로그인" disabled={pending || !email || !password} onPress={submit} />
-      <Link href="/sign-up" style={{ ...t.label, color: color.brand600, textAlign: 'center', paddingVertical: 8 }}>회원가입</Link>
+      <Link href="/sign-up" style={{ ...t.label, color: color.mintDeep, textAlign: 'center', paddingVertical: 8 }}>회원가입</Link>
       <SocialButtons />
       <Button label="사고 현장 모드" variant="danger" onPress={() => router.push('/scene')} />
     </Screen>

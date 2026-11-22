@@ -2,8 +2,8 @@ import { useClerk, useUser } from '@clerk/expo';
 import Constants from 'expo-constants';
 import * as WebBrowser from 'expo-web-browser';
 import { useState } from 'react';
-import { Alert, Pressable, Text, View } from 'react-native';
-import { Button, MenuGroup, MenuRow, Screen } from '@/components/ui';
+import { Pressable, Text, View } from 'react-native';
+import { Button, MenuGroup, MenuRow, Screen, useConfirm } from '@/components/ui';
 import { ReportHeader } from '@/components/report-sections';
 import { seoulDate } from '@/lib/analysis';
 import { useApi } from '@/lib/api';
@@ -22,26 +22,26 @@ export default function AccountScreen() {
   const { user } = useUser();
   const email = user?.primaryEmailAddress?.emailAddress ?? '';
   const [error, setError] = useState<string | null>(null);
+  const [ask, dialog] = useConfirm();
 
   const remove = () =>
-    Alert.alert('탈퇴', '계정과 분석 기록이 모두 삭제됩니다. 계속할까요?', [
-      { text: '취소', style: 'cancel' },
-      {
-        text: '탈퇴',
-        style: 'destructive',
-        onPress: async () => {
-          try {
-            await api('/api/v1/me', { method: 'DELETE' });
-          } catch (e) {
-            setError((e as ApiFailure).message);
-            return;
-          }
-          // 계정은 이미 지워졌다. 로그아웃 실패를 삭제 실패로 보이게 하지 않는다.
-          clearAppCache();
-          signOut().catch(() => setError(DELETED_BUT_SIGNED_IN));
-        },
+    ask({
+      title: '탈퇴할까요?',
+      body: '계정과 분석 기록이 모두 지워져요. 되돌릴 수 없어요.',
+      confirmLabel: '탈퇴하기',
+      danger: true,
+      onConfirm: async () => {
+        try {
+          await api('/api/v1/me', { method: 'DELETE' });
+        } catch (e) {
+          setError((e as ApiFailure).message);
+          return;
+        }
+        // 계정은 이미 지워졌다. 로그아웃 실패를 삭제 실패로 보이게 하지 않는다.
+        clearAppCache();
+        signOut().catch(() => setError(DELETED_BUT_SIGNED_IN));
       },
-    ]);
+    });
 
   const logout = async () => {
     await unregisterPush(api); // 실패해도 로그아웃은 계속한다.
@@ -54,6 +54,7 @@ export default function AccountScreen() {
   return (
     <Screen scroll tabInset topColor={color.ink} barStyle="light-content">
       <ReportHeader title="계정" />
+      {dialog}
       <View style={{ flexDirection: 'row', alignItems: 'center', gap: space[3], backgroundColor: color.white, borderWidth: 1, borderColor: color.line, borderRadius: radius.card, padding: space[4] }}>
         <View style={{ width: 56, height: 56, borderRadius: 18, backgroundColor: color.ink, alignItems: 'center', justifyContent: 'center' }}>
           <Text style={[t.title, { color: color.mint }]}>{email.slice(0, 1).toUpperCase()}</Text>

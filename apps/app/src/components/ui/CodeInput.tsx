@@ -9,7 +9,7 @@ export function CodeInput({ value, onChange, length = 6 }: { value: string; onCh
     <View>
       <View style={{ flexDirection: 'row', gap: space[2] }} pointerEvents="none">
         {Array.from({ length }, (_, i) => (
-          <View key={i} style={{ flex: 1, height: 52, borderRadius: radius.icon, backgroundColor: color.white, alignItems: 'center', justifyContent: 'center', borderWidth: focused && i === Math.min(value.length, length - 1) ? 2 : 1, borderColor: focused && i === Math.min(value.length, length - 1) ? color.brand : color.gray4 }}>
+          <View key={i} style={{ flex: 1, height: 52, borderRadius: radius.icon, backgroundColor: color.white, alignItems: 'center', justifyContent: 'center', borderWidth: focused && i === Math.min(value.length, length - 1) ? 2 : 1, borderColor: focused && i === Math.min(value.length, length - 1) ? color.mintDeep : color.gray4 }}>
             <Text style={[type.title, { fontSize: 20, color: color.gray12 }]}>{value[i] ?? ''}</Text>
           </View>
         ))}

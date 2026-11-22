@@ -21,8 +21,8 @@ export function SectionTitle({ title, meta, action }: { title: string; meta?: st
       {meta ? <Text style={[type.caption, { color: color.gray11 }]}>{meta}</Text> : null}
       {action ? (
         <Pressable accessibilityRole="link" onPress={action.onPress} hitSlop={8} style={{ flexDirection: 'row', alignItems: 'center', gap: 2 }}>
-          <Text style={[type.label, { color: color.brand600 }]}>{action.label}</Text>
-          <Icon name="chevron" size={14} color={color.brand600} />
+          <Text style={[type.label, { color: color.mintDeep }]}>{action.label}</Text>
+          <Icon name="chevron" size={14} color={color.mintDeep} />
         </Pressable>
       ) : null}
     </View>
