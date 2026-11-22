@@ -97,7 +97,8 @@ export default function AnalysisScreen() {
   return (
     <Screen scroll scrollRef={scroll} topColor={color.ink} barStyle="light-content">
       <Stack.Screen options={{ headerShown: false }} />
-      <ReportHeader title={analysis ? analysisTitle(analysis) : `분석 #${id}`} subtitle={subtitle} onBack={back} right={menuButton} />
+      {/* 결과가 나오기 전에는 "분석 #24" 대신 지금 하는 일을 말한다(ADR 0037, 내 분석 목록과 같은 문구). */}
+      <ReportHeader title={!analysis || analysis.status === 'queued' || analysis.status === 'processing' ? '영상을 분석하고 있어요' : analysisTitle(analysis)} subtitle={subtitle} onBack={back} right={menuButton} />
       <ReportMenu visible={menu !== null} anchor={menu} actions={actions} onClose={() => setMenu(null)} />
       {analysis ? (
         <>
