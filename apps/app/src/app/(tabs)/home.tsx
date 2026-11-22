@@ -8,6 +8,7 @@ import type { Analysis } from '@/lib/analysis';
 import { useApi } from '@/lib/api';
 import { getSeenNotices } from '@/lib/notice-store';
 import { toNotices } from '@/lib/notices';
+import { homeRecent } from '@/lib/ui-logic';
 import { color, radius, space, type } from '@/theme';
 
 // 눌렀을 때 버튼처럼 살짝 줄어드는 카드
@@ -69,8 +70,8 @@ export default function HomeScreen() {
   );
   const upload = () => router.push('/upload');
   const deviceConnected = false; // 기기 연결 기능 전까지는 항상 연결 안 됨
-  // 분석 결과는 영상을 올린 뒤에야 의미가 있다. 분석이 있을 때만 가장 최근 1건을 보인다(목록은 "내 분석" 탭).
-  const latest = items[0];
+  // 분석 결과는 영상을 올린 뒤에야 의미가 있다. 가장 최근 1건을 올린 지 2주 안일 때만 보인다(목록은 "내 분석" 탭, ADR 0034).
+  const latest = homeRecent(items);
   // 최근 분석 줄이 보이고 화면 높이가 낮으면(720 미만) 분석 카드의 카메라 그림을 빼서, 사고 현장 모드 버튼이 스크롤 없이 보이게 한다.
   const { height } = useWindowDimensions();
   const compact = !!latest && height < 720;
@@ -90,7 +91,7 @@ export default function HomeScreen() {
         </Pressable>
       </View>
 
-      {latest ? <RecentAnalyses items={items} limit={1} title="최근 분석" /> : null}
+      {latest ? <RecentAnalyses items={[latest]} limit={1} title="최근 분석" /> : null}
 
       {/* 메인: 영상 분석하기. 남색 바탕에 민트 포인트. 아래 사고 현장 모드 버튼이 한 화면에 들어오도록 높이를 줄였다. */}
       <PressCard label="사고 영상, 바로 분석해요" onPress={upload} style={{ flexGrow: 1, minHeight: compact ? 0 : 220 }}>
