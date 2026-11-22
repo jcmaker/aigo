@@ -55,6 +55,23 @@ export function checkTrim(duration: number | null, { start, end }: Trim): string
 /** 파일을 읽지 않고 크기만 구한다. file://, content:// 모두 expo-file-system이 처리한다. */
 export const fileSize = (uri: string): number => new File(uri).size;
 
+type PickerAsset = { uri: string; fileName?: string | null; mimeType?: string | null; fileSize?: number; duration?: number | null };
+
+/**
+ * 홈에서 갤러리로 고른 영상을 영상 분석하기 화면에 넘길 주소 값으로 바꾼다(ADR 0039).
+ * 선택기의 duration은 밀리초라 초로 바꾼다. 크기를 모르면 빈 값으로 두고 받는 쪽이 파일에서 구한다.
+ */
+export function pickedParams(a: PickerAsset): { uri: string; name: string; size: string; mime: string; duration: string; from: 'home' } {
+  return {
+    uri: a.uri,
+    name: videoName(a.uri, a.fileName, a.mimeType),
+    size: a.fileSize ? String(a.fileSize) : '',
+    mime: a.mimeType ?? '',
+    duration: a.duration ? String(a.duration / 1000) : '',
+    from: 'home',
+  };
+}
+
 const sleep = (ms: number) => new Promise<void>((r) => setTimeout(r, ms));
 
 /**

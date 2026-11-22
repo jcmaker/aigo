@@ -34,7 +34,7 @@ const sizeOf = (uri: string) => {
 };
 
 export default function UploadScreen() {
-  const params = useLocalSearchParams<{ uri?: string; name?: string; size?: string }>();
+  const params = useLocalSearchParams<{ uri?: string; name?: string; size?: string; mime?: string; duration?: string; from?: string }>();
   const api = useApi();
   const router = useRouter();
   const [file, setFile] = useState<Picked | null>(null);
@@ -86,11 +86,11 @@ export default function UploadScreen() {
     }
   };
 
-  // 다른 화면(공유 메뉴, 구간 자르기)이 넘긴 파일. 크기와 이름이 없으면 여기서 구한다.
-  const { uri, name, size } = params;
+  // 다른 화면이 넘긴 파일. 공유 메뉴(share.tsx)와 홈에서 고른 영상(from=home, ADR 0039)이 있다. 크기와 이름이 없으면 여기서 구한다.
+  const { uri, name, size, mime, duration, from } = params;
   useEffect(() => {
-    if (uri) choose({ uri, name: videoName(uri, name), size: Number(size) || sizeOf(uri), mime: '', duration: null }, 'shared');
-  }, [uri, name, size]);
+    if (uri) choose({ uri, name: videoName(uri, name), size: Number(size) || sizeOf(uri), mime: mime ?? '', duration: Number(duration) || null }, from === 'home' ? 'picked' : 'shared');
+  }, [uri, name, size, mime, duration, from]);
 
   async function pick() {
     const res = await ImagePicker.launchImageLibraryAsync({ mediaTypes: ['videos'] });
