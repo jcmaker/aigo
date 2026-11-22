@@ -53,3 +53,4 @@ ADR(Architecture Decision Record)은 "무엇을, 왜, 누가 바꿨는지" 남�
 | [0031](0031-app-analyses-empty.md) | 내 분석이 비어 있을 때 필터를 숨기고, 받는 결과 3단계와 블랙박스 영상 찾는 법을 안내한다 | 채택 | 최혜지, Claude(AI) | 2026-11-14 |
 | [0032](0032-app-analyses-report-style.md) | 내 분석 화면을 리포트와 같은 남색 머리글·흰 탭·결과 중심 카드로 맞추고, 삭제는 길게 누르기로 바꾼다 | 채택 | 최혜지, Claude(AI) | 2026-11-14 |
 | [0033](0033-app-analysis-progress-live.md) | 분석 진행 화면을 단계 안에서도 경과 초·회전 링·바뀌는 안내 문구로 움직이게 한다 | 채택 | 조준형, Claude(AI) | 2026-11-21 |
+| [0034](0034-app-home-recent-two-weeks.md) | 홈 "최근 분석"은 가장 최근 분석을 올린 지 2주(14일) 안일 때만 보인다 | 제안 | 최혜지, Claude(AI) | 2026-11-22 |

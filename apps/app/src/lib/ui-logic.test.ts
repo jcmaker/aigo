@@ -1,4 +1,4 @@
-import { faultSegments, matches } from './ui-logic';
+import { faultSegments, homeRecent, matches } from './ui-logic';
 
 test('과실 범위는 겹치는 칸만 켠다', () => {
   expect(faultSegments(20, 40)).toEqual(['off','off','on','on','off','off','off','off','off','off']);
@@ -14,4 +14,14 @@ test('목록 필터: 완료는 done만, 진행 중은 created·queued·processin
   expect(all.filter((s) => matches('all', s))).toEqual(all);
   expect(all.filter((s) => matches('done', s))).toEqual(['done']);
   expect(all.filter((s) => matches('running', s))).toEqual(['created', 'queued', 'processing']);
+});
+
+test('홈 최근 분석: 가장 최근 1건을 올린 지 14일 안일 때만 보인다', () => {
+  const now = Date.parse('2026-11-22T00:00:00Z');
+  const a = (created_at: string) => ({ id: 1, created_at });
+  expect(homeRecent([], now)).toBeNull();
+  expect(homeRecent([a('2026-11-21T00:00:00Z'), a('2026-11-01T00:00:00Z')], now)?.created_at).toBe('2026-11-21T00:00:00Z');
+  expect(homeRecent([a('2026-11-08T00:00:00Z')], now)).not.toBeNull(); // 딱 14일
+  expect(homeRecent([a('2026-11-07T23:59:00Z')], now)).toBeNull(); // 14일 넘음
+  expect(homeRecent([a('잘못된 날짜')], now)).toBeNull();
 });
