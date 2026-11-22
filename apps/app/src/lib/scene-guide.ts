@@ -238,6 +238,8 @@ export function buildGuide(a: Answers, notes: Notes = {}): Guide {
   const howLabel = a.how === 'etc' && notes.how ? notes.how : a.how ? HOW_LABEL[a.how] : null;
   // 기타에 적은 말도 요약 칩으로 함께 보여 준다.
   const surfaceLabel = a.surface === 'etc' && notes.surface ? notes.surface : a.surface ? SURFACE_LABEL[a.surface] : null;
-  const summary = [PLACE_LABEL[a.place ?? 'road'], kindLabel, ...(howLabel ? [howLabel] : []), ...(surfaceLabel ? [surfaceLabel] : []), hurt ? '다친 사람 있음' : '다친 사람 없음'];
+  // 사람·이륜 사고는 "없다"고 답해도 다친 것으로 보고 안내한다. 칩이 답과 어긋나 보이지 않게 "부상 가능성 있음"으로 적는다(ADR 0041).
+  const hurtLabel = !hurt ? '다친 사람 없음' : a.injury === 'no' ? '부상 가능성 있음' : '다친 사람 있음';
+  const summary = [PLACE_LABEL[a.place ?? 'road'], kindLabel, ...(howLabel ? [howLabel] : []), ...(surfaceLabel ? [surfaceLabel] : []), hurtLabel];
   return { summary, now, later };
 }
