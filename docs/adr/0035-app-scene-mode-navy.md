@@ -3,7 +3,7 @@
 - 상태: 제안
 - 날짜: 2026-11-22
 - 변경 작업자: 최혜지 (marong9087), Claude(AI)
-- 관련 PR: (올린 뒤 채움)
+- 관련 PR: #98
 
 ## 작업 내용
 사고 현장 모드 화면(`components/SceneBody.tsx`, `components/SceneGuide.tsx`)의 색과 배치를 바꿨다. 질문 순서와 안내 문구(`lib/scene-guide.ts`, ADR 0025)는 바꾸지 않았다.
