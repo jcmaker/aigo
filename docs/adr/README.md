@@ -67,3 +67,4 @@ ADR(Architecture Decision Record)은 "무엇을, 왜, 누가 바꿨는지" 남�
 | [0045](0045-app-failure-text-tone.md) | 분석 실패 안내 문구를 "~어요"로 맞춘다 | 제안 | 최혜지, Claude(AI) | 2026-11-23 |
 | [0046](0046-app-report-fault-first.md) | 리포트 요약 탭은 내 과실 범위가 담긴 요약 카드를 맨 위에 둔다 | 제안 | 최혜지, Claude(AI) | 2026-11-23 |
 | [0047](0047-app-analyses-no-upload-button.md) | 내 분석 목록 아래 "영상 올리기" 버튼을 뺀다(빈 화면 버튼은 남김) | 제안 | 최혜지, Claude(AI) | 2026-11-23 |
+| [0048](0048-app-home-recent-strip.md) | 홈 "최근 분석"을 제목 줄 없는 한 줄 띠로 줄여 맨 위에 붙인다 | 제안 | 최혜지, Claude(AI) | 2026-11-23 |

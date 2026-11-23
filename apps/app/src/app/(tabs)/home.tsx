@@ -2,7 +2,7 @@ import * as ImagePicker from 'expo-image-picker';
 import { useFocusEffect, useRouter } from 'expo-router';
 import { useCallback, useRef, useState, type ReactNode } from 'react';
 import { Animated, Pressable, Text, View, useWindowDimensions } from 'react-native';
-import { RecentAnalyses } from '@/components/AnalysisRow';
+import { RecentStrip } from '@/components/AnalysisRow';
 import { Wordmark } from '@/components/Wordmark';
 import { Button, Icon, Screen, StatusChip, type IconName } from '@/components/ui';
 import type { Analysis } from '@/lib/analysis';
@@ -98,7 +98,7 @@ export default function HomeScreen() {
         </Pressable>
       </View>
 
-      {latest ? <RecentAnalyses items={[latest]} limit={1} title="최근 분석" /> : null}
+      {latest ? <RecentStrip a={latest} /> : null}
 
       {/* 메인: 영상 분석하기. 남색 바탕에 민트 포인트. 아래 사고 현장 모드 버튼이 한 화면에 들어오도록 높이를 줄였다. */}
       <PressCard label="사고 영상, 바로 분석해요" onPress={upload} style={{ flexGrow: 1, minHeight: compact ? 0 : 220 }}>
