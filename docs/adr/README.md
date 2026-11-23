@@ -65,3 +65,4 @@ ADR(Architecture Decision Record)은 "무엇을, 왜, 누가 바꿨는지" 남�
 | [0043](0043-app-analyses-bulk-delete.md) | 내 분석에서 ⋯로 여러 개를 골라 지우거나 탭의 분석을 모두 지우고, "진행 중" 탭을 뺀다 | 제안 | 최혜지, Claude(AI) | 2026-11-23 |
 | [0044](0044-app-report-menu-after-analysis.md) | 분석 화면의 ⋯는 분석이 끝난 뒤에만 보인다 | 제안 | 최혜지, Claude(AI) | 2026-11-23 |
 | [0045](0045-app-failure-text-tone.md) | 분석 실패 안내 문구를 "~어요"로 맞춘다 | 제안 | 최혜지, Claude(AI) | 2026-11-23 |
+| [0046](0046-app-report-fault-first.md) | 리포트 요약 탭은 내 과실 범위가 담긴 요약 카드를 맨 위에 둔다 | 제안 | 최혜지, Claude(AI) | 2026-11-23 |

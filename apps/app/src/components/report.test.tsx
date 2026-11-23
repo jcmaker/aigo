@@ -58,6 +58,13 @@ test('요약 탭에 예상 범위와 기준 도표가 보이고, 근거 탭을 �
   expect(onTab).toHaveBeenCalledWith('evidence');
 });
 
+test('요약 탭은 내 과실 범위가 담긴 요약 카드를 지금 먼저 할 일보다 먼저 보인다', async () => {
+  await render(<ReportView analysis={analysis({ report: { ...report, actions_now: ['비상등을 켭니다.'] } })} onReload={() => {}} tab="summary" onTab={() => {}} />);
+  const texts = screen.toJSON() ? JSON.stringify(screen.toJSON()) : '';
+  expect(texts.indexOf('사고 분석 요약')).toBeGreaterThan(-1);
+  expect(texts.indexOf('사고 분석 요약')).toBeLessThan(texts.indexOf('지금 먼저 할 일'));
+});
+
 test('요약 탭의 충돌 시각을 누르면 근거 탭으로 바꾼다', async () => {
   const onTab = jest.fn();
   await render(<ReportView analysis={analysis({})} onReload={() => {}} tab="summary" onTab={onTab} />);

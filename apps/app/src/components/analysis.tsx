@@ -290,11 +290,6 @@ export function ReportView({ analysis, onReload, tab, onTab }: { analysis: Analy
 
       {tab === 'summary' && (
         <>
-          {report.actions_now.length > 0 && (
-            <Card title="지금 먼저 할 일">
-              <NumberedList items={report.actions_now} />
-            </Card>
-          )}
           <DarkCard label="사고 분석 요약">
             <Text style={[type.caption, { color: color.brand400 }]}>{involvementLabel(report)}</Text>
             <Text style={[type.title, { color: color.white }]}>{report.accident_type ?? '사고 분석 결과'}</Text>
@@ -303,6 +298,12 @@ export function ReportView({ analysis, onReload, tab, onTab }: { analysis: Analy
             <View style={{ height: 1, backgroundColor: color.ink3, marginVertical: space[1] }} />
             <FaultHeadline fault={fault} note={noFault} confidence={report.confidence} collisionT={report.collision_t} onSeek={seekToEvidence} onBasis={() => onTab('basis')} />
           </DarkCard>
+          {/* 리포트에서 가장 궁금한 내 과실 범위가 첫 화면에 보이게 요약 카드를 맨 위에 둔다. 현장에서 급한 일은 사고 현장 모드가 맡는다(ADR 0046). */}
+          {report.actions_now.length > 0 && (
+            <Card title="지금 먼저 할 일">
+              <NumberedList items={report.actions_now} />
+            </Card>
+          )}
           {scenes.length > 0 && (
             <Card title="영상에서 확인한 장면">
               {scenes.map((e) => (
