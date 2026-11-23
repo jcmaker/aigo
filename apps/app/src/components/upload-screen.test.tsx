@@ -21,6 +21,13 @@ jest.mock('@/lib/upload', () => ({ ...jest.requireActual('@/lib/upload'), upload
 import { fireEvent, render, screen, waitFor } from '@testing-library/react-native';
 import UploadScreen from '@/app/(tabs)/upload';
 
+test('동의하기 전에는 버튼 위에 왜 못 누르는지 알리고, 동의하면 사라진다', async () => {
+  await render(<UploadScreen />);
+  expect(screen.getByText('2번에서 동의하면 누를 수 있어요')).toBeTruthy();
+  await fireEvent.press(screen.getByRole('switch'));
+  expect(screen.queryByText('2번에서 동의하면 누를 수 있어요')).toBeNull();
+});
+
 test('제출이 끝나면 레포트를 탭 묶음 위에 push한다(replace하면 뒤로가기에 앱이 닫힌다)', async () => {
   await render(<UploadScreen />);
   await fireEvent.press(screen.getByRole('switch'));

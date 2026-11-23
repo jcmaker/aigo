@@ -146,13 +146,14 @@ export function SceneBody({ tabInset, onBack }: { tabInset?: boolean; onBack?: (
       <View onLayout={(e) => { contactsY.current = e.nativeEvent.layout.y; }}>
         <ContactsCard />
       </View>
-      <View style={{ height: 64 }} />
+      {/* 아래 고정된 112·119 띠에 마지막 카드가 가리지 않도록 띠 높이만큼 더 내려 볼 수 있게 한다(ADR 0049). */}
+      <View style={{ height: 72 }} />
     </Screen>
       {/* 신고는 엄지가 닿는 아래에 고정한다. 스크롤 위치와 상관없이 늘 보인다. */}
       <View pointerEvents="box-none" style={{ position: 'absolute', left: space[4], right: space[4], bottom: barBottom, flexDirection: 'row', gap: space[2] }}>
         {EMERGENCY.map((e) => (
           <Pressable key={e.number} accessibilityRole="button" accessibilityLabel={e.label} onPress={() => confirmCall(e)}
-            style={({ pressed }) => ({ flex: 1, height: 56, borderRadius: radius.pill, backgroundColor: pressed ? '#A8270F' : color.danger600, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8, shadowColor: '#000', shadowOpacity: 0.18, shadowRadius: 10, shadowOffset: { width: 0, height: 4 }, elevation: 6 })}>
+            style={({ pressed }) => ({ flex: 1, height: 48, borderRadius: radius.pill, backgroundColor: pressed ? '#A8270F' : color.danger600, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8, shadowColor: '#000', shadowOpacity: 0.18, shadowRadius: 10, shadowOffset: { width: 0, height: 4 }, elevation: 6 })}>
             <Icon name={e.icon} size={20} color={color.white} />
             <Text style={[type.label, { fontSize: 16, color: color.white }]}>{e.label}</Text>
           </Pressable>
@@ -160,7 +161,7 @@ export function SceneBody({ tabInset, onBack }: { tabInset?: boolean; onBack?: (
       </View>
       {dialog}
       {toast ? (
-        <Animated.View pointerEvents="none" style={{ position: 'absolute', left: space[5], right: space[5], bottom: barBottom + 68, opacity: toastOpacity, alignItems: 'center' }}>
+        <Animated.View pointerEvents="none" style={{ position: 'absolute', left: space[5], right: space[5], bottom: barBottom + 60, opacity: toastOpacity, alignItems: 'center' }}>
           <View accessibilityLiveRegion="polite" style={{ flexDirection: 'row', alignItems: 'center', gap: space[2], backgroundColor: color.ink, borderRadius: radius.pill, paddingHorizontal: space[4], paddingVertical: space[3] }}>
             <Icon name="check" size={16} color={color.mint} />
             <Text style={[type.label, { color: color.white }]}>{toast}</Text>

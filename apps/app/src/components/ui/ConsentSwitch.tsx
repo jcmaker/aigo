@@ -9,12 +9,12 @@ export function ConsentSwitch({ value, onChange, label, disabled }: { value: boo
       accessibilityState={{ checked: value, disabled: !!disabled }}
       disabled={disabled}
       onPress={() => onChange(!value)}
-      style={{ flexDirection: 'row', alignItems: 'center', gap: 10, opacity: disabled ? 0.5 : 1 }}
+      style={{ flexDirection: 'row', alignItems: 'center', gap: 12, minHeight: 48, opacity: disabled ? 0.5 : 1 }}
     >
-      <View style={{ width: 44, height: 26, borderRadius: 13, padding: 3, backgroundColor: value ? color.mintDeep : '#C9C9C9', alignItems: value ? 'flex-end' : 'flex-start' }}>
-        <View style={{ width: 20, height: 20, borderRadius: 10, backgroundColor: color.white }} />
+      <View style={{ width: 52, height: 30, borderRadius: 15, padding: 3, backgroundColor: value ? color.mintDeep : '#C9C9C9', alignItems: value ? 'flex-end' : 'flex-start' }}>
+        <View style={{ width: 24, height: 24, borderRadius: 12, backgroundColor: color.white }} />
       </View>
-      <Text style={[type.label, { flex: 1, color: color.gray12 }]}>{label}</Text>
+      <Text style={[type.label, { flex: 1, fontSize: 15, lineHeight: 21, color: color.gray12 }]}>{label}</Text>
     </Pressable>
   );
 }

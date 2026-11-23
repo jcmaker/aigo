@@ -223,6 +223,12 @@ export default function UploadScreen() {
         </Card>
       ) : null}
 
+      {/* 버튼이 왜 안 눌리는지 바로 위에 알려 준다(ADR 0049). */}
+      {!busy && !failure && (!file || !consent) ? (
+        <Text style={[type.body, { fontSize: 15, color: color.gray11, textAlign: 'center' }]}>
+          {!file ? '1번에서 영상을 고르면 누를 수 있어요' : '2번에서 동의하면 누를 수 있어요'}
+        </Text>
+      ) : null}
       <Button label={failure ? '다시 시도' : '올리고 분석 시작'} loading={busy} disabled={!file || !consent || blocked || !!trimProblem} onPress={start} />
     </Screen>
   );

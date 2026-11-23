@@ -19,6 +19,11 @@ test('버튼 5개가 순서대로 있고, 가운데(3번째)가 사고 현장 �
   expect(screen.getByRole('tab', { name: '사고 현장 모드', selected: true })).toBeTruthy();
 });
 
+test('아이콘 밑에 짧은 글자가 보인다(사고 현장 모드는 "사고 현장")', async () => {
+  await render(<FloatingTabBar {...props()} />);
+  for (const t of ['홈', '내 분석', '사고 현장', '분석하기', '계정']) expect(screen.getByText(t)).toBeTruthy();
+});
+
 test('계정을 누르면 account 탭으로 이동한다', async () => {
   const navigate = jest.fn();
   await render(<FloatingTabBar {...props(navigate)} />);

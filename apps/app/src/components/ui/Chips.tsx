@@ -21,7 +21,7 @@ export function statusTone(status: string): Tone {
 export function StatusChip({ tone, label }: { tone: Tone; label: string }) {
   const { bg, fg } = tones[tone];
   return (
-    <Text style={[type.micro, { fontWeight: '700', color: fg, backgroundColor: bg, borderRadius: radius.pill, paddingHorizontal: 10, paddingVertical: 4, overflow: 'hidden', alignSelf: 'flex-start' }]}>
+    <Text style={[type.caption, { fontWeight: '700', color: fg, backgroundColor: bg, borderRadius: radius.pill, paddingHorizontal: 10, paddingVertical: 3, overflow: 'hidden', alignSelf: 'flex-start' }]}>
       {label}
     </Text>
   );
