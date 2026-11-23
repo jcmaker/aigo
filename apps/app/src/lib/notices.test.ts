@@ -16,7 +16,7 @@ test('완료와 실패만 최신순 알림이 된다', () => {
   ] as unknown as Analysis[];
   const n = toNotices(items);
   expect(n.map((x) => x.id)).toEqual(['3:failed', '1:done']);
-  expect(n[0]).toMatchObject({ title: '분석하지 못했어요', body: '영상을 읽지 못했습니다' });
+  expect(n[0]).toMatchObject({ title: '분석하지 못했어요', body: '영상을 읽지 못했어요' });
   expect(n[1].body).toBe('진로변경 중 충돌 · 내 과실 10~30%');
 });
 
