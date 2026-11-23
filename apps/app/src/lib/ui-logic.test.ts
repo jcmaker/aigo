@@ -1,4 +1,4 @@
-import { faultSegments, homeRecent, matches } from './ui-logic';
+import { deletable, faultSegments, homeRecent, matches } from './ui-logic';
 
 test('과실 범위는 겹치는 칸만 켠다', () => {
   expect(faultSegments(20, 40)).toEqual(['off','off','on','on','off','off','off','off','off','off']);
@@ -24,4 +24,8 @@ test('홈 최근 분석: 가장 최근 1건을 올린 지 14일 안일 때만 �
   expect(homeRecent([a('2026-11-08T00:00:00Z')], now)).not.toBeNull(); // 딱 14일
   expect(homeRecent([a('2026-11-07T23:59:00Z')], now)).toBeNull(); // 14일 넘음
   expect(homeRecent([a('잘못된 날짜')], now)).toBeNull();
+});
+
+test('여러 개 지우기: 대기·분석 중인 분석은 고를 수 없다', () => {
+  expect(['created', 'queued', 'processing', 'done', 'failed'].filter(deletable)).toEqual(['created', 'done', 'failed']);
 });

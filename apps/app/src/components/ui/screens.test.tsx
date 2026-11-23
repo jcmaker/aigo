@@ -39,3 +39,23 @@ test('DashPi에서 온 분석 행에만 DashPi 칩이 있다', async () => {
   await render(<AnalysisRow a={{ ...done(2), source: 'upload' }} onPress={jest.fn()} />);
   expect(screen.queryByText('DashPi')).toBeNull();
 });
+
+test('고르는 중인 분석 행은 체크 상태를 알리고, 누르면 onPress만 부르며 길게 눌러도 지우지 않는다', async () => {
+  const onPress = jest.fn();
+  const onDelete = jest.fn();
+  await render(<AnalysisRow a={done(3)} onPress={onPress} onDelete={onDelete} select={{ checked: true, disabled: false }} />);
+  const row = screen.getByRole('button', { name: /차선 변경 사고/ });
+  expect(row.props.accessibilityState).toMatchObject({ checked: true, disabled: false });
+  await fireEvent.press(row);
+  expect(onPress).toHaveBeenCalled();
+  await fireEvent(row, 'longPress');
+  expect(onDelete).not.toHaveBeenCalled();
+});
+
+test('분석 중인 행은 고를 수 없다고 알린다', async () => {
+  const running = { ...done(4), status: 'processing', report: null } as unknown as Analysis;
+  await render(<AnalysisRow a={running} onPress={jest.fn()} select={{ checked: false, disabled: true }} />);
+  const row = screen.getByRole('button', { name: /영상을 분석하고 있어요/ });
+  expect(row.props.accessibilityState).toMatchObject({ checked: false, disabled: true });
+  expect(row.props.accessibilityHint).toBe('분석 중이라 고를 수 없어요');
+});
