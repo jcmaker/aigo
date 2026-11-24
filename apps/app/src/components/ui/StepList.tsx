@@ -12,7 +12,7 @@ function DoneDot({ still }: { still: boolean }) {
     if (!still) Animated.spring(scale, { toValue: 1, useNativeDriver: true, speed: 18, bounciness: 12 }).start();
   }, [scale, still]);
   return (
-    <Animated.View style={{ width: 28, height: 28, borderRadius: 14, backgroundColor: color.brand, alignItems: 'center', justifyContent: 'center', transform: [{ scale }] }}>
+    <Animated.View style={{ width: 28, height: 28, borderRadius: 14, backgroundColor: color.mintDeep, alignItems: 'center', justifyContent: 'center', transform: [{ scale }] }}>
       <Icon name="check" size={16} color={color.onBrand} />
     </Animated.View>
   );
@@ -30,7 +30,7 @@ function ActiveDot({ n, still }: { n: number; still: boolean }) {
   const rotate = spin.interpolate({ inputRange: [0, 1], outputRange: ['0deg', '360deg'] });
   return (
     <View style={{ width: 28, height: 28, alignItems: 'center', justifyContent: 'center' }}>
-      <Animated.View style={{ position: 'absolute', width: 28, height: 28, borderRadius: 14, borderWidth: 3, borderColor: color.brand200, borderTopColor: color.brand, transform: [{ rotate }] }} />
+      <Animated.View style={{ position: 'absolute', width: 28, height: 28, borderRadius: 14, borderWidth: 3, borderColor: color.mintSoft, borderTopColor: color.mintDeep, transform: [{ rotate }] }} />
       <Text style={[type.micro, { fontWeight: '800', color: color.ink }]}>{n}</Text>
     </View>
   );
@@ -60,9 +60,9 @@ export function StepList({ steps, current, state, reduceMotion = false }: { step
             <View style={{ flex: 1 }}>
               <View style={{ flexDirection: 'row', justifyContent: 'space-between', gap: space[2] }}>
                 <Text style={[type.label, { color: done || active || failed ? color.gray12 : color.gray9 }]}>{s.title}</Text>
-                {s.time ? <Text style={[type.label, { color: color.brand }]}>{s.time}</Text> : null}
+                {s.time ? <Text style={[type.label, { color: color.mintDeep }]}>{s.time}</Text> : null}
               </View>
-              {s.detail ? <Text style={[type.caption, { color: failed ? color.danger600 : active ? color.brand : color.gray11 }]}>{s.detail}</Text> : null}
+              {s.detail ? <Text style={[type.caption, { color: failed ? color.danger600 : active ? color.mintDeep : color.gray11 }]}>{s.detail}</Text> : null}
             </View>
           </View>
         );

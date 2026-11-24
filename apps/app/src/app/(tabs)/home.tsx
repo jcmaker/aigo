@@ -1,3 +1,4 @@
+import * as ImagePicker from 'expo-image-picker';
 import { useFocusEffect, useRouter } from 'expo-router';
 import { useCallback, useRef, useState, type ReactNode } from 'react';
 import { Animated, Pressable, Text, View, useWindowDimensions } from 'react-native';
@@ -8,6 +9,8 @@ import type { Analysis } from '@/lib/analysis';
 import { useApi } from '@/lib/api';
 import { getSeenNotices } from '@/lib/notice-store';
 import { toNotices } from '@/lib/notices';
+import { homeRecent } from '@/lib/ui-logic';
+import { pickedParams } from '@/lib/upload';
 import { color, radius, space, type } from '@/theme';
 
 // 눌렀을 때 버튼처럼 살짝 줄어드는 카드
@@ -67,10 +70,15 @@ export default function HomeScreen() {
       }, () => {});
     }, [api]),
   );
-  const upload = () => router.push('/upload');
+  // "갤러리에서 영상 고르기"는 이름대로 갤러리를 바로 연다. 고르면 그 영상이 선택된 채로 영상 분석하기로 가고, 취소하면 홈에 남는다(ADR 0039).
+  const upload = async () => {
+    const res = await ImagePicker.launchImageLibraryAsync({ mediaTypes: ['videos'] }).catch(() => null);
+    const a = res && !res.canceled ? res.assets[0] : null;
+    if (a) router.push({ pathname: '/upload', params: pickedParams(a) });
+  };
   const deviceConnected = false; // 기기 연결 기능 전까지는 항상 연결 안 됨
-  // 분석 결과는 영상을 올린 뒤에야 의미가 있다. 분석이 있을 때만 가장 최근 1건을 보인다(목록은 "내 분석" 탭).
-  const latest = items[0];
+  // 분석 결과는 영상을 올린 뒤에야 의미가 있다. 가장 최근 1건을 올린 지 2주 안일 때만 보인다(목록은 "내 분석" 탭, ADR 0034).
+  const latest = homeRecent(items);
   // 최근 분석 줄이 보이고 화면 높이가 낮으면(720 미만) 분석 카드의 카메라 그림을 빼서, 사고 현장 모드 버튼이 스크롤 없이 보이게 한다.
   const { height } = useWindowDimensions();
   const compact = !!latest && height < 720;
@@ -90,7 +98,7 @@ export default function HomeScreen() {
         </Pressable>
       </View>
 
-      {latest ? <RecentAnalyses items={items} limit={1} title="최근 분석" /> : null}
+      {latest ? <RecentAnalyses items={[latest]} limit={1} title="최근 분석" /> : null}
 
       {/* 메인: 영상 분석하기. 남색 바탕에 민트 포인트. 아래 사고 현장 모드 버튼이 한 화면에 들어오도록 높이를 줄였다. */}
       <PressCard label="사고 영상, 바로 분석해요" onPress={upload} style={{ flexGrow: 1, minHeight: compact ? 0 : 220 }}>

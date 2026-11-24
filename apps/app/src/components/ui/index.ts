@@ -16,3 +16,4 @@ export { SegmentGauge } from './SegmentGauge';
 export { StepList } from './StepList';
 export { FloatingTabBar, TAB_ITEMS } from './FloatingTabBar';
 export { PageTitle, SectionTitle, IconTile, MenuGroup, MenuRow } from './Section';
+export { useConfirm, type ConfirmRequest } from './ConfirmDialog';

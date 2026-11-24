@@ -33,7 +33,7 @@ export function SourceChip({ source }: { source: string }) {
 }
 
 // onPress가 없으면(재생 영상 없음) 버튼이 아닌 글자로 그린다. tone='mint'는 리포트 화면용(ADR 0027).
-export function TimeChip({ seconds, onPress, tone = 'brand' }: { seconds: number; onPress?: (seconds: number) => void; tone?: 'brand' | 'mint' }) {
+export function TimeChip({ seconds, onPress, tone = 'mint' }: { seconds: number; onPress?: (seconds: number) => void; tone?: 'brand' | 'mint' }) {
   const t = formatTimePrecise(seconds);
   const fg = tone === 'mint' ? color.mintDeep : color.brand600;
   const bg = tone === 'mint' ? color.mintSoft : color.brand200;

@@ -2,7 +2,7 @@ import { useRouter } from 'expo-router';
 import * as Sharing from 'expo-sharing';
 import { useEffect, useState } from 'react';
 import { Alert, Image, Pressable, Text, View } from 'react-native';
-import { Button, Card, EmptyState, Screen, TopBar } from '@/components/ui';
+import { Button, Card, EmptyState, Screen, TopBar, useConfirm } from '@/components/ui';
 import { deleteScenePhoto, listScenePhotos, type ScenePhoto } from '@/lib/scene-store';
 import { color, radius, space, type } from '@/theme';
 
@@ -10,28 +10,30 @@ export default function ScenePhotosScreen() {
   const router = useRouter();
   const [photos, setPhotos] = useState<ScenePhoto[] | null>(null);
   const [selectedId, setSelectedId] = useState<string | null>(null);
+  const [ask, dialog] = useConfirm();
   const load = () => listScenePhotos().then(setPhotos);
   useEffect(() => void load(), []);
 
   const share = (p: ScenePhoto) =>
     Sharing.shareAsync(p.uri, { mimeType: 'image/jpeg', UTI: 'public.jpeg', dialogTitle: '사진 공유' }).catch(() =>
-      Alert.alert('공유하지 못했습니다.'),
+      Alert.alert('공유하지 못했어요.'),
     );
 
   const remove = (p: ScenePhoto) =>
-    Alert.alert('사진을 삭제할까요?', '삭제하면 되돌릴 수 없습니다.', [
-      { text: '취소', style: 'cancel' },
-      {
-        text: '삭제',
-        style: 'destructive',
-        onPress: () => deleteScenePhoto(p.id).then(load, () => Alert.alert('삭제하지 못했습니다.')),
-      },
-    ]);
+    ask({
+      title: '사진을 지울까요?',
+      body: '지우면 되돌릴 수 없어요.',
+      confirmLabel: '삭제',
+      danger: true,
+      icon: 'trash',
+      onConfirm: () => deleteScenePhoto(p.id).then(load, () => Alert.alert('삭제하지 못했어요.')),
+    });
 
   if (!photos) return null;
   const selected = photos.find((p) => p.id === selectedId) ?? photos[0];
   return (
     <Screen scroll>
+      {dialog}
       <TopBar title="현장 사진" subtitle={`${photos.length}장`} onBack={() => router.back()} />
       {photos.length === 0 ? (
         <EmptyState icon="image" title="저장된 사진이 없습니다." />
@@ -45,7 +47,7 @@ export default function ScenePhotosScreen() {
                 accessibilityLabel={`사진 ${new Date(p.takenAt).toLocaleString('ko-KR')}`}
                 accessibilityState={{ selected: p.id === selected.id }}
                 onPress={() => setSelectedId(p.id)}
-                style={{ width: '32.3%', aspectRatio: 1, borderRadius: radius.icon, overflow: 'hidden', borderWidth: 2, borderColor: p.id === selected.id ? color.brand : 'transparent' }}
+                style={{ width: '32.3%', aspectRatio: 1, borderRadius: radius.icon, overflow: 'hidden', borderWidth: 2, borderColor: p.id === selected.id ? color.mintDeep : 'transparent' }}
               >
                 <Image source={{ uri: p.uri }} style={{ width: '100%', height: '100%' }} />
               </Pressable>

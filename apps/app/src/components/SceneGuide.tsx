@@ -17,15 +17,15 @@ const ACTION_LOOK: Record<GuideAction, { label: string; icon: IconName }> = {
   photo: { label: '현장 사진 촬영', icon: 'camera' },
 };
 
-// 질문 카드는 파랑과 하늘색 사이의 차분한 색(sceneCard)으로, 화면을 열면 바로 눈에 들어오되 쨍하지 않게 한다.
+// 질문 카드는 앱의 남색(sceneCard = ink)에 민트 진행 막대를 쓴다(ADR 0035). 흰 선택지가 남색 위에서 또렷하게 보인다.
 // 카드 위 글자와 아이콘은 흰색으로 쓴다.
 const ON_CARD = color.white;
 const ON_DARK_SUB = 'rgba(255,255,255,0.92)';
 
 // 눈이 편하도록 강한 빨강은 쓰지 않고 연한 바탕 + 진한 아이콘으로만 강조한다.
 function Tile({ icon, tone = 'plain', size = 40 }: { icon: IconName; tone?: 'plain' | 'urgent' | 'urgentOnPink' | 'done'; size?: number }) {
-  const bg = { plain: color.gray3, urgent: color.danger300, urgentOnPink: color.white, done: color.brand }[tone];
-  const fg = { plain: color.gray12, urgent: color.danger600, urgentOnPink: color.danger600, done: color.onBrand }[tone];
+  const bg = { plain: color.gray3, urgent: color.danger300, urgentOnPink: color.white, done: color.mintDeep }[tone];
+  const fg = { plain: color.gray12, urgent: color.danger600, urgentOnPink: color.danger600, done: color.white }[tone];
   return (
     <View style={{ width: size, height: size, borderRadius: radius.icon, backgroundColor: bg, alignItems: 'center', justifyContent: 'center' }}>
       <Icon name={icon} size={size * 0.5} color={fg} />
@@ -43,13 +43,13 @@ function OptionButton({ o, bare, selected, onPress }: { o: Option; bare?: boolea
       onPress={onPress}
       style={({ pressed }) => ({
         flexDirection: 'row', alignItems: 'center', minHeight: 64, gap: space[3], padding: space[3] + 2, borderRadius: radius.row,
-        backgroundColor: pressed || selected ? color.brand200 : color.white,
+        backgroundColor: pressed || selected ? color.mintSoft : color.white,
       })}
     >
       {bare ? <Icon name={o.icon} size={34} color={color.gray12} /> : <Tile icon={o.icon} tone={o.danger ? 'urgent' : 'plain'} />}
       <View style={{ flex: 1, gap: 2 }}>
         <Text style={[type.headline, { fontSize: 16, fontWeight: '700', color: color.gray12 }]}>{o.label}</Text>
-        {o.sub ? <Text style={[type.caption, { color: color.gray11 }]}>{o.sub}</Text> : null}
+        {o.sub ? <Text style={[type.caption, { fontSize: 15, lineHeight: 21, color: color.gray11 }]}>{o.sub}</Text> : null}
       </View>
       <Icon name="chevron" size={16} color={color.gray9} />
     </Pressable>
@@ -61,11 +61,11 @@ function OptionButton({ o, bare, selected, onPress }: { o: Option; bare?: boolea
 function GridOption({ o, selected, onPress }: { o: Option; selected?: boolean; onPress: () => void }) {
   return (
     <Pressable accessibilityRole="button" accessibilityLabel={o.label} accessibilityState={{ selected: !!selected }} onPress={onPress}
-      style={({ pressed }) => ({ width: '48.5%', minHeight: 132, overflow: 'hidden', borderRadius: radius.row, padding: space[3] + 2, gap: space[3], backgroundColor: pressed || selected ? color.brand200 : color.white })}>
+      style={({ pressed }) => ({ width: '48.5%', minHeight: 132, overflow: 'hidden', borderRadius: radius.row, padding: space[3] + 2, gap: space[3], backgroundColor: pressed || selected ? color.mintSoft : color.white })}>
       {({ pressed }) => (
         <>
           {pressed || selected ? (
-            <View pointerEvents="none" style={{ position: 'absolute', right: -14, bottom: -14 }}><Icon name={o.icon} size={86} color={color.brand400} /></View>
+            <View pointerEvents="none" style={{ position: 'absolute', right: -14, bottom: -14 }}><Icon name={o.icon} size={86} color={color.gray4} /></View>
           ) : null}
           <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start' }}>
             <Tile icon={o.icon} size={46} />
@@ -75,7 +75,7 @@ function GridOption({ o, selected, onPress }: { o: Option; selected?: boolean; o
           </View>
           <View style={{ gap: 2 }}>
             <Text style={[type.headline, { fontSize: 17, fontWeight: '800', color: color.gray12 }]}>{o.label}</Text>
-            {o.sub ? <Text style={[type.caption, { color: color.gray11 }]}>{o.sub}</Text> : null}
+            {o.sub ? <Text style={[type.caption, { fontSize: 15, lineHeight: 21, color: color.gray11 }]}>{o.sub}</Text> : null}
           </View>
         </>
       )}
@@ -157,7 +157,7 @@ function QuestionCard({ q, step, total, onAnswer, onBack }: { q: Question; step:
           <Text style={[type.label, { width: 48, textAlign: 'right', fontSize: 15, color: ON_DARK_SUB }]}>{step} / {total}</Text>
         </View>
         <View style={{ height: 4, borderRadius: 2, backgroundColor: 'rgba(255,255,255,0.22)' }}>
-          <View style={{ width: `${pct * 100}%`, height: 4, borderRadius: 2, backgroundColor: color.white }} />
+          <View style={{ width: `${pct * 100}%`, height: 4, borderRadius: 2, backgroundColor: color.mint }} />
         </View>
         <View style={{ gap: space[1], marginTop: space[1] }}>
           <Text accessibilityRole="header" style={[type.title, { fontSize: 26, color: ON_CARD }]}>{q.title}</Text>
@@ -201,7 +201,7 @@ function StepRow({ n, step, done, open, onToggleDone, onToggleOpen, handlers, la
         </Pressable>
         {open ? (
           <View style={{ gap: space[3], marginTop: space[1] }}>
-            <Text style={[type.body, { fontSize: 14, color: color.gray11, lineHeight: 21 }]}>{step.detail}</Text>
+            <Text style={[type.body, { fontSize: 15, color: color.gray11, lineHeight: 22 }]}>{step.detail}</Text>
             {step.actions?.length ? (
               <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: space[2] }}>
                 {step.actions.map((a) => (
@@ -244,11 +244,16 @@ export function SceneGuide({ handlers }: { handlers: GuideHandlers }) {
   const guide = buildGuide(answers, notes);
   const doneCount = guide.now.filter((s) => done.has(s.id)).length;
   const toggle = (id: string) => setDone((d) => { const n = new Set(d); n.has(id) ? n.delete(id) : n.add(id); return n; });
-  const restart = () => { setAnswers({}); setNotes({}); setDone(new Set()); setOpen(null); };
 
   return (
     <>
       <View style={{ backgroundColor: color.white, borderWidth: 1, borderColor: color.line, borderRadius: radius.card, padding: space[4], gap: space[3] }}>
+        {/* 결과에서도 질문 카드처럼 왼쪽 위 뒤로 버튼으로 마지막 질문에 돌아간다. 앞의 답은 그대로 남는다(ADR 0040). */}
+        <Pressable accessibilityRole="button" accessibilityLabel="이전 질문" onPress={back} hitSlop={10}
+          style={{ flexDirection: 'row', alignItems: 'center', gap: space[1], alignSelf: 'flex-start', minHeight: 32 }}>
+          <Icon name="back" size={20} color={color.gray12} />
+          <Text style={[type.label, { fontSize: 15, color: color.gray12 }]}>이전 질문</Text>
+        </Pressable>
         <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: space[2] }}>
           {guide.summary.map((t) => (
             <View key={t} style={{ backgroundColor: color.gray3, borderRadius: radius.pill, paddingHorizontal: space[3], paddingVertical: 6 }}>
@@ -256,10 +261,7 @@ export function SceneGuide({ handlers }: { handlers: GuideHandlers }) {
             </View>
           ))}
         </View>
-        <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
-          <Text style={[type.caption, { color: color.gray11 }]}>이 상황에 맞춰 안내해요.</Text>
-          <Pressable accessibilityRole="button" onPress={restart} hitSlop={10}><Text style={[type.label, { color: color.brand600 }]}>다시 답하기</Text></Pressable>
-        </View>
+        <Text style={[type.caption, { color: color.gray11 }]}>이 상황에 맞춰 안내해요.</Text>
       </View>
 
       <Card title="지금 할 일" action={{ label: `${doneCount}/${guide.now.length} 완료`, onPress: () => setDone(new Set()) }}>

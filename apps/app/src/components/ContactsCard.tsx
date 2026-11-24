@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Alert, Linking, Platform, Pressable, Text, View } from 'react-native';
-import { Button, Card, Icon, TextField, type IconName } from '@/components/ui';
+import { Button, Card, Icon, TextField, useConfirm, type IconName } from '@/components/ui';
 import { addContact, getContacts, MAX_CONTACTS, removeContact, type Contact } from '@/lib/scene-store';
 import { color, radius, space, type } from '@/theme';
 
@@ -8,7 +8,7 @@ const RELATIONS = ['가족', '친구', '직장', '기타'];
 const SMS_BODY = '[AIGO] 교통사고가 났어요. 확인하면 연락 부탁해요.';
 
 function open(url: string, fallback: string) {
-  Linking.openURL(url).catch(() => Alert.alert('앱을 열 수 없습니다.', fallback));
+  Linking.openURL(url).catch(() => Alert.alert('앱을 열 수 없어요.', fallback));
 }
 const call = (c: Contact) => open(`tel:${c.phone}`, `${c.phone}로 직접 전화해 주세요.`);
 // iOS는 번호 뒤 &body=, Android는 ?body=를 쓴다.
@@ -25,8 +25,8 @@ function RoundButton({ icon, label, onPress, bg, fg }: { icon: IconName; label: 
 function ContactRow({ c, editing, onRemove }: { c: Contact; editing: boolean; onRemove: () => void }) {
   return (
     <View style={{ flexDirection: 'row', alignItems: 'center', gap: space[3], padding: space[3], borderWidth: 1, borderColor: color.gray4, borderRadius: radius.row, backgroundColor: color.white }}>
-      <View style={{ width: 40, height: 40, borderRadius: 20, backgroundColor: color.brand200, alignItems: 'center', justifyContent: 'center' }}>
-        <Text style={[type.headline, { color: color.brand600 }]}>{c.name.slice(0, 1)}</Text>
+      <View style={{ width: 40, height: 40, borderRadius: 20, backgroundColor: color.mintSoft, alignItems: 'center', justifyContent: 'center' }}>
+        <Text style={[type.headline, { color: color.mintDeep }]}>{c.name.slice(0, 1)}</Text>
       </View>
       <View style={{ flex: 1 }}>
         <Text style={[type.label, { fontSize: 14, color: color.gray12 }]} numberOfLines={1}>{c.name}</Text>
@@ -37,7 +37,7 @@ function ContactRow({ c, editing, onRemove }: { c: Contact; editing: boolean; on
       ) : (
         <View style={{ flexDirection: 'row', gap: space[2] }}>
           <RoundButton icon="message" label={`${c.name}에게 문자`} onPress={() => text(c)} bg={color.gray3} fg={color.ink} />
-          <RoundButton icon="phone" label={`${c.name}에게 전화`} onPress={() => call(c)} bg={color.brand} fg={color.onBrand} />
+          <RoundButton icon="phone" label={`${c.name}에게 전화`} onPress={() => call(c)} bg={color.ink} fg={color.white} />
         </View>
       )}
     </View>
@@ -53,6 +53,7 @@ export function ContactsCard() {
   const [relation, setRelation] = useState(RELATIONS[0]);
   const [phone, setPhone] = useState('');
   const [error, setError] = useState<string | null>(null);
+  const [ask, dialog] = useConfirm();
 
   useEffect(() => {
     getContacts().then(setList);
@@ -70,20 +71,25 @@ export function ContactsCard() {
       setList(await addContact(name, relation, phone));
       reset();
     } catch (e) {
-      setError(e instanceof Error ? e.message : '저장하지 못했습니다.');
+      setError(e instanceof Error ? e.message : '저장하지 못했어요.');
     }
   }
   function remove(c: Contact) {
-    Alert.alert(`${c.name}을(를) 지울까요?`, undefined, [
-      { text: '취소', style: 'cancel' },
-      { text: '삭제', style: 'destructive', onPress: () => removeContact(c.id).then((next) => { setList(next); if (!next.length) setEditing(false); }) },
-    ]);
+    ask({
+      title: '이 연락처를 지울까요?',
+      body: c.relation ? `${c.name} · ${c.relation} · ${c.phone}` : `${c.name} · ${c.phone}`,
+      confirmLabel: '삭제',
+      danger: true,
+      icon: 'trash',
+      onConfirm: () => removeContact(c.id).then((next) => { setList(next); if (!next.length) setEditing(false); }),
+    });
   }
 
   const action = list.length && !adding ? { label: editing ? '완료' : '편집', onPress: () => setEditing(!editing) } : undefined;
 
   return (
     <Card title="알릴 사람" action={action}>
+      {dialog}
       {!list.length && !adding ? (
         <Text style={[type.caption, { color: color.gray11 }]}>사고가 났을 때 바로 연락할 사람을 저장해 두세요. 버튼 한 번으로 전화나 문자를 보낼 수 있어요.</Text>
       ) : null}
