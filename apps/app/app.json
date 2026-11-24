@@ -4,7 +4,7 @@
     "slug": "aigo",
     "version": "0.3.6",
     "orientation": "portrait",
-    "icon": "./assets/brand/icon-dark.png",
+    "icon": "./assets/brand/app-icon.png",
     "userInterfaceStyle": "light",
     "ios": {
       "supportsTablet": false,
@@ -12,9 +12,10 @@
     },
     "android": {
       "adaptiveIcon": {
-        "foregroundImage": "./assets/brand/adaptive-foreground.png",
-        "monochromeImage": "./assets/brand/adaptive-monochrome.png",
-        "backgroundColor": "#1C1C1C"
+        "foregroundImage": "./assets/brand/app-icon-fg.png",
+        "backgroundImage": "./assets/brand/app-icon-bg.png",
+        "monochromeImage": "./assets/brand/app-icon-mono.png",
+        "backgroundColor": "#1A2B4C"
       },
       "predictiveBackGestureEnabled": false,
       "package": "com.jcmaker.aigo",
@@ -22,7 +23,7 @@
       "allowBackup": false
     },
     "web": {
-      "favicon": "./assets/brand/icon-dark.png"
+      "favicon": "./assets/brand/app-icon.png"
     },
     "scheme": "aigo",
     "plugins": [

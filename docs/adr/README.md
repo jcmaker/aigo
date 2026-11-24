@@ -69,3 +69,4 @@ ADR(Architecture Decision Record)은 "무엇을, 왜, 누가 바꿨는지" 남�
 | [0047](0047-app-analyses-no-upload-button.md) | 내 분석 목록 아래 "영상 올리기" 버튼을 뺀다(빈 화면 버튼은 남김) | 제안 | 최혜지, Claude(AI) | 2026-11-23 |
 | [0048](0048-app-home-recent-strip.md) | 홈 "최근 분석"을 제목 줄 없는 한 줄 띠로 줄여 맨 위에 붙인다 | 제안 | 최혜지, Claude(AI) | 2026-11-23 |
 | [0049](0049-app-ux-review-fixes.md) | UX 검토 1~8번: 리포트 머리글 "분석 리포트", 업로드 버튼 안내, 글씨 키우기, 하단 메뉴 글자, 근거 반복 문구 빼기, 112·119 띠 낮추기, 홈 DashPi 줄 빼기 | 제안 | 최혜지, Claude(AI) | 2026-11-23 |
+| [0050](0050-app-icon-navy-red-dot.md) | 앱 아이콘을 남색 원형 그라데이션 + 흰 AIGO 글자 + O 안 빨간 점으로 바꾼다 | 제안 | 최혜지, Claude(AI) | 2026-11-25 |
