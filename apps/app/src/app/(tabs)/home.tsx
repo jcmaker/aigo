@@ -2,9 +2,9 @@ import * as ImagePicker from 'expo-image-picker';
 import { useFocusEffect, useRouter } from 'expo-router';
 import { useCallback, useRef, useState, type ReactNode } from 'react';
 import { Animated, Pressable, Text, View, useWindowDimensions } from 'react-native';
-import { RecentAnalyses } from '@/components/AnalysisRow';
+import { RecentStrip } from '@/components/AnalysisRow';
 import { Wordmark } from '@/components/Wordmark';
-import { Button, Icon, Screen, StatusChip, type IconName } from '@/components/ui';
+import { Button, Icon, Screen, type IconName } from '@/components/ui';
 import type { Analysis } from '@/lib/analysis';
 import { useApi } from '@/lib/api';
 import { getSeenNotices } from '@/lib/notice-store';
@@ -76,7 +76,6 @@ export default function HomeScreen() {
     const a = res && !res.canceled ? res.assets[0] : null;
     if (a) router.push({ pathname: '/upload', params: pickedParams(a) });
   };
-  const deviceConnected = false; // 기기 연결 기능 전까지는 항상 연결 안 됨
   // 분석 결과는 영상을 올린 뒤에야 의미가 있다. 가장 최근 1건을 올린 지 2주 안일 때만 보인다(목록은 "내 분석" 탭, ADR 0034).
   const latest = homeRecent(items);
   // 최근 분석 줄이 보이고 화면 높이가 낮으면(720 미만) 분석 카드의 카메라 그림을 빼서, 사고 현장 모드 버튼이 스크롤 없이 보이게 한다.
@@ -98,7 +97,7 @@ export default function HomeScreen() {
         </Pressable>
       </View>
 
-      {latest ? <RecentAnalyses items={[latest]} limit={1} title="최근 분석" /> : null}
+      {latest ? <RecentStrip a={latest} /> : null}
 
       {/* 메인: 영상 분석하기. 남색 바탕에 민트 포인트. 아래 사고 현장 모드 버튼이 한 화면에 들어오도록 높이를 줄였다. */}
       <PressCard label="사고 영상, 바로 분석해요" onPress={upload} style={{ flexGrow: 1, minHeight: compact ? 0 : 220 }}>
@@ -119,18 +118,7 @@ export default function HomeScreen() {
         </View>
       </PressCard>
 
-      {/* DashPi 기기 상태. 아직 준비 중이라 작은 한 줄로 둔다. 기기 연결 기능이 들어오면 deviceConnected를 실제 상태로 바꾼다. */}
-      <View style={{ flexDirection: 'row', alignItems: 'center', gap: space[3], backgroundColor: color.white, borderWidth: 1, borderColor: color.line, borderRadius: radius.row, paddingHorizontal: space[4], paddingVertical: space[3] }}>
-        <Icon name="dashcam" size={20} color={color.gray11} />
-        <Text style={[type.caption, small, { flex: 1, color: color.gray12 }]} numberOfLines={1}>DashPi 기기</Text>
-        <StatusChip tone="neutral" label="준비 중" />
-        <View
-          accessible
-          accessibilityLabel={deviceConnected ? '기기 연결됨' : '기기 연결 안 됨'}
-          style={{ width: 10, height: 10, borderRadius: 5, backgroundColor: deviceConnected ? color.online : color.gray9 }}
-        />
-      </View>
-
+      {/* DashPi 기기 줄은 기기 연결 기능이 나올 때까지 뺀다(ADR 0049). */}
       <SceneButton onPress={() => router.push('/emergency')} />
     </Screen>
   );

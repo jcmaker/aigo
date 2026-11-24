@@ -1,6 +1,6 @@
 import { useRouter } from 'expo-router';
 import { Pressable, Text, View, useWindowDimensions } from 'react-native';
-import { Icon, SectionTitle, SourceChip, StatusChip, statusTone, type IconName } from '@/components/ui';
+import { Icon, SourceChip, StatusChip, statusTone, type IconName } from '@/components/ui';
 import { STATUS_LABEL, analysisTitle, faultRange, seoulDate, type Analysis } from '@/lib/analysis';
 import { color, radius, space, type } from '@/theme';
 
@@ -70,14 +70,35 @@ export function AnalysisRow({ a, onPress, onDelete, select }: { a: Analysis; onP
   );
 }
 
-export function RecentAnalyses({ items, limit = 3, title = '최근 분석 기록' }: { items: Analysis[]; limit?: number; title?: string }) {
+// 홈 "최근 분석"(ADR 0048): 제목 줄 없이 한 줄짜리 띠로 줄여 홈 맨 위에 붙인다. 전체 목록은 하단 메뉴 내 분석.
+export function RecentStrip({ a }: { a: Analysis }) {
   const router = useRouter();
+  const busy = a.status === 'queued' || a.status === 'processing';
+  const title = busy ? '영상을 분석하고 있어요' : a.status === 'created' ? '영상 업로드가 끝나지 않았어요' : analysisTitle(a);
+  const tone = statusTone(a.status);
+  const look = LOOK[tone];
+  const range = a.report?.fault ? faultRange(a.report.fault) : null;
+  const status = STATUS_LABEL[a.status] ?? STATUS_LABEL.processing;
   return (
-    <>
-      <SectionTitle title={title} action={{ label: '전체 보기', onPress: () => router.push('/analyses') }} />
-      {items.slice(0, limit).map((a) => (
-        <AnalysisRow key={a.id} a={a} onPress={() => router.push(`/analyses/${a.id}`)} />
-      ))}
-    </>
+    <Pressable
+      accessibilityRole="button"
+      accessibilityLabel={['최근 분석', title, status, range ? `내 과실 ${range}` : null].filter(Boolean).join(', ')}
+      onPress={() => router.push(`/analyses/${a.id}`)}
+      style={({ pressed }) => ({ flexDirection: 'row', alignItems: 'center', gap: space[3], paddingVertical: space[2], paddingHorizontal: space[3], backgroundColor: pressed ? color.gray2 : color.white, borderRadius: radius.row, borderWidth: 1, borderColor: color.line })}
+    >
+      <View style={{ width: 36, height: 36, borderRadius: 10, backgroundColor: look.bg, alignItems: 'center', justifyContent: 'center' }}>
+        <Icon name={look.icon} size={18} color={look.fg} />
+      </View>
+      <View style={{ flex: 1, gap: 1 }}>
+        <Text style={[type.caption, { color: color.gray11 }]}>최근 분석 · {seoulDate(a.created_at)}</Text>
+        <Text style={[type.body, { fontSize: 15, fontWeight: '700', color: color.gray12 }]} numberOfLines={1}>{title}</Text>
+      </View>
+      {range ? (
+        <Text style={[type.headline, { fontSize: 17, fontWeight: '800', color: color.mintDeep }]}>{range}</Text>
+      ) : (
+        <StatusChip tone={tone} label={status} />
+      )}
+      <Icon name="chevron" size={16} color={color.gray11} />
+    </Pressable>
   );
 }

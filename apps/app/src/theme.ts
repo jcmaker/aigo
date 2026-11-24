@@ -51,4 +51,4 @@ export const type = {
 } satisfies Record<string, TextStyle>;
 
 // 떠 있는 하단 메뉴가 차지하는 높이: 메뉴 46 + 위 14 + 아래 여백 18. 기기 안전 영역(insets.bottom)은 Screen이 따로 더한다.
-export const tabBarSpace = 46 + 14 + 18;
+export const tabBarSpace = 54 + 14 + 18; // 하단 메뉴 칸 높이 + 위아래 여백 + 바닥 띄움(ADR 0049)

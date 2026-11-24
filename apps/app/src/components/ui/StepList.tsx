@@ -54,15 +54,15 @@ export function StepList({ steps, current, state, reduceMotion = false }: { step
               <ActiveDot n={i + 1} still={reduceMotion} />
             ) : (
               <View style={{ width: 28, height: 28, borderRadius: 14, backgroundColor: failed ? color.danger : color.gray4, alignItems: 'center', justifyContent: 'center' }}>
-                <Text style={[type.micro, { fontWeight: '800', color: failed ? color.white : color.ink }]}>{i + 1}</Text>
+                <Text style={[type.label, { fontWeight: '800', color: failed ? color.white : color.ink }]}>{i + 1}</Text>
               </View>
             )}
             <View style={{ flex: 1 }}>
               <View style={{ flexDirection: 'row', justifyContent: 'space-between', gap: space[2] }}>
-                <Text style={[type.label, { color: done || active || failed ? color.gray12 : color.gray9 }]}>{s.title}</Text>
+                <Text style={[type.label, { fontSize: 15, color: done || active || failed ? color.gray12 : color.gray9 }]}>{s.title}</Text>
                 {s.time ? <Text style={[type.label, { color: color.mintDeep }]}>{s.time}</Text> : null}
               </View>
-              {s.detail ? <Text style={[type.caption, { color: failed ? color.danger600 : active ? color.mintDeep : color.gray11 }]}>{s.detail}</Text> : null}
+              {s.detail ? <Text style={[type.caption, { fontSize: 14, lineHeight: 20, color: failed ? color.danger600 : active ? color.mintDeep : color.gray11 }]}>{s.detail}</Text> : null}
             </View>
           </View>
         );

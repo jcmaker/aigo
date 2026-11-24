@@ -5,7 +5,7 @@ jest.mock('expo-router', () => ({ useRouter: () => ({ push: mockPush }) }));
 
 import { fireEvent, render, screen } from '@testing-library/react-native';
 import type { Analysis } from '@/lib/analysis';
-import { AnalysisRow, RecentAnalyses } from '../AnalysisRow';
+import { AnalysisRow, RecentStrip } from '../AnalysisRow';
 
 const done = (id: number) =>
   ({ id, status: 'done', created_at: '2026-11-08T03:00:00Z', report: { accident_type: '차선 변경 사고', involvement: 'involved', fault: { my_min: 20, my_max: 40 } } }) as unknown as Analysis;
@@ -26,11 +26,19 @@ test('분석 행은 제목, 상태, 내 과실 범위를 크게 보이고 누르
   expect(onDelete).toHaveBeenCalled();
 });
 
-test('최근 분석은 앞의 3개만 보이고 전체 보기로 목록에 간다', async () => {
-  await render(<RecentAnalyses items={[1, 2, 3, 4, 5].map(done)} />);
-  expect(screen.getAllByText('차선 변경 사고')).toHaveLength(3);
-  await fireEvent.press(screen.getByText('전체 보기'));
-  expect(mockPush).toHaveBeenCalledWith('/analyses');
+test('홈 최근 분석 띠는 한 줄로 제목과 과실 범위를 보이고 누르면 그 리포트로 간다', async () => {
+  await render(<RecentStrip a={done(7)} />);
+  expect(screen.getByText('차선 변경 사고')).toBeTruthy();
+  expect(screen.getByText('20~40%')).toBeTruthy();
+  expect(screen.queryByText('전체 보기')).toBeNull();
+  await fireEvent.press(screen.getByRole('button', { name: /최근 분석, 차선 변경 사고, 완료, 내 과실 20~40%/ }));
+  expect(mockPush).toHaveBeenCalledWith('/analyses/7');
+});
+
+test('분석 중인 최근 분석 띠는 과실 대신 분석 중 표시를 보인다', async () => {
+  await render(<RecentStrip a={{ ...done(8), status: 'processing', report: null } as unknown as Analysis} />);
+  expect(screen.getByText('영상을 분석하고 있어요')).toBeTruthy();
+  expect(screen.getByText('분석 중')).toBeTruthy();
 });
 
 test('DashPi에서 온 분석 행에만 DashPi 칩이 있다', async () => {

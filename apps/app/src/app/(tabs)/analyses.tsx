@@ -196,7 +196,8 @@ export default function AnalysesScreen() {
                 <Text style={{ ...t.body, color: color.gray11, textAlign: 'center', paddingVertical: space[4] }}>{FILTER_EMPTY[filter]}</Text>
               )}
             </View>
-          {selecting ? <View style={{ height: 72 }} /> : <Button variant="secondary" icon="upload" label="영상 올리기" onPress={() => router.push('/upload')} />}
+          {/* 목록 아래 "영상 올리기"는 뺐다(ADR 0047): 하단 메뉴 분석하기와 홈 카드로 가고, 목록이 길면 보이지도 않는다. 빈 화면 버튼은 남긴다. */}
+          {selecting ? <View style={{ height: 72 }} /> : null}
         </>
       )}
     </Screen>

@@ -124,7 +124,6 @@ export function VerticalTimeline({ items, collisionT, onSeek }: { items: Evidenc
                 {hit && <Pill text="접촉 장면" tone="red" />}
               </View>
               <Text style={[strong, { fontSize: 15, lineHeight: 22 }]}>{e.text}</Text>
-              {onSeek && <Text style={muted}>눌러서 이 장면으로 이동</Text>}
             </View>
           </View>
         );
