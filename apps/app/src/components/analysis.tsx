@@ -66,7 +66,7 @@ function RefCard({ title, items, source }: { title: string; items: { text: strin
 /** 서버 메시지가 제목과 같은 말로 시작하면 두 번 쓰지 않는다. */
 export function FailureNotice({ code, message }: { code: string; message: string }) {
   const known = FAILURES[code];
-  const title = known?.title ?? '요청을 끝내지 못했습니다';
+  const title = known?.title ?? '요청을 끝내지 못했어요';
   const repeated = message.startsWith(title);
   return (
     <View style={{ gap: space[1] }}>
@@ -124,8 +124,8 @@ function ProgressBar({ ratio, still }: { ratio: number; still: boolean }) {
   const pct = width.interpolate({ inputRange: [0, 1], outputRange: ['0%', '100%'] });
   const translateX = sheen.interpolate({ inputRange: [0, 1], outputRange: [-120, 360] });
   return (
-    <View style={{ height: 8, borderRadius: 999, backgroundColor: color.brand200, overflow: 'hidden' }}>
-      <Animated.View style={{ width: pct, height: '100%', borderRadius: 999, backgroundColor: color.brand, overflow: 'hidden' }}>
+    <View style={{ height: 8, borderRadius: 999, backgroundColor: color.mintSoft, overflow: 'hidden' }}>
+      <Animated.View style={{ width: pct, height: '100%', borderRadius: 999, backgroundColor: color.mintDeep, overflow: 'hidden' }}>
         {!still && <Animated.View style={{ position: 'absolute', top: 0, bottom: 0, width: 60, backgroundColor: 'rgba(255,255,255,0.35)', transform: [{ translateX }] }} />}
       </Animated.View>
     </View>
@@ -146,9 +146,9 @@ export function ProgressView({ analysis, stale }: { analysis: Analysis; stale: b
   const current = live.current;
   const byStage = new Map(analysis.progress.map((p) => [p.stage, p]));
   const headline = failed
-    ? '분석을 끝내지 못했습니다'
+    ? '분석을 끝내지 못했어요'
     : abandoned
-      ? '영상이 끝까지 올라가지 않았습니다'
+      ? '영상이 끝까지 올라가지 않았어요'
       : (STAGES[current]?.doing ?? '곧 분석을 시작해요');
   const label = failed || abandoned ? '분석 중단' : current >= 0 ? `${current + 1}/${STAGES.length} 단계` : '대기 중';
   const state = failed ? 'failed' : 'running';
@@ -169,7 +169,7 @@ export function ProgressView({ analysis, stale }: { analysis: Analysis; stale: b
       <Card>
         <View style={{ gap: space[3] }}>
           <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
-            <Text style={[type.label, { color: failed || abandoned ? color.danger600 : color.brand }]}>{label}</Text>
+            <Text style={[type.label, { color: failed || abandoned ? color.danger600 : color.mintDeep }]}>{label}</Text>
             {running && live.elapsedSec !== null ? <Text style={muted}>{`경과 ${formatTime(live.elapsedSec)}`}</Text> : null}
           </View>
           <Text accessibilityRole="header" style={[type.title, { color: color.gray12 }]}>{headline}</Text>
@@ -180,12 +180,18 @@ export function ProgressView({ analysis, stale }: { analysis: Analysis; stale: b
         {abandoned && <Text style={body}>이 분석은 시작되지 않았습니다. 영상을 다시 올려 주세요.</Text>}
         {stale && <Text style={muted}>연결이 불안정합니다. 계속 다시 확인하고 있습니다.</Text>}
       </Card>
+      {/* 기다리지 않아도 된다는 안내를 진행 카드 바로 아래에 둔다(ADR 0037). */}
+      {running && (
+        <View style={{ flexDirection: 'row', alignItems: 'center', gap: space[3], backgroundColor: color.mintSoft, borderRadius: radius.row, padding: space[4] }}>
+          <Icon name="check" size={18} color={color.mintDeep} />
+          <Text style={[type.body, { flex: 1, fontSize: 15, lineHeight: 22, color: color.gray12 }]}>화면을 닫아도 분석은 계속돼요. 끝나면 내 분석에서 볼 수 있어요.</Text>
+        </View>
+      )}
       {!abandoned && (
         <Card title="진행 단계">
           <StepList steps={steps} current={current} state={state} reduceMotion={still} />
         </Card>
       )}
-      {running && <Notice>화면을 닫아도 분석은 계속됩니다. 끝나면 내 분석에서 레포트를 볼 수 있습니다.</Notice>}
     </View>
   );
 }

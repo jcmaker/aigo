@@ -2,7 +2,7 @@ import { Stack, useLocalSearchParams, useRouter } from 'expo-router';
 import { useEffect, useRef, useState } from 'react';
 import { ActivityIndicator, Alert, Dimensions, Pressable, Text, type ScrollViewInstance, type ViewInstance } from 'react-native';
 import { ErrorLine, FailureNotice, ProgressView, ReportView, type ReportTab } from '@/components/analysis';
-import { Button, Card, Icon, Screen } from '@/components/ui';
+import { Button, Card, Icon, Screen, useConfirm } from '@/components/ui';
 import { ReportHeader, ReportMenu, headerCircle, type MenuAction, type MenuAnchor } from '@/components/report-sections';
 import { analysisTitle, seoulDate, useAnalysis } from '@/lib/analysis';
 import { useApi } from '@/lib/api';
@@ -22,6 +22,7 @@ export default function AnalysisScreen() {
   const menuRef = useRef<ViewInstance>(null);
   const [error, setError] = useState<string | null>(null);
   const [tab, setTab] = useState<ReportTab>('summary');
+  const [ask, dialog] = useConfirm();
   const scroll = useRef<ScrollViewInstance>(null);
   // 탭을 바꾸면 맨 위로 올린다. 요약 맨 아래의 시각을 눌러도 근거 탭의 영상이 보인다.
   useEffect(() => {
@@ -32,7 +33,7 @@ export default function AnalysisScreen() {
   // 목록·업로드로 갈 때는 dismissTo로 아래의 탭 묶음까지 내려간다(replace는 탭 묶음을 하나 더 쌓는다).
   useEffect(() => {
     if (notFound === null) return;
-    Alert.alert('분석을 찾을 수 없습니다', notFound, [{ text: '확인', onPress: () => router.dismissTo('/analyses') }]);
+    Alert.alert('분석을 찾을 수 없어요', notFound, [{ text: '확인', onPress: () => router.dismissTo('/analyses') }]);
   }, [notFound, router]);
 
   const share = async () => {
@@ -49,27 +50,27 @@ export default function AnalysisScreen() {
   };
 
   const remove = () =>
-    Alert.alert('분석 삭제', '이 분석과 영상 파일을 지웁니다. 되돌릴 수 없습니다.', [
-      { text: '취소', style: 'cancel' },
-      {
-        text: '삭제',
-        style: 'destructive',
-        onPress: async () => {
-          stop(); // 삭제 뒤 도착한 폴링의 404가 알림을 띄우지 않게 한다.
-          setDeleting(true);
-          setError(null);
-          try {
-            await api(`/api/v1/analyses/${id}`, { method: 'DELETE' });
-            deleteReportPdf(id);
-            router.dismissTo('/analyses');
-          } catch (e) {
-            setError((e as ApiFailure).message);
-            setDeleting(false);
-            reload();
-          }
-        },
+    ask({
+      title: '분석을 지울까요?',
+      body: '이 분석과 영상 파일을 지워요. 되돌릴 수 없어요.',
+      confirmLabel: '삭제',
+      danger: true,
+      icon: 'trash',
+      onConfirm: async () => {
+        stop(); // 삭제 뒤 도착한 폴링의 404가 알림을 띄우지 않게 한다.
+        setDeleting(true);
+        setError(null);
+        try {
+          await api(`/api/v1/analyses/${id}`, { method: 'DELETE' });
+          deleteReportPdf(id);
+          router.dismissTo('/analyses');
+        } catch (e) {
+          setError((e as ApiFailure).message);
+          setDeleting(false);
+          reload();
+        }
       },
-    ]);
+    });
 
   // 알림으로 바로 열면 뒤로 갈 화면이 없다.
   const back = () => (router.canGoBack() ? router.back() : router.replace('/analyses'));
@@ -88,7 +89,8 @@ export default function AnalysisScreen() {
   // ⋯ 버튼의 화면 위치를 재서 메뉴 상자를 바로 아래 오른쪽 끝에 맞춘다.
   const openMenu = () =>
     menuRef.current?.measureInWindow((x, y, w, h) => setMenu({ top: y + h + 6, right: Math.max(space[2], Dimensions.get('window').width - (x + w)) }));
-  const menuButton = analysis ? (
+  // 대기·분석 중에는 할 수 있는 일이 삭제뿐이라 ⋯를 숨긴다. 끝나면(완료·실패) 나타난다(ADR 0044).
+  const menuButton = analysis && !busy ? (
     <Pressable ref={menuRef} accessibilityRole="button" accessibilityLabel="더 보기" accessibilityHint="리포트 PDF 보내기, 영상 다시 올리기, 분석 삭제" onPress={openMenu} style={headerCircle}>
       {sharing || deleting ? <ActivityIndicator color={color.white} /> : <Icon name="dots" size={20} color={color.white} />}
     </Pressable>
@@ -97,8 +99,10 @@ export default function AnalysisScreen() {
   return (
     <Screen scroll scrollRef={scroll} topColor={color.ink} barStyle="light-content">
       <Stack.Screen options={{ headerShown: false }} />
-      <ReportHeader title={analysis ? analysisTitle(analysis) : `분석 #${id}`} subtitle={subtitle} onBack={back} right={menuButton} />
+      {/* 결과가 나오기 전에는 "분석 #24" 대신 지금 하는 일을 말한다(ADR 0037, 내 분석 목록과 같은 문구). */}
+      <ReportHeader title={!analysis || analysis.status === 'queued' || analysis.status === 'processing' ? '영상을 분석하고 있어요' : analysisTitle(analysis)} subtitle={subtitle} onBack={back} right={menuButton} />
       <ReportMenu visible={menu !== null} anchor={menu} actions={actions} onClose={() => setMenu(null)} />
+      {dialog}
       {analysis ? (
         <>
           {/* 출처(DashPi)는 머리글 날짜 줄에 붙인다. 머리글과 탭 사이를 비워 두기 위해서다. */}

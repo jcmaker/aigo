@@ -1,10 +1,10 @@
 import { useClerk, useUser } from '@clerk/expo';
 import Constants from 'expo-constants';
-import { useRouter } from 'expo-router';
 import * as WebBrowser from 'expo-web-browser';
 import { useState } from 'react';
-import { Alert, Text, View } from 'react-native';
-import { Button, MenuGroup, MenuRow, PageTitle, Screen } from '@/components/ui';
+import { Pressable, Text, View } from 'react-native';
+import { Button, MenuGroup, MenuRow, Screen, useConfirm } from '@/components/ui';
+import { ReportHeader } from '@/components/report-sections';
 import { seoulDate } from '@/lib/analysis';
 import { useApi } from '@/lib/api';
 import type { ApiFailure } from '@/lib/api';
@@ -19,30 +19,29 @@ const DELETED_BUT_SIGNED_IN = '탈퇴는 완료됐지만 로그아웃하지 못�
 export default function AccountScreen() {
   const api = useApi();
   const { signOut } = useClerk();
-  const router = useRouter();
   const { user } = useUser();
   const email = user?.primaryEmailAddress?.emailAddress ?? '';
   const [error, setError] = useState<string | null>(null);
+  const [ask, dialog] = useConfirm();
 
   const remove = () =>
-    Alert.alert('탈퇴', '계정과 분석 기록이 모두 삭제됩니다. 계속할까요?', [
-      { text: '취소', style: 'cancel' },
-      {
-        text: '탈퇴',
-        style: 'destructive',
-        onPress: async () => {
-          try {
-            await api('/api/v1/me', { method: 'DELETE' });
-          } catch (e) {
-            setError((e as ApiFailure).message);
-            return;
-          }
-          // 계정은 이미 지워졌다. 로그아웃 실패를 삭제 실패로 보이게 하지 않는다.
-          clearAppCache();
-          signOut().catch(() => setError(DELETED_BUT_SIGNED_IN));
-        },
+    ask({
+      title: '탈퇴할까요?',
+      body: '계정과 분석 기록이 모두 지워져요. 되돌릴 수 없어요.',
+      confirmLabel: '탈퇴하기',
+      danger: true,
+      onConfirm: async () => {
+        try {
+          await api('/api/v1/me', { method: 'DELETE' });
+        } catch (e) {
+          setError((e as ApiFailure).message);
+          return;
+        }
+        // 계정은 이미 지워졌다. 로그아웃 실패를 삭제 실패로 보이게 하지 않는다.
+        clearAppCache();
+        signOut().catch(() => setError(DELETED_BUT_SIGNED_IN));
       },
-    ]);
+    });
 
   const logout = async () => {
     await unregisterPush(api); // 실패해도 로그아웃은 계속한다.
@@ -51,26 +50,27 @@ export default function AccountScreen() {
   };
   const group = (label: string) => <Text style={[t.label, { color: color.gray11, marginTop: space[2] }]}>{label}</Text>;
 
-  // 시안의 마이페이지 배치: 프로필 카드 → 묶음 메뉴 → 로그아웃 → 버전
+  // 남색 머리글 → 프로필 → 내 서비스 → 로그아웃 → (맨 아래 작게) 탈퇴 → 버전(ADR 0038)
   return (
-    <Screen scroll tabInset>
-      <PageTitle title="계정" />
+    <Screen scroll tabInset topColor={color.ink} barStyle="light-content">
+      <ReportHeader title="계정" />
+      {dialog}
       <View style={{ flexDirection: 'row', alignItems: 'center', gap: space[3], backgroundColor: color.white, borderWidth: 1, borderColor: color.line, borderRadius: radius.card, padding: space[4] }}>
-        <View style={{ width: 56, height: 56, borderRadius: 18, backgroundColor: color.brand, alignItems: 'center', justifyContent: 'center' }}>
-          <Text style={[t.title, { color: color.ink }]}>{email.slice(0, 1).toUpperCase()}</Text>
+        <View style={{ width: 56, height: 56, borderRadius: 18, backgroundColor: color.ink, alignItems: 'center', justifyContent: 'center' }}>
+          <Text style={[t.title, { color: color.mint }]}>{email.slice(0, 1).toUpperCase()}</Text>
         </View>
         <View style={{ flex: 1, gap: 4 }}>
           <Text style={[t.label, { fontSize: 15, color: color.gray12 }]} numberOfLines={1}>{email}</Text>
-          {user?.createdAt ? <Text style={[t.caption, { fontSize: 12, color: color.gray11 }]}>가입 {seoulDate(user.createdAt.toISOString())}</Text> : null}
+          {user?.createdAt ? <Text style={[t.caption, { fontSize: 13, color: color.gray11 }]}>가입 {seoulDate(user.createdAt.toISOString())}</Text> : null}
         </View>
       </View>
       {error ? <Text style={{ ...t.caption, color: color.danger600 }}>{error}</Text> : null}
 
+      {/* 내 분석·사고 현장 모드는 하단 메뉴에 있어 이 화면에는 하단 메뉴에 없는 상품 보기만 둔다(ADR 0038). */}
       {group('내 서비스')}
       <MenuGroup>
-        <MenuRow first icon="list" title="내 분석" subtitle="분석 기록 · 레포트" onPress={() => router.push('/analyses')} />
-        <MenuRow icon="alert" urgent title="사고 현장 모드" subtitle="신고 · 체크리스트 · 현장 사진" onPress={() => router.push('/emergency')} />
         <MenuRow
+          first
           icon="file"
           title="상품 보기"
           subtitle="웹에서 열기"
@@ -78,13 +78,14 @@ export default function AccountScreen() {
         />
       </MenuGroup>
 
-      {group('계정 관리')}
-      <MenuGroup>
-        <MenuRow first icon="trash" danger title="탈퇴" subtitle="계정과 분석 기록을 모두 지웁니다" onPress={remove} />
-      </MenuGroup>
-
       <Button variant="secondary" icon="logout" label="로그아웃" onPress={logout} style={{ marginTop: space[2] }} />
-      <Text style={[t.micro, { color: color.gray11, textAlign: 'center' }]}>AIGO 앱 v{Constants.expoConfig?.version ?? ''}</Text>
+
+      {/* 되돌릴 수 없는 탈퇴는 자주 쓰는 로그아웃보다 눈에 덜 띄게 맨 아래 작은 글씨로 둔다. 누르면 확인 창을 거친다. */}
+      <Pressable accessibilityRole="button" accessibilityLabel="탈퇴하기" onPress={remove} hitSlop={8} style={{ alignSelf: 'center', marginTop: space[4], alignItems: 'center', gap: 2 }}>
+        <Text style={[t.label, { fontSize: 14, color: color.danger600, textDecorationLine: 'underline' }]}>탈퇴하기</Text>
+        <Text style={[t.micro, { color: color.gray11 }]}>계정과 분석 기록을 모두 지워요</Text>
+      </Pressable>
+      <Text style={[t.micro, { color: color.gray11, textAlign: 'center', marginTop: space[2] }]}>AIGO 앱 v{Constants.expoConfig?.version ?? ''}</Text>
     </Screen>
   );
 }

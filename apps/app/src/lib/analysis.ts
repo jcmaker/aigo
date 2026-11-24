@@ -26,25 +26,25 @@ export const LIKELIHOOD = {
 } as const;
 export const signed = (n: number) => (n > 0 ? `+${n}` : n < 0 ? `−${-n}` : '0');
 
-const NEXT_DAY = '한국 시간 자정이 지나면 다시 올릴 수 있습니다.';
-const NOT_COUNTED = '실패한 분석은 하루 한도에 세지 않습니다.';
-const MODEL_FAILURE = { title: 'AI 분석을 끝내지 못했습니다', hint: `영상 문제가 아닐 수 있습니다. ${NOT_COUNTED}` };
+const NEXT_DAY = '한국 시간 자정이 지나면 다시 올릴 수 있어요.';
+const NOT_COUNTED = '실패한 분석은 하루 한도에 세지 않아요.';
+const MODEL_FAILURE = { title: 'AI 분석을 끝내지 못했어요', hint: `영상 문제가 아닐 수 있어요. ${NOT_COUNTED}` };
 
 export const FAILURES: Record<string, { title: string; hint: string; final?: boolean }> = {
-  DAILY_LIMIT: { title: '오늘 올릴 수 있는 분석을 모두 썼습니다', hint: NEXT_DAY, final: true },
-  SERVICE_LIMIT: { title: '오늘 서비스 분석이 마감됐습니다', hint: NEXT_DAY, final: true },
-  UPLOAD_FAILED: { title: '영상을 올리지 못했습니다', hint: '다시 시도하면 같은 분석에 이어 올리므로 하루 한도를 더 쓰지 않습니다. 올린 지 15분이 지나 주소가 만료됐다면 새 분석이 만들어져 한도가 한 번 더 줄어듭니다.' },
-  INVALID_TRIM: { title: '선택한 구간을 분석하지 못했습니다', hint: '구간을 다시 골라 영상을 새로 올려 주세요.' },
-  UPLOAD_INCOMPLETE: { title: '영상이 끝까지 올라가지 않았습니다', hint: '다시 시도하면 처음부터 올립니다.' },
-  INVALID_VIDEO: { title: '영상을 읽지 못했습니다', hint: '파일이 손상되지 않았는지 확인하고 다른 파일로 올려 주세요.' },
-  VIDEO_TOO_LONG: { title: '영상이 너무 깁니다', hint: '충돌 앞뒤만 남기고 2분 이하로 잘라서 올려 주세요.' },
-  UPLOAD_CHANGED: { title: '업로드한 영상이 바뀌었습니다', hint: '분석을 시작한 뒤 파일이 달라졌습니다. 영상을 새로 올려 주세요.' },
-  INTERNAL_ERROR: { title: '분석 중 문제가 생겼습니다', hint: `영상 문제가 아닐 수 있습니다. ${NOT_COUNTED}` },
-  WORKER_TIMEOUT: { title: '분석 시간이 너무 오래 걸렸습니다', hint: NOT_COUNTED },
+  DAILY_LIMIT: { title: '오늘 올릴 수 있는 분석을 모두 썼어요', hint: NEXT_DAY, final: true },
+  SERVICE_LIMIT: { title: '오늘 서비스 분석이 마감됐어요', hint: NEXT_DAY, final: true },
+  UPLOAD_FAILED: { title: '영상을 올리지 못했어요', hint: '다시 시도하면 같은 분석에 이어 올리므로 하루 한도를 더 쓰지 않아요. 올린 지 15분이 지나 주소가 만료됐다면 새 분석이 만들어져 한도가 한 번 더 줄어요.' },
+  INVALID_TRIM: { title: '선택한 구간을 분석하지 못했어요', hint: '구간을 다시 골라 영상을 새로 올려 주세요.' },
+  UPLOAD_INCOMPLETE: { title: '영상이 끝까지 올라가지 않았어요', hint: '다시 시도하면 처음부터 올려요.' },
+  INVALID_VIDEO: { title: '영상을 읽지 못했어요', hint: '파일이 손상되지 않았는지 확인하고 다른 파일로 올려 주세요.' },
+  VIDEO_TOO_LONG: { title: '영상이 너무 길어요', hint: '충돌 앞뒤만 남기고 2분 이하로 잘라서 올려 주세요.' },
+  UPLOAD_CHANGED: { title: '업로드한 영상이 바뀌었어요', hint: '분석을 시작한 뒤 파일이 달라졌어요. 영상을 새로 올려 주세요.' },
+  INTERNAL_ERROR: { title: '분석 중 문제가 생겼어요', hint: `영상 문제가 아닐 수 있어요. ${NOT_COUNTED}` },
+  WORKER_TIMEOUT: { title: '분석 시간이 너무 오래 걸렸어요', hint: NOT_COUNTED },
   MODEL_TIMEOUT: MODEL_FAILURE,
   MODEL_FAILED: MODEL_FAILURE,
   MODEL_INVALID: MODEL_FAILURE,
-  REPORT_MISSING: { title: '레포트를 불러오지 못했습니다', hint: '' },
+  REPORT_MISSING: { title: '리포트를 불러오지 못했어요', hint: '' },
 };
 
 export const STATUS_LABEL: Record<string, string> = {
@@ -57,17 +57,17 @@ export const STATUS_LABEL: Record<string, string> = {
 
 export const STAGES = [
   // hints: 진행 중에 2.6초마다 바뀌는 안내. 실제로 잰 값이 아니므로 숫자를 넣지 않는다(ADR 0033).
-  { id: 'normalize', title: '영상 준비', doing: '영상을 준비하고 있어요', about: '재생용과 분석용 파일을 만듭니다.',
+  { id: 'normalize', title: '영상 준비', doing: '영상을 준비하고 있어요', about: '재생용과 분석용 파일을 만들어요.',
     hints: ['영상 길이와 화질을 확인하고 있어요', '재생용 파일을 만들고 있어요'] },
-  { id: 'scan', title: '객체 추적', doing: '차와 사람을 따라가고 있어요', about: '차량과 사람을 프레임마다 따라갑니다.',
+  { id: 'scan', title: '객체 추적', doing: '차와 사람을 따라가고 있어요', about: '차량과 사람을 프레임마다 따라가요.',
     hints: ['프레임을 한 장씩 살펴보고 있어요', '차와 사람을 찾고 있어요', '움직이는 물체마다 번호를 붙이고 있어요'] },
-  { id: 'locate', title: '충돌 후보 찾기', doing: '충돌 순간을 찾고 있어요', about: '급접근, 화면 흔들림, 소리 변화를 봅니다.',
+  { id: 'locate', title: '충돌 후보 찾기', doing: '충돌 순간을 찾고 있어요', about: '급접근, 화면 흔들림, 소리 변화를 봐요.',
     hints: ['갑자기 가까워진 차를 찾고 있어요', '화면 흔들림과 소리 변화를 보고 있어요'] },
-  { id: 'focus', title: '장면 고르기', doing: '볼 장면을 고르고 있어요', about: '후보 앞뒤에서 프레임을 뽑습니다.',
+  { id: 'focus', title: '장면 고르기', doing: '볼 장면을 고르고 있어요', about: '후보 앞뒤에서 프레임을 뽑아요.',
     hints: ['충돌 후보 앞뒤를 자르고 있어요', '가장 잘 보이는 장면을 고르고 있어요'] },
-  { id: 'observe', title: '장면 관찰', doing: 'AI가 장면을 읽고 있어요', about: 'AI가 프레임에서 보이는 사실만 적습니다.',
+  { id: 'observe', title: '장면 관찰', doing: 'AI가 장면을 읽고 있어요', about: 'AI가 프레임에서 보이는 사실만 적어요.',
     hints: ['신호등과 차선을 확인하고 있어요', '상대 차가 어디서 들어왔는지 보고 있어요', '충돌 직전 장면을 다시 보고 있어요', '보이는 사실만 적고 있어요'] },
-  { id: 'assess', title: '기준과 대조', doing: '과실 기준과 맞춰 보고 있어요', about: '확인한 사실을 과실 기준에 맞춰 봅니다.',
+  { id: 'assess', title: '기준과 대조', doing: '과실 기준과 맞춰 보고 있어요', about: '확인한 사실을 과실 기준에 맞춰 봐요.',
     hints: ['비슷한 사고 유형을 찾고 있어요', '과실 기준표와 맞춰 보고 있어요', '레포트를 쓰고 있어요'] },
 ];
 
@@ -96,7 +96,7 @@ export const seoulDate = (iso: string) => new Date(iso).toLocaleDateString('ko-K
 
 /** 목록 제목. 웹 AnalysisList와 같다. */
 export function analysisTitle({ id, status, report, error }: Analysis): string {
-  if (status === 'failed') return FAILURES[error?.code ?? '']?.title ?? '분석을 끝내지 못했습니다';
+  if (status === 'failed') return FAILURES[error?.code ?? '']?.title ?? '분석을 끝내지 못했어요';
   if (!report) return `분석 #${id}`;
   if (report.involvement === 'none') return '사고 장면 미확인';
   return report.accident_type ?? '사고 분석 결과';

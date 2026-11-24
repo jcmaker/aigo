@@ -21,8 +21,8 @@ export function SectionTitle({ title, meta, action }: { title: string; meta?: st
       {meta ? <Text style={[type.caption, { color: color.gray11 }]}>{meta}</Text> : null}
       {action ? (
         <Pressable accessibilityRole="link" onPress={action.onPress} hitSlop={8} style={{ flexDirection: 'row', alignItems: 'center', gap: 2 }}>
-          <Text style={[type.label, { color: color.brand600 }]}>{action.label}</Text>
-          <Icon name="chevron" size={14} color={color.brand600} />
+          <Text style={[type.label, { color: color.mintDeep }]}>{action.label}</Text>
+          <Icon name="chevron" size={14} color={color.mintDeep} />
         </Pressable>
       ) : null}
     </View>
@@ -32,8 +32,8 @@ export function SectionTitle({ title, meta, action }: { title: string; meta?: st
 // 연한 바탕의 네모 아이콘. danger는 현장 모드처럼 급한 기능에 쓴다.
 export function IconTile({ name, danger, size = 44 }: { name: IconName; danger?: boolean; size?: number }) {
   return (
-    <View style={{ width: size, height: size, borderRadius: radius.icon, backgroundColor: danger ? color.danger300 : color.brand200, alignItems: 'center', justifyContent: 'center' }}>
-      <Icon name={name} size={size * 0.45} color={danger ? color.danger : color.brand600} />
+    <View style={{ width: size, height: size, borderRadius: radius.icon, backgroundColor: danger ? color.danger300 : color.mintSoft, alignItems: 'center', justifyContent: 'center' }}>
+      <Icon name={name} size={size * 0.45} color={danger ? color.danger : color.mintDeep} />
     </View>
   );
 }
@@ -56,8 +56,8 @@ export function MenuRow({ icon, title, subtitle, onPress, danger, urgent, first 
     >
       <IconTile name={icon} danger={danger || urgent} size={38} />
       <View style={{ flex: 1 }}>
-        <Text style={[type.label, { fontSize: 14, color: danger ? color.danger600 : color.gray12 }]}>{title}</Text>
-        {subtitle ? <Text style={[type.caption, { fontSize: 12, color: color.gray11 }]}>{subtitle}</Text> : null}
+        <Text style={[type.label, { fontSize: 15, color: danger ? color.danger600 : color.gray12 }]}>{title}</Text>
+        {subtitle ? <Text style={[type.caption, { fontSize: 13, color: color.gray11 }]}>{subtitle}</Text> : null}
       </View>
       <Icon name="chevron" size={16} color={color.gray9} />
     </Pressable>

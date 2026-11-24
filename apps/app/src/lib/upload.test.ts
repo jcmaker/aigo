@@ -8,7 +8,7 @@ jest.mock('expo-file-system', () => ({
   UploadType: { BINARY_CONTENT: 0 },
 }));
 
-import { checkTrim, checkVideo, isTicketExpired, MAX_BYTES, uploadVideo, videoName, type UploadTicket } from './upload';
+import { checkTrim, checkVideo, isTicketExpired, MAX_BYTES, pickedParams, uploadVideo, videoName, type UploadTicket } from './upload';
 
 const ticket: UploadTicket = {
   id: 7,
@@ -91,4 +91,11 @@ describe('checkTrim', () => {
     expect(checkTrim(300, { start: 0, end: 120 })).toBe('');
     expect(checkTrim(300, { start: 0, end: 120.5 })).toContain('120초 이하');
   });
+});
+
+test('홈에서 고른 영상은 이름·크기·길이(초)를 문자열로 넘긴다', () => {
+  expect(pickedParams({ uri: 'content://media/42', fileName: 'crash', mimeType: 'video/mp4', fileSize: 1000, duration: 27000 })).toEqual({
+    uri: 'content://media/42', name: 'crash.mp4', size: '1000', mime: 'video/mp4', duration: '27', from: 'home',
+  });
+  expect(pickedParams({ uri: 'file:///a.mov' })).toEqual({ uri: 'file:///a.mov', name: 'a.mov', size: '', mime: '', duration: '', from: 'home' });
 });

@@ -11,7 +11,7 @@ export const color = {
   ink: '#1A2B4C',
   ink2: '#26395E',
   ink3: '#344A73',
-  sceneCard: '#5580C8', // 사고 현장 질문 카드: 파랑과 하늘색 사이의 차분한 색
+  sceneCard: '#1A2B4C', // 사고 현장 질문 카드: 앱의 남색(ink)과 같다(ADR 0035)
   white: '#FFFFFF',
   bg: '#F3F5F8', // 화면 바탕: 남색 기운의 밝은 회색(ADR 0028). 흰 카드는 line 테두리로 구분한다
   line: '#E6E9EF', // 바탕 위 흰 카드·버튼 테두리

@@ -1,7 +1,8 @@
 import { useFocusEffect, useRouter } from 'expo-router';
 import { useCallback, useState } from 'react';
 import { ActivityIndicator, Pressable, Text, View } from 'react-native';
-import { EmptyState, Icon, Screen, TopBar } from '@/components/ui';
+import { EmptyState, Icon, Screen } from '@/components/ui';
+import { ReportHeader } from '@/components/report-sections';
 import type { Analysis } from '@/lib/analysis';
 import { useApi } from '@/lib/api';
 import { getSeenNotices, markNoticesSeen } from '@/lib/notice-store';
@@ -17,14 +18,14 @@ function NoticeRow({ n, unread, now, onPress }: { n: Notice; unread: boolean; no
       onPress={onPress}
       style={({ pressed }) => ({ flexDirection: 'row', gap: space[3], paddingVertical: space[3], paddingHorizontal: space[1], borderRadius: radius.row, backgroundColor: pressed ? color.gray2 : 'transparent' })}
     >
-      <View style={{ width: 40, height: 40, borderRadius: 20, alignItems: 'center', justifyContent: 'center', backgroundColor: done ? color.brand200 : color.danger300 }}>
-        <Icon name={done ? 'check' : 'alert'} size={18} color={done ? color.brand600 : color.danger600} />
+      <View style={{ width: 40, height: 40, borderRadius: 20, alignItems: 'center', justifyContent: 'center', backgroundColor: done ? color.mintSoft : color.danger300 }}>
+        <Icon name={done ? 'check' : 'alert'} size={18} color={done ? color.mintDeep : color.danger600} />
       </View>
       <View style={{ flex: 1, gap: 2 }}>
         <View style={{ flexDirection: 'row', alignItems: 'center', gap: space[2] }}>
-          <Text style={[type.label, { flex: 1, fontSize: 14, color: unread ? color.gray12 : color.gray11 }]}>{n.title}</Text>
+          <Text style={[type.label, { flex: 1, fontSize: 15, color: unread ? color.gray12 : color.gray11 }]}>{n.title}</Text>
           <Text style={[type.micro, { color: color.gray11 }]}>{timeAgo(n.at, now)}</Text>
-          {unread ? <View style={{ width: 6, height: 6, borderRadius: 3, backgroundColor: color.brand }} /> : null}
+          {unread ? <View style={{ width: 6, height: 6, borderRadius: 3, backgroundColor: color.mintDeep }} /> : null}
         </View>
         <Text style={[type.caption, { color: unread ? color.gray12 : color.gray11 }]} numberOfLines={2}>{n.body}</Text>
       </View>
@@ -67,8 +68,8 @@ export default function NotificationsScreen() {
   const earlier = notices?.filter((n) => !isToday(n.at, now)) ?? [];
 
   return (
-    <Screen scroll>
-      <TopBar title="알림" onBack={() => router.back()} />
+    <Screen scroll topColor={color.ink} barStyle="light-content">
+      <ReportHeader title="알림" onBack={() => router.back()} />
       {notices === null ? (
         <ActivityIndicator color={color.gray9} style={{ marginTop: space[8] }} />
       ) : notices.length ? (

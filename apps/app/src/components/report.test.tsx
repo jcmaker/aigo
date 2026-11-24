@@ -108,7 +108,7 @@ describe('진행 화면', () => {
   test('실패하면 시간 없이 실패 문구만', async () => {
     const progress = [at('normalize', 'done', '2026-11-21T06:00:05Z')];
     await render(<ProgressView analysis={analysis({ status: 'failed', stage: 'scan', progress, report: null, error: { code: 'ANALYSIS_FAILED', message: '분석 오류' } })} stale={false} />);
-    expect(screen.getAllByText('분석을 끝내지 못했습니다').length).toBeGreaterThan(0);
+    expect(screen.getAllByText('분석을 끝내지 못했어요').length).toBeGreaterThan(0);
     expect(screen.queryByText(/경과/)).toBeNull();
   });
 });

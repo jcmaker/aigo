@@ -82,3 +82,10 @@ test('도로 상태: 갈라짐이면 도로 관리 주체 배상, 떨어진 물�
 test('이전으로 돌아가기용 답한 질문 목록', () => {
   expect(askedQuestions({ help: true, kind: 'animal', fire: false })).toEqual(['help', 'kind', 'fire']);
 });
+
+test('사람·이륜 사고는 다친 사람이 없다고 답해도 다친 것으로 보고, 요약 칩은 "부상 가능성 있음"으로 적는다', () => {
+  const base = { help: true, fire: false, injury: 'no', place: 'road', other: 'here', drivable: true } as const;
+  expect(buildGuide({ ...base, kind: 'person' }, {}).summary).toContain('부상 가능성 있음');
+  expect(buildGuide({ ...base, kind: 'car', how: 'ihit' }, {}).summary).toContain('다친 사람 없음');
+  expect(buildGuide({ ...base, kind: 'person', injury: 'yes' }, {}).summary).toContain('다친 사람 있음');
+});

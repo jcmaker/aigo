@@ -14,7 +14,8 @@ const LOOK: Record<string, { icon: IconName; bg: string; fg: string }> = {
   neutral: { icon: 'video', bg: color.gray3, fg: color.gray11 },
 };
 
-export function AnalysisRow({ a, onPress, onDelete }: { a: Analysis; onPress: () => void; onDelete?: () => void }) {
+// select: 여러 개 지우기 모드에서 왼쪽에 체크 동그라미를 보인다. disabled면 고를 수 없다(분석 중).
+export function AnalysisRow({ a, onPress, onDelete, select }: { a: Analysis; onPress: () => void; onDelete?: () => void; select?: { checked: boolean; disabled: boolean } }) {
   // 아직 결과가 없는 상태는 "분석 #13" 대신 지금 무슨 일이 있는지 말해 준다.
   const title = a.status === 'queued' || a.status === 'processing' ? '영상을 분석하고 있어요' : a.status === 'created' ? '영상 업로드가 끝나지 않았어요' : analysisTitle(a);
   // 좁은 화면(360 미만)에서는 과실 범위를 오른쪽 칸 대신 상태 줄 아래에 둬서 제목이 잘게 끊기지 않게 한다.
@@ -28,14 +29,23 @@ export function AnalysisRow({ a, onPress, onDelete }: { a: Analysis; onPress: ()
     <Pressable
       accessibilityRole="button"
       accessibilityLabel={[title, status, range ? `내 과실 ${range}` : null, date, a.source === 'dashpi' ? 'DashPi' : null].filter(Boolean).join(', ')}
-      accessibilityHint={onDelete ? '길게 누르면 삭제할 수 있어요' : undefined}
+      accessibilityHint={select ? (select.disabled ? '분석 중이라 고를 수 없어요' : undefined) : onDelete ? '길게 누르면 삭제할 수 있어요' : undefined}
+      accessibilityState={select ? { checked: select.checked, disabled: select.disabled } : undefined}
+      disabled={select?.disabled}
       onPress={onPress}
-      onLongPress={onDelete}
-      style={({ pressed }) => ({ flexDirection: 'row', alignItems: 'center', gap: space[3], padding: space[4], backgroundColor: pressed ? color.gray2 : color.white, borderRadius: radius.row, borderWidth: 1, borderColor: color.line })}
+      onLongPress={select ? undefined : onDelete}
+      style={({ pressed }) => ({ flexDirection: 'row', alignItems: 'center', gap: space[3], padding: space[4], backgroundColor: select?.checked ? color.mintSoft : pressed ? color.gray2 : color.white, borderRadius: radius.row, borderWidth: select?.checked ? 2 : 1, borderColor: select?.checked ? color.mintDeep : color.line, opacity: select?.disabled ? 0.45 : 1 })}
     >
-      <View style={{ width: 44, height: 44, borderRadius: radius.icon, backgroundColor: look.bg, alignItems: 'center', justifyContent: 'center' }}>
-        <Icon name={look.icon} size={20} color={look.fg} />
-      </View>
+      {select ? (
+        <View style={{ width: 28, height: 28, borderRadius: 14, marginHorizontal: 8, borderWidth: 2, borderColor: select.checked ? color.mintDeep : color.gray9, backgroundColor: select.checked ? color.mintDeep : color.white, alignItems: 'center', justifyContent: 'center' }}>
+          {select.checked ? <Icon name="check" size={16} color={color.white} /> : null}
+        </View>
+      ) : (
+        // 고르는 중에는 체크 동그라미가 상태 아이콘 자리를 대신해 제목이 좁아지지 않게 한다.
+        <View style={{ width: 44, height: 44, borderRadius: radius.icon, backgroundColor: look.bg, alignItems: 'center', justifyContent: 'center' }}>
+          <Icon name={look.icon} size={20} color={look.fg} />
+        </View>
+      )}
       <View style={{ flex: 1, gap: 4 }}>
         <Text style={[type.body, { fontSize: 16, fontWeight: '700', color: color.gray12 }]} numberOfLines={2}>{title}</Text>
         <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6, flexWrap: 'wrap' }}>
@@ -55,7 +65,7 @@ export function AnalysisRow({ a, onPress, onDelete }: { a: Analysis; onPress: ()
           <Text style={[type.headline, { fontSize: 18, fontWeight: '800', color: color.mintDeep }]}>{range}</Text>
         </View>
       ) : null}
-      <Icon name="chevron" size={16} color={color.gray11} />
+      {select ? null : <Icon name="chevron" size={16} color={color.gray11} />}
     </Pressable>
   );
 }

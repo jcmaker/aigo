@@ -5,7 +5,9 @@ import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useEffect, useRef, useState } from 'react';
 import { Text, View } from 'react-native';
 import { ErrorLine, FailureNotice } from '@/components/analysis';
-import { Button, Card, ConsentSwitch, EmptyState, Notice, Screen } from '@/components/ui';
+import { Button, Card, ConsentSwitch, Icon, Notice, Screen } from '@/components/ui';
+import { FindVideoTips } from '@/components/FindVideoTips';
+import { ReportHeader } from '@/components/report-sections';
 import { FAILURES } from '@/lib/analysis';
 import { ApiFailure, useApi } from '@/lib/api';
 import { registerPush } from '@/lib/push';
@@ -32,7 +34,7 @@ const sizeOf = (uri: string) => {
 };
 
 export default function UploadScreen() {
-  const params = useLocalSearchParams<{ uri?: string; name?: string; size?: string }>();
+  const params = useLocalSearchParams<{ uri?: string; name?: string; size?: string; mime?: string; duration?: string; from?: string }>();
   const api = useApi();
   const router = useRouter();
   const [file, setFile] = useState<Picked | null>(null);
@@ -84,11 +86,11 @@ export default function UploadScreen() {
     }
   };
 
-  // 다른 화면(공유 메뉴, 구간 자르기)이 넘긴 파일. 크기와 이름이 없으면 여기서 구한다.
-  const { uri, name, size } = params;
+  // 다른 화면이 넘긴 파일. 공유 메뉴(share.tsx)와 홈에서 고른 영상(from=home, ADR 0039)이 있다. 크기와 이름이 없으면 여기서 구한다.
+  const { uri, name, size, mime, duration, from } = params;
   useEffect(() => {
-    if (uri) choose({ uri, name: videoName(uri, name), size: Number(size) || sizeOf(uri), mime: '', duration: null }, 'shared');
-  }, [uri, name, size]);
+    if (uri) choose({ uri, name: videoName(uri, name), size: Number(size) || sizeOf(uri), mime: mime ?? '', duration: Number(duration) || null }, from === 'home' ? 'picked' : 'shared');
+  }, [uri, name, size, mime, duration, from]);
 
   async function pick() {
     const res = await ImagePicker.launchImageLibraryAsync({ mediaTypes: ['videos'] });
@@ -152,8 +154,9 @@ export default function UploadScreen() {
   const muted = [type.caption, { color: color.gray11 }];
 
   return (
-    <Screen scroll tabInset>
-      <Text accessibilityRole="header" style={[type.title, { color: color.gray12, paddingTop: space[2] }]}>영상 분석하기</Text>
+    <Screen scroll tabInset topColor={color.ink} barStyle="light-content">
+      <ReportHeader title="영상 분석하기" subtitle="과실 비율과 근거 장면을 알려드려요" />
+      <StepTitle n={1} title="영상 고르기" done={!!file} />
       {file ? (
         <>
           <Text style={muted}>
@@ -185,22 +188,34 @@ export default function UploadScreen() {
           <Button label="다른 영상 고르기" variant="secondary" disabled={busy} onPress={pick} />
         </>
       ) : (
-        <View style={{ backgroundColor: color.brand, borderRadius: radius.card, paddingHorizontal: space[4] }}>
-          <EmptyState tone="brand" icon="video" title="어떤 영상을 분석할까요?">
-            <Button label="갤러리에서 영상 고르기" variant="secondary" icon="image" disabled={busy} onPress={pick} />
-          </EmptyState>
+        <View style={{ backgroundColor: color.ink, borderRadius: radius.card, padding: space[5], gap: space[3], alignItems: 'center' }}>
+          <View style={{ width: 64, height: 64, borderRadius: 32, backgroundColor: 'rgba(63,207,142,0.12)', alignItems: 'center', justifyContent: 'center' }}>
+            <Icon name="video" size={30} color={color.mint} />
+          </View>
+          <Text style={[type.title, { fontSize: 20, color: color.white, textAlign: 'center' }]}>어떤 영상을 분석할까요?</Text>
+          <Text style={[type.caption, { fontSize: 14, color: color.brand400, textAlign: 'center' }]}>사고 앞뒤가 담긴 영상 · mp4, mov, webm, avi · 200MB · 2분 이하</Text>
+          <Button label="갤러리에서 영상 고르기" variant="onDark" icon="image" disabled={busy} onPress={pick} style={{ alignSelf: 'stretch', marginTop: space[1] }} />
         </View>
       )}
       <ErrorLine>{fileError}</ErrorLine>
-      <Text style={muted}>mp4, mov, webm, avi · 200MB · 2분 이하</Text>
+      {file ? <Text style={muted}>mp4, mov, webm, avi · 200MB · 2분 이하</Text> : <FindVideoTips />}
 
+      <StepTitle n={2} title="확인하고 동의하기" done={consent} />
       <Notice>
         <Text style={{ fontWeight: '700' }}>올리기 전에 확인하세요{'\n'}</Text>
         {CONSENT_TEXT}
       </Notice>
       <ConsentSwitch value={consent} disabled={busy} onChange={setConsent} label="위 내용을 확인했고 영상 분석에 동의합니다." />
 
-      {phase === 'uploading' ? <Text style={[type.label, { color: color.gray12 }]}>올리는 중 {percent}%</Text> : null}
+      <StepTitle n={3} title="올리고 분석 시작" done={false} />
+      {phase === 'uploading' ? (
+        <View style={{ gap: space[1] }}>
+          <Text style={[type.label, { color: color.gray12 }]}>올리는 중 {percent}%</Text>
+          <View style={{ height: 6, borderRadius: 3, backgroundColor: color.gray4 }}>
+            <View style={{ width: `${percent}%`, height: 6, borderRadius: 3, backgroundColor: color.mintDeep }} />
+          </View>
+        </View>
+      ) : null}
       {phase === 'submitting' ? <Text style={[type.label, { color: color.gray12 }]}>분석 대기열에 넣는 중</Text> : null}
       {failure ? (
         <Card>
@@ -221,7 +236,19 @@ function TrimBar({ duration, start, end }: { duration: number | null; start: num
   const to = end ?? duration;
   return (
     <View style={{ height: 12, borderRadius: radius.pill, backgroundColor: color.gray4 }}>
-      <View style={{ position: 'absolute', top: 0, bottom: 0, left: pct(from), width: pct(Math.max(0, to - from)), borderRadius: radius.pill, borderWidth: 2, borderColor: color.brand, backgroundColor: color.brand200 }} />
+      <View style={{ position: 'absolute', top: 0, bottom: 0, left: pct(from), width: pct(Math.max(0, to - from)), borderRadius: radius.pill, borderWidth: 2, borderColor: color.mintDeep, backgroundColor: color.mintSoft }} />
+    </View>
+  );
+}
+
+/** 단계 제목(ADR 0036): 번호는 연한 민트 동그라미, 끝난 단계는 진한 민트 체크. */
+function StepTitle({ n, title, done }: { n: number; title: string; done: boolean }) {
+  return (
+    <View style={{ flexDirection: 'row', alignItems: 'center', gap: space[2], marginTop: space[2] }}>
+      <View style={{ width: 26, height: 26, borderRadius: 13, alignItems: 'center', justifyContent: 'center', backgroundColor: done ? color.mintDeep : color.mintSoft }}>
+        {done ? <Icon name="check" size={14} color={color.white} /> : <Text style={[type.label, { fontSize: 13, fontWeight: '800', color: color.mintDeep }]}>{n}</Text>}
+      </View>
+      <Text accessibilityRole="header" style={[type.headline, { fontSize: 17, color: color.gray12 }]}>{title}</Text>
     </View>
   );
 }
