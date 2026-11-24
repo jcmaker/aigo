@@ -89,7 +89,8 @@ export default function AnalysisScreen() {
   // ⋯ 버튼의 화면 위치를 재서 메뉴 상자를 바로 아래 오른쪽 끝에 맞춘다.
   const openMenu = () =>
     menuRef.current?.measureInWindow((x, y, w, h) => setMenu({ top: y + h + 6, right: Math.max(space[2], Dimensions.get('window').width - (x + w)) }));
-  const menuButton = analysis ? (
+  // 대기·분석 중에는 할 수 있는 일이 삭제뿐이라 ⋯를 숨긴다. 끝나면(완료·실패) 나타난다(ADR 0044).
+  const menuButton = analysis && !busy ? (
     <Pressable ref={menuRef} accessibilityRole="button" accessibilityLabel="더 보기" accessibilityHint="리포트 PDF 보내기, 영상 다시 올리기, 분석 삭제" onPress={openMenu} style={headerCircle}>
       {sharing || deleting ? <ActivityIndicator color={color.white} /> : <Icon name="dots" size={20} color={color.white} />}
     </Pressable>
